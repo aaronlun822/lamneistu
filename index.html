@@ -1,370 +1,348 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-HK">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>實用工具箱</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🀄️ 戰績紀錄</title>
+  <style>
+    /* 現代化、類 iOS 介面設計 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #F2F2F7;
+      margin: 0;
+      padding: 20px 16px;
+      color: #1C1C1E;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+    }
     
-    <!-- Tailwind CSS (用於樣式) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- PDF.js (用於讀取 PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    
-    <!-- JSZip (用於打包下載) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    /* 按鈕選單設計 */
+    .button-group {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
+    }
+    .button-group::-webkit-scrollbar {
+      display: none; 
+    }
+    .sheet-btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      background-color: #E5E5EA;
+      color: #1C1C1E;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .sheet-btn.active {
+      background-color: #007AFF;
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
 
-    <script>
-        // 設定 Tailwind 配置以符合 iOS 風格
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        iosBlue: '#007AFF',
-                        iosGray: '#F2F2F7',
-                        iosGreen: '#34C759',
-                    },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.1)',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* iOS 風格優化 */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #F2F2F7;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-        .btn-primary {
-            background-color: #007AFF;
-            color: white;
-            transition: opacity 0.2s;
-        }
-        .btn-primary:active {
-            opacity: 0.7;
-        }
-        /* 隱藏滾動條但保留功能 */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 3px solid #007AFF;
-            width: 20px;
-            height: 20px;
-            -webkit-animation: spin 1s linear infinite; /* Safari */
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    .card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 20px 0;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 20px;
+      margin-bottom: 16px;
+      padding: 0 20px;
+    }
+    
+    /* 表格與固定欄距設計 */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+      table-layout: fixed; /* 強制欄距固定 */
+    }
+    th, td {
+      padding: 12px 8px;
+      text-align: center;
+      border-bottom: 1px solid #E5E5EA;
+      width: 70px; /* 預設其他日期/數值欄位的寬度 */
+      box-sizing: border-box;
+    }
+    th {
+      color: #8E8E93;
+      font-weight: 500;
+      font-size: 14px;
+      background-color: #FFFFFF;
+    }
+    
+    /* 鎖定第一欄 (排名) */
+    td:nth-child(1), th:nth-child(1) {
+      position: sticky;
+      left: 0;
+      background: #FFFFFF;
+      z-index: 2;
+      width: 50px;
+    }
+    
+    /* 鎖定第二欄 (名字) */
+    td:nth-child(2), th:nth-child(2) {
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      left: 50px; /* 剛好接在排名欄位後面 */
+      background: #FFFFFF;
+      z-index: 2;
+      width: 80px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.02); /* 滾動時微陰影分隔 */
+    }
+
+    /* 獎牌與排名設計 */
+    .rank-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .rank-1 { background-color: #FFD700; color: #FFFFFF; } /* 金 */
+    .rank-2 { background-color: #C0C0C0; color: #FFFFFF; } /* 銀 */
+    .rank-3 { background-color: #CD7F32; color: #FFFFFF; } /* 銅 */
+    .rank-other { color: #8E8E93; font-weight: normal; }
+
+    .win { color: #34C759; font-weight: bold; }
+    .lose { color: #FF3B30; font-weight: bold; }
+    .loading { text-align: center; color: #8E8E93; padding: 40px; }
+  </style>
 </head>
-<body class="text-gray-800 pb-10 safe-area-inset-bottom">
+<body>
 
-    <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 px-4 py-4 mb-6">
-        <h1 class="text-xl font-bold text-center text-gray-900">實用工具箱</h1>
-    </header>
-
-    <main class="max-w-md mx-auto px-4">
-
-        <!-- 1. 單位轉換器 -->
-        <section class="card">
-            <h2 class="text-lg font-semibold mb-4 flex items-center">
-                <span class="bg-blue-100 text-blue-600 p-1 rounded mr-2">📏</span> 單位轉換
-            </h2>
-            <div class="space-y-3">
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-xs text-gray-500 ml-1">數值</label>
-                        <input type="number" id="unitInput" placeholder="0" class="w-full bg-gray-100 rounded-lg p-3 outline-none focus:ring-2 focus:ring-iosBlue transition">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 ml-1">單位</label>
-                        <select id="unitFrom" class="w-full bg-gray-100 rounded-lg p-3 outline-none focus:ring-2 focus:ring-iosBlue transition appearance-none">
-                            <option value="m">公尺 (m)</option>
-                            <option value="cm" selected>公分 (cm)</option>
-                            <option value="mm">毫米 (mm)</option>
-                            <option value="ft">英呎 (ft)</option>
-                            <option value="inch">英吋 (inch)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="flex justify-center text-gray-400 text-sm">⬇️ 轉換為</div>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="flex items-center bg-gray-50 rounded-lg p-3 border border-gray-200">
-                        <span id="unitResult" class="font-bold text-gray-800 text-lg overflow-hidden text-ellipsis">0</span>
-                    </div>
-                    <div>
-                        <select id="unitTo" class="w-full bg-gray-100 rounded-lg p-3 outline-none focus:ring-2 focus:ring-iosBlue transition appearance-none">
-                            <option value="m">公尺 (m)</option>
-                            <option value="cm">公分 (cm)</option>
-                            <option value="mm">毫米 (mm)</option>
-                            <option value="ft" selected>英呎 (ft)</option>
-                            <option value="inch">英吋 (inch)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. WhatsApp 快速對話 -->
-        <section class="card">
-            <h2 class="text-lg font-semibold mb-4 flex items-center">
-                <span class="bg-green-100 text-green-600 p-1 rounded mr-2">💬</span> WhatsApp 傳送門
-            </h2>
-            <div class="space-y-3">
-                <div>
-                    <label class="text-xs text-gray-500 ml-1">電話號碼 (含區碼，如 852)</label>
-                    <input type="tel" id="waPhone" placeholder="85212345678" class="w-full bg-gray-100 rounded-lg p-3 outline-none focus:ring-2 focus:ring-iosGreen transition">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500 ml-1">預設訊息 (選填)</label>
-                    <textarea id="waMessage" rows="2" placeholder="你好..." class="w-full bg-gray-100 rounded-lg p-3 outline-none focus:ring-2 focus:ring-iosGreen transition resize-none"></textarea>
-                </div>
-                <button onclick="openWhatsApp()" class="w-full bg-[#25D366] text-white font-semibold py-3 rounded-lg shadow-sm active:opacity-80 transition flex items-center justify-center">
-                    開啟 WhatsApp 對話
-                </button>
-            </div>
-        </section>
-
-        <!-- 3. PDF 轉 JPG -->
-        <section class="card">
-            <h2 class="text-lg font-semibold mb-4 flex items-center">
-                <span class="bg-red-100 text-red-600 p-1 rounded mr-2">📄</span> PDF 轉 JPG
-            </h2>
-            
-            <!-- 上傳區 -->
-            <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-50 transition relative">
-                <input type="file" id="pdfInput" accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                <div class="pointer-events-none">
-                    <p class="text-3xl mb-2">📥</p>
-                    <p class="text-sm text-gray-500 font-medium">點擊或拖曳 PDF 檔案至此</p>
-                    <p class="text-xs text-gray-400 mt-1">支援多頁轉檔</p>
-                </div>
-            </div>
-
-            <!-- 狀態與進度 -->
-            <div id="pdfStatus" class="hidden mt-4 text-center">
-                <div class="flex items-center justify-center space-x-2 text-sm text-gray-600">
-                    <div class="loader"></div>
-                    <span id="statusText">正在處理中...</span>
-                </div>
-            </div>
-
-            <!-- 下載全部按鈕 (隱藏) -->
-            <button id="downloadAllBtn" onclick="downloadAllImages()" class="hidden w-full mt-4 bg-gray-800 text-white font-semibold py-3 rounded-lg shadow-sm active:opacity-80 transition">
-                📦 下載所有圖片 (ZIP)
-            </button>
-
-            <!-- 圖片預覽區 -->
-            <div id="previewArea" class="mt-6 space-y-4">
-                <!-- 生成的圖片會放在這裡 -->
-            </div>
-        </section>
-
-    </main>
+  <div class="container">
+    <h1>🀄️ 戰績紀錄</h1>
     
-    <footer class="text-center text-gray-400 text-xs py-8">
-        Designed for iPhone & Desktop
-    </footer>
+    <div id="sheetButtons" class="button-group"></div>
 
-    <script>
-        // --- 1. 單位轉換邏輯 ---
-        const unitInput = document.getElementById('unitInput');
-        const unitFrom = document.getElementById('unitFrom');
-        const unitTo = document.getElementById('unitTo');
-        const unitResult = document.getElementById('unitResult');
+    <div id="contentArea">
+      <div class="loading">正在載入最新戰績...</div>
+    </div>
+  </div>
 
-        const factors = {
-            m: 1,
-            cm: 0.01,
-            mm: 0.001,
-            ft: 0.3048,
-            inch: 0.0254
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
+    let globalData = {};
+    let activeSheetName = '';
+
+    // 取得資料
+    async function fetchData() {
+      try {
+        const response = await fetch(API_URL);
+        globalData = await response.json();
+        
+        const sheetNames = Object.keys(globalData);
+        if (sheetNames.length > 0) {
+          activeSheetName = sheetNames[0]; 
+          renderButtons();
+          renderData();
+        }
+      } catch (error) {
+        document.getElementById('contentArea').innerHTML = '<div class="loading">載入失敗，請檢查網路或 API 設定。</div>';
+      }
+    }
+
+    // 渲染按鈕選單
+    function renderButtons() {
+      const btnContainer = document.getElementById('sheetButtons');
+      btnContainer.innerHTML = '';
+      
+      Object.keys(globalData).forEach(sheetName => {
+        const btn = document.createElement('button');
+        btn.className = `sheet-btn ${sheetName === activeSheetName ? 'active' : ''}`;
+        btn.textContent = sheetName;
+        btn.onclick = () => {
+          activeSheetName = sheetName;
+          renderButtons();
+          renderData();   
         };
+        btnContainer.appendChild(btn);
+      });
+    }
 
-        function convertUnit() {
-            const val = parseFloat(unitInput.value);
-            if (isNaN(val)) {
-                unitResult.innerText = "0";
-                return;
-            }
-            const inMeters = val * factors[unitFrom.value];
-            const result = inMeters / factors[unitTo.value];
+    // 渲染資料內容
+    function renderData() {
+      const sheetData = globalData[activeSheetName];
+      const contentArea = document.getElementById('contentArea');
+      
+      contentArea.innerHTML = '';
+
+      if (activeSheetName === '總排名') {
+        renderOverallRanking(sheetData, contentArea);
+        return;
+      }
+
+      // ==== 渲染每日紀錄 (包含名次) ====
+      let detailHTML = `
+        <div class="card">
+          <h2>📅 每日紀錄</h2>
+          <div class="table-container">
+            <table>
+              <tr>
+                <th>排名</th>
+                <th>名字</th>
+                <th>本月總數</th>`;
+      
+      // 讀取日期標題 (C欄到Q欄)
+      for (let j = 2; j <= 16; j++) {
+        const dateStr = sheetData[1][j];
+        if (dateStr) detailHTML += `<th>${formatDate(dateStr)}</th>`;
+      }
+      detailHTML += `</tr>`;
+
+      // 取出玩家資料
+      let playerRows = [];
+      for (let i = 2; i < sheetData.length; i++) {
+        if (sheetData[i][0]) { 
+          playerRows.push(sheetData[i]);
+        }
+      }
+
+      // 依據本月總數排序 (大到小)
+      playerRows.sort((a, b) => {
+        const totalA = Number(a[1]) || 0;
+        const totalB = Number(b[1]) || 0;
+        return totalB - totalA; 
+      });
+
+      // 渲染玩家列
+      playerRows.forEach((row, index) => {
+        const name = row[0]; 
+        const total = row[1]; 
+        const totalClass = total > 0 ? 'win' : (total < 0 ? 'lose' : '');
+        
+        // 判斷名次獎牌
+        let rankHTML = '';
+        if (index === 0) rankHTML = `<span class="rank-circle rank-1">1</span>`;
+        else if (index === 1) rankHTML = `<span class="rank-circle rank-2">2</span>`;
+        else if (index === 2) rankHTML = `<span class="rank-circle rank-3">3</span>`;
+        else rankHTML = `<span class="rank-other">${index + 1}</span>`;
+        
+        detailHTML += `<tr>
+          <td>${rankHTML}</td>
+          <td>${name}</td>
+          <td class="${totalClass}">${total || 0}</td>`;
+          
+        for (let j = 2; j <= 16; j++) {
+          const dailyScore = row[j];
+          const hasDate = sheetData[1][j] !== ""; 
+          
+          if (hasDate) {
+            const dailyClass = dailyScore > 0 ? 'win' : (dailyScore < 0 ? 'lose' : '');
+            detailHTML += `<td class="${dailyClass}">${dailyScore !== "" ? dailyScore : '-'}</td>`;
+          }
+        }
+        detailHTML += `</tr>`;
+      });
+      
+      detailHTML += `</table></div></div>`;
+      contentArea.innerHTML += detailHTML;
+    }
+
+    // ==== 處理總排名 (與每日紀錄格式一致，並隱藏右側排行榜) ====
+    function renderOverallRanking(sheetData, contentArea) {
+       let html = `
+        <div class="card">
+          <h2>🌟 總排名</h2>
+          <div class="table-container">
+            <table>`;
             
-            // 處理小數點，如果是整數顯示整數，否則最多4位
-            unitResult.innerText = Number.isInteger(result) ? result : result.toFixed(4).replace(/\.?0+$/, "");
-        }
+       // 自動偵測讀取到哪一欄 (忽略右側的 🏆 排行榜)
+       let maxColIndex = 1; // 至少包含 A(名字) 和 B(總數)
+       for (let j = 2; j < sheetData[0].length; j++) {
+         // 若遇到空白標題，或是包含「排行」字眼，就當作資料尾端
+         if (!sheetData[0][j] || String(sheetData[0][j]).includes('排行')) {
+           break;
+         }
+         maxColIndex = j;
+       }
 
-        [unitInput, unitFrom, unitTo].forEach(el => el.addEventListener('input', convertUnit));
+       // 標題列
+       html += `<tr><th>排名</th>`;
+       for (let j = 0; j <= maxColIndex; j++) {
+         html += `<th>${sheetData[0][j]}</th>`;
+       }
+       html += `</tr>`;
 
+       // 取出資料進行排序
+       let dataRows = [];
+       for (let i = 1; i < sheetData.length; i++) {
+         if (sheetData[i][0]) {
+           dataRows.push(sheetData[i]);
+         }
+       }
 
-        // --- 2. WhatsApp 邏輯 ---
-        function openWhatsApp() {
-            let phone = document.getElementById('waPhone').value.replace(/\D/g, ''); // 只保留數字
-            const msg = encodeURIComponent(document.getElementById('waMessage').value);
-            
-            if (phone.length < 3) {
-                alert("請輸入有效的電話號碼");
-                return;
-            }
+       // 依據總數排序
+       dataRows.sort((a, b) => {
+         const totalA = Number(a[1]) || 0;
+         const totalB = Number(b[1]) || 0;
+         return totalB - totalA; 
+       });
 
-            const url = `https://wa.me/${phone}?text=${msg}`;
-            window.open(url, '_blank');
-        }
+       // 渲染內容
+       dataRows.forEach((row, index) => {
+         // 名次獎牌
+         let rankHTML = '';
+         if (index === 0) rankHTML = `<span class="rank-circle rank-1">1</span>`;
+         else if (index === 1) rankHTML = `<span class="rank-circle rank-2">2</span>`;
+         else if (index === 2) rankHTML = `<span class="rank-circle rank-3">3</span>`;
+         else rankHTML = `<span class="rank-other">${index + 1}</span>`;
 
+         html += `<tr>`;
+         html += `<td>${rankHTML}</td>`;
+         
+         for (let j = 0; j <= maxColIndex; j++) {
+           const cellData = row[j];
+           const isNum = !isNaN(cellData) && cellData !== "";
+           const colorClass = isNum && cellData > 0 ? 'win' : (isNum && cellData < 0 ? 'lose' : '');
+           // 第0欄是名字不套用顏色，其餘數值套用顏色
+           html += `<td class="${j > 0 ? colorClass : ''}">${cellData !== "" ? cellData : '-'}</td>`;
+         }
+         html += `</tr>`;
+       });
+       
+       html += `</table></div></div>`;
+       contentArea.innerHTML += html;
+    }
 
-        // --- 3. PDF 轉 JPG 邏輯 ---
-        // 設定 PDF.js Worker
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    // 簡化日期顯示格式
+    function formatDate(dateString) {
+      const d = new Date(dateString);
+      if(isNaN(d)) return dateString;
+      return `${d.getMonth() + 1}/${d.getDate()}`;
+    }
 
-        const pdfInput = document.getElementById('pdfInput');
-        const dropZone = document.getElementById('dropZone');
-        const pdfStatus = document.getElementById('pdfStatus');
-        const statusText = document.getElementById('statusText');
-        const previewArea = document.getElementById('previewArea');
-        const downloadAllBtn = document.getElementById('downloadAllBtn');
-
-        let generatedImages = []; // 儲存 {blob, name}
-        let originalFileName = "document";
-
-        // 拖曳效果
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
-        });
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, highlight, false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, unhighlight, false);
-        });
-        function highlight() { dropZone.classList.add('bg-blue-50', 'border-blue-400'); }
-        function unhighlight() { dropZone.classList.remove('bg-blue-50', 'border-blue-400'); }
-
-        dropZone.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            if (files.length > 0 && files[0].type === "application/pdf") {
-                processPDF(files[0]);
-            } else {
-                alert("請上傳 PDF 檔案");
-            }
-        }
-
-        pdfInput.addEventListener('change', function(e) {
-            if (this.files.length > 0) {
-                processPDF(this.files[0]);
-            }
-        });
-
-        async function processPDF(file) {
-            // 重置
-            previewArea.innerHTML = '';
-            generatedImages = [];
-            downloadAllBtn.classList.add('hidden');
-            pdfStatus.classList.remove('hidden');
-            statusText.innerText = "正在讀取 PDF...";
-            originalFileName = file.name.replace('.pdf', '');
-
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                const totalPages = pdf.numPages;
-
-                for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-                    statusText.innerText = `正在轉換第 ${pageNum} / ${totalPages} 頁...`;
-                    
-                    const page = await pdf.getPage(pageNum);
-                    const viewport = page.getViewport({ scale: 2.0 }); // 2.0 倍率以獲得較好畫質
-
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-
-                    await page.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise;
-
-                    // 轉為 Blob
-                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
-                    const imgUrl = URL.createObjectURL(blob);
-                    const fileName = `${originalFileName}_page_${pageNum}.jpg`;
-
-                    generatedImages.push({ blob: blob, name: fileName });
-
-                    // 建立預覽卡片
-                    createImageCard(imgUrl, fileName, pageNum);
-                }
-
-                statusText.innerText = "轉換完成！";
-                setTimeout(() => pdfStatus.classList.add('hidden'), 2000);
-
-                // 如果多於一頁，顯示下載全部按鈕
-                if (totalPages > 1) {
-                    downloadAllBtn.classList.remove('hidden');
-                }
-
-            } catch (error) {
-                console.error(error);
-                statusText.innerText = "發生錯誤，請檢查檔案是否損毀";
-                alert("轉換失敗，請稍後再試。");
-            }
-        }
-
-        function createImageCard(url, fileName, pageNum) {
-            const div = document.createElement('div');
-            div.className = "bg-white p-3 rounded-lg border border-gray-200 shadow-sm";
-            div.innerHTML = `
-                <div class="text-sm font-semibold text-gray-500 mb-2">第 ${pageNum} 頁</div>
-                <img src="${url}" class="w-full h-auto rounded border border-gray-100 mb-3">
-                <a href="${url}" download="${fileName}" class="block w-full text-center py-2 bg-gray-100 hover:bg-gray-200 text-blue-600 rounded text-sm font-medium transition">
-                    下載此張圖片
-                </a>
-            `;
-            previewArea.appendChild(div);
-        }
-
-        function downloadAllImages() {
-            const zip = new JSZip();
-            generatedImages.forEach(img => {
-                zip.file(img.name, img.blob);
-            });
-
-            downloadAllBtn.innerText = "正在壓縮...";
-            
-            zip.generateAsync({type:"blob"}).then(function(content) {
-                saveAs(content, `${originalFileName}_images.zip`);
-                downloadAllBtn.innerText = "📦 下載所有圖片 (ZIP)";
-            });
-        }
-
-    </script>
+    // 啟動程式
+    fetchData();
+  </script>
 </body>
 </html>
-
-
