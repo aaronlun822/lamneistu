@@ -33,24 +33,51 @@
       margin: 0;
       padding: 0 40px; 
     }
+    
+    /* ✨ 更新：設定預設靠右對齊 (右上角) */
     .sheet-link-icon {
       position: absolute;
-      right: 0;
       top: 50%;
+      right: 0; /* 確保 Google Sheet 按鈕預設在最右邊 */
       transform: translateY(-50%);
       text-decoration: none;
-      opacity: 0.8;
-      transition: opacity 0.2s ease, transform 0.2s ease;
       cursor: pointer;
     }
-    .sheet-link-icon:hover {
-      opacity: 1;
-      transform: translateY(-50%) scale(1.1); 
+
+    /* --- ✨ logo 視覺統一與容器設計 --- */
+    .logo-container {
+      width: 36px;
+      height: 36px;
+      background-color: transparent;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      position: relative;
     }
-    .sheet-link-icon img {
-      width: 28px; 
-      height: auto;
+
+    .logo-container img {
+      max-width: 100%;
+      max-height: 100%;
       display: block;
+      transition: all 0.2s ease;
+    }
+
+    /* 視差微調：PDF 較方，縮小至 60%；Sheets 設定 75% */
+    .pdf-logo img {
+      width: 60%;
+      height: 60%;
+    }
+    .sheets-logo img {
+      width: 75%;
+      height: 75%;
+    }
+
+    .sheet-link-icon:hover .logo-container {
+      background-color: rgba(0, 0, 0, 0.05);
+      transform: scale(1.05);
     }
     
     /* 按鈕選單設計 */
@@ -63,9 +90,7 @@
       -ms-overflow-style: none; 
       scrollbar-width: none; 
     }
-    .button-group::-webkit-scrollbar {
-      display: none; 
-    }
+    .button-group::-webkit-scrollbar { display: none; }
     .sheet-btn {
       padding: 10px 20px;
       border-radius: 20px;
@@ -90,7 +115,7 @@
       padding: 20px 0;
       margin-bottom: 24px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      overflow: hidden; /* 防止表格圓角被覆蓋 */
+      overflow: hidden;
     }
     .card h2 {
       margin-top: 0;
@@ -99,7 +124,70 @@
       padding: 0 20px;
     }
     
-    /* 1. 表格與骨架屏設計 */
+    /* 表格滾動控制 */
+    .table-container {
+      width: 100%;
+      max-height: 70vh; 
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate; 
+      border-spacing: 0;
+      white-space: nowrap;
+      table-layout: fixed; 
+    }
+    th, td {
+      padding: 12px 8px;
+      text-align: center;
+      border-bottom: 1px solid #E5E5EA;
+      width: 70px; 
+      box-sizing: border-box;
+      background-color: #FFFFFF;
+      transition: background-color 0.1s ease;
+    }
+    
+    th {
+      color: #8E8E93;
+      font-weight: 500;
+      font-size: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 1px 0 #E5E5EA;
+      cursor: pointer;
+      user-select: none;
+    }
+    th:hover { background-color: #F2F2F7; }
+    tr:hover td { background-color: #F2F2F7 !important; }
+
+    /* 左側固定欄位 */
+    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 50px; min-width: 50px; z-index: 2; border-right: 1px solid #F2F2F7; }
+    td:nth-child(2), th:nth-child(2) { position: sticky; left: 50px; width: 80px; min-width: 80px; text-align: left; font-weight: 600; z-index: 2; }
+    td:nth-child(3), th:nth-child(3) { position: sticky; left: 130px; width: 85px; min-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
+    th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
+
+    .rank-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    .rank-1 { background-color: #FFD700; color: #FFFFFF; }
+    .rank-2 { background-color: #C0C0C0; color: #FFFFFF; }
+    .rank-3 { background-color: #CD7F32; color: #FFFFFF; }
+    .rank-other { color: #8E8E93; font-weight: normal; }
+
+    .win { color: #34C759; font-weight: bold; }
+    .lose { color: #FF3B30; font-weight: bold; }
+    .sort-icon { font-size: 10px; margin-left: 2px; }
+
+    /* 骨架屏載入動畫 */
     .skeleton-wrapper { padding: 20px; }
     .sk-box {
       background: #E5E5EA;
@@ -112,125 +200,53 @@
       50% { opacity: 1; }
       100% { opacity: 0.5; }
     }
-
-    /* 2 & 3. 滾動與固定欄距設計 (Sticky Header & Columns) */
-    .table-container {
-      width: 100%;
-      max-height: 70vh; /* 啟動縱向捲動的關鍵 */
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    table {
-      width: 100%;
-      border-collapse: separate; /* 必須用 separate 讓 sticky 生效 */
-      border-spacing: 0;
-      white-space: nowrap;
-      table-layout: fixed; 
-    }
-    th, td {
-      padding: 12px 8px;
-      text-align: center;
-      border-bottom: 1px solid #E5E5EA;
-      width: 70px; 
-      box-sizing: border-box;
-      background-color: #FFFFFF; /* 確保背景不透明 */
-      transition: background-color 0.1s ease;
-    }
-    
-    /* 頂部標題列鎖定 */
-    th {
-      color: #8E8E93;
-      font-weight: 500;
-      font-size: 14px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 1px 0 #E5E5EA; /* 模擬底線 */
-      cursor: pointer; /* 提示可點擊排序 */
-      user-select: none;
-    }
-    th:hover {
-      background-color: #F2F2F7;
-    }
-    
-    /* 當使用者指向某列時變色 (Hover Row) */
-    tr:hover td {
-      background-color: #F2F2F7 !important;
-    }
-
-    /* 左側三欄鎖定 (排名, 名字, 本月總數) */
-    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 50px; min-width: 50px; z-index: 2; border-right: 1px solid #F2F2F7; }
-    td:nth-child(2), th:nth-child(2) { position: sticky; left: 50px; width: 80px; min-width: 80px; text-align: left; font-weight: 600; z-index: 2; }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 130px; width: 85px; min-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
-
-    /* 處理左上角交叉點的 Z-index (必須在最上層) */
-    th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
-
-    /* 獎牌與排名設計 */
-    .rank-circle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      font-size: 13px;
-      font-weight: bold;
-    }
-    .rank-1 { background-color: #FFD700; color: #FFFFFF; } /* 金 */
-    .rank-2 { background-color: #C0C0C0; color: #FFFFFF; } /* 銀 */
-    .rank-3 { background-color: #CD7F32; color: #FFFFFF; } /* 銅 */
-    .rank-other { color: #8E8E93; font-weight: normal; }
-
-    .win { color: #34C759; font-weight: bold; }
-    .lose { color: #FF3B30; font-weight: bold; }
-    
-    .sort-icon { font-size: 10px; margin-left: 2px; }
   </style>
 </head>
 <body>
 
   <div class="container">
     <div class="header-wrapper">
+      <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" rel="noopener noreferrer" title="打開番表" class="sheet-link-icon" style="left: 0; right: auto;">
+        <div class="logo-container pdf-logo">
+          <img src="pdf.svg" alt="PDF">
+        </div>
+      </a>
+      
       <h1>🀄️ Lam Nei Studio</h1>
-      <a href="https://docs.google.com/spreadsheets/d/1YlyI7xdtf4wCtY9E4kPyNRFsU9UhnOFOnX81o8z4lbs/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sheet-link-icon" title="開啟試算表紀錄">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets Logo">
+      
+      <a href="https://docs.google.com/spreadsheets/d/1YlyI7xdtf4wCtY9E4kPyNRFsU9UhnOFOnX81o8z4lbs/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sheet-link-icon" title="開啟 Google Sheet">
+        <div class="logo-container sheets-logo">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets Logo">
+        </div>
       </a>
     </div>
     
     <div id="sheetButtons" class="button-group"></div>
 
-    <div id="contentArea">
-      </div>
+    <div id="contentArea"></div>
   </div>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
     let globalData = {};
     let activeSheetName = '';
-    
-    // 排序狀態管理
-    let currentSortCol = 'total'; // 預設排序：本月總數
-    let sortAscending = false;    // 預設倒序：大到小
+    let currentSortCol = 'total';
+    let sortAscending = false;
+    let focusedDateCol = null;
 
-    // 1. 骨架屏載入動畫
     function renderSkeleton() {
       let html = '<div class="card skeleton-wrapper">';
       html += '<div class="sk-box" style="height: 30px; width: 40%; margin-bottom: 24px;"></div>';
-      for(let i=0; i<8; i++) {
-        html += `<div class="sk-box" style="height: 45px; width: 100%;"></div>`;
-      }
+      for(let i=0; i<8; i++) html += `<div class="sk-box" style="height: 45px; width: 100%;"></div>`;
       html += '</div>';
       document.getElementById('contentArea').innerHTML = html;
     }
 
-    // 取得資料
     async function fetchData() {
-      renderSkeleton(); // 先顯示骨架屏
+      renderSkeleton();
       try {
         const response = await fetch(API_URL);
         globalData = await response.json();
-        
         const sheetNames = Object.keys(globalData);
         if (sheetNames.length > 0) {
           activeSheetName = sheetNames[0]; 
@@ -238,15 +254,13 @@
           renderData();
         }
       } catch (error) {
-        document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding: 40px; color: #8E8E93;">載入失敗，請檢查網路或 API 設定。</div>';
+        document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding: 40px; color: #8E8E93;">載入失敗。</div>';
       }
     }
 
-    // 渲染按鈕選單
     function renderButtons() {
       const btnContainer = document.getElementById('sheetButtons');
       btnContainer.innerHTML = '';
-      
       Object.keys(globalData).forEach(sheetName => {
         const btn = document.createElement('button');
         btn.className = `sheet-btn ${sheetName === activeSheetName ? 'active' : ''}`;
@@ -254,9 +268,9 @@
         btn.onclick = () => {
           if (activeSheetName !== sheetName) {
             activeSheetName = sheetName;
-            // 切換月份時，重置為預設排序
             currentSortCol = 'total';
             sortAscending = false;
+            focusedDateCol = null; 
             renderButtons();
             renderData();   
           }
@@ -265,30 +279,27 @@
       });
     }
 
-    // 4. 點擊標題進行排序邏輯
     window.handleSort = function(colIndex) {
       if (currentSortCol === colIndex) {
-        sortAscending = !sortAscending; // 再次點擊同一欄，反轉順序
+        sortAscending = !sortAscending;
       } else {
         currentSortCol = colIndex;
-        sortAscending = false; // 點擊新欄位，預設大到小
+        sortAscending = false;
       }
-      renderData(); // 重新渲染表格
+      
+      // 點擊日期時觸發 Focus 模式，點擊總數時恢復
+      focusedDateCol = (colIndex === 'total') ? null : colIndex;
+      renderData();
     };
 
-    // 取得排序圖示
     function getSortIcon(colIndex) {
-      if (currentSortCol === colIndex) {
-        return sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>';
-      }
+      if (currentSortCol === colIndex) return sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>';
       return '';
     }
 
-    // 渲染資料內容
     function renderData() {
       const sheetData = globalData[activeSheetName];
       const contentArea = document.getElementById('contentArea');
-      
       contentArea.innerHTML = '';
 
       if (activeSheetName === '總排名') {
@@ -296,101 +307,64 @@
         return;
       }
 
-      // ==== 渲染每日紀錄 ====
       let detailHTML = `
         <div class="card">
           <div class="table-container">
             <table>
               <tr>
-                <th onclick="handleSort('total')" title="點擊排序">排名 ${getSortIcon('total')}</th>
+                <th onclick="handleSort('total')">排名 ${getSortIcon('total')}</th>
                 <th>名字</th>
-                <th onclick="handleSort('total')" title="點擊排序">本月總數 ${getSortIcon('total')}</th>`;
+                <th onclick="handleSort('total')">本月總數 ${getSortIcon('total')}</th>`;
       
-      // 讀取日期標題 (Row 2, C欄到Q欄)
       for (let j = 2; j <= 16; j++) {
+        if (focusedDateCol !== null && focusedDateCol !== j) continue;
         const dateStr = sheetData[1][j];
-        if (dateStr) detailHTML += `<th onclick="handleSort(${j})" title="點擊排序">${formatDate(dateStr)} ${getSortIcon(j)}</th>`;
+        if (dateStr) detailHTML += `<th onclick="handleSort(${j})">${formatDate(dateStr)} ${getSortIcon(j)}</th>`;
       }
       detailHTML += `</tr>`;
 
-      // 提取資料並先計算「預設總排名」
       let playerRows = [];
       for (let i = 2; i < sheetData.length; i++) {
-        if (sheetData[i][0]) { 
-          playerRows.push({
-            data: sheetData[i],
-            originalTotal: Number(sheetData[i][1]) || 0
-          });
-        }
+        if (sheetData[i][0]) playerRows.push({ data: sheetData[i], originalTotal: Number(sheetData[i][1]) || 0 });
       }
 
-      // 步驟一：永遠先用本月總數排一次，為每個玩家綁定固定的「總排名(金銀銅牌)」
       playerRows.sort((a, b) => b.originalTotal - a.originalTotal);
-      playerRows.forEach((item, index) => {
-        item.overallRank = index + 1;
-      });
+      playerRows.forEach((item, index) => item.overallRank = index + 1);
 
-      // 步驟二：根據使用者點擊的欄位進行最終排序
       playerRows.sort((a, b) => {
         let valA, valB;
         if (currentSortCol === 'total') {
-          valA = a.originalTotal;
-          valB = b.originalTotal;
+          valA = a.originalTotal; valB = b.originalTotal;
         } else {
-          // 若當日沒打牌(空白)，視為 -Infinity 排到最底
           valA = a.data[currentSortCol] === "" ? -Infinity : (Number(a.data[currentSortCol]) || 0);
           valB = b.data[currentSortCol] === "" ? -Infinity : (Number(b.data[currentSortCol]) || 0);
         }
-
-        // 數值相同時，保留原來的總排名順序
         if (valA === valB) return a.overallRank - b.overallRank;
-
         return sortAscending ? valA - valB : valB - valA; 
       });
 
-      // 渲染玩家列
       playerRows.forEach((item) => {
         const row = item.data;
-        const name = row[0]; 
-        const total = item.originalTotal; 
-        const totalClass = total > 0 ? 'win' : (total < 0 ? 'lose' : '');
+        const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
+        let rankHTML = (item.overallRank <= 3) ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` : `<span class="rank-other">${item.overallRank}</span>`;
         
-        // 判斷名次獎牌 (使用固定的 overallRank)
-        let rankHTML = '';
-        if (item.overallRank === 1) rankHTML = `<span class="rank-circle rank-1">1</span>`;
-        else if (item.overallRank === 2) rankHTML = `<span class="rank-circle rank-2">2</span>`;
-        else if (item.overallRank === 3) rankHTML = `<span class="rank-circle rank-3">3</span>`;
-        else rankHTML = `<span class="rank-other">${item.overallRank}</span>`;
-        
-        detailHTML += `<tr>
-          <td>${rankHTML}</td>
-          <td>${name}</td>
-          <td class="${totalClass}">${total || 0}</td>`;
-          
+        detailHTML += `<tr><td>${rankHTML}</td><td>${row[0]}</td><td class="${totalClass}">${item.originalTotal || 0}</td>`;
         for (let j = 2; j <= 16; j++) {
+          if (focusedDateCol !== null && focusedDateCol !== j) continue;
           const dailyScore = row[j];
-          const hasDate = sheetData[1][j] !== ""; 
-          
-          if (hasDate) {
+          if (sheetData[1][j] !== "") {
             const dailyClass = dailyScore > 0 ? 'win' : (dailyScore < 0 ? 'lose' : '');
             detailHTML += `<td class="${dailyClass}">${dailyScore !== "" ? dailyScore : '-'}</td>`;
           }
         }
         detailHTML += `</tr>`;
       });
-      
       detailHTML += `</table></div></div>`;
       contentArea.innerHTML += detailHTML;
     }
 
-    // ==== 處理總排名 ====
     function renderOverallRanking(sheetData, contentArea) {
-       let html = `
-        <div class="card">
-          <h2>🌟 總排名</h2>
-          <div class="table-container">
-            <table>`;
-            
+       let html = `<div class="card"><h2>🌟 總排名</h2><div class="table-container"><table>`;
        let maxColIndex = 1;
        if (sheetData[1]) {
          for (let j = 2; j < sheetData[1].length; j++) {
@@ -398,38 +372,23 @@
            maxColIndex = j;
          }
        }
-
-       html += `<tr>
-         <th onclick="handleSort('total')" title="點擊排序">排名 ${getSortIcon('total')}</th>
-         <th>名字</th>
-         <th onclick="handleSort('total')" title="點擊排序">總數 ${getSortIcon('total')}</th>`;
-         
+       html += `<tr><th onclick="handleSort('total')">排名 ${getSortIcon('total')}</th><th>名字</th><th onclick="handleSort('total')">總數 ${getSortIcon('total')}</th>`;
        for (let j = 2; j <= maxColIndex; j++) {
-         html += `<th onclick="handleSort(${j})" title="點擊排序">${sheetData[1][j]} ${getSortIcon(j)}</th>`;
+         if (focusedDateCol !== null && focusedDateCol !== j) continue;
+         html += `<th onclick="handleSort(${j})">${sheetData[1][j]} ${getSortIcon(j)}</th>`;
        }
        html += `</tr>`;
 
        let dataRows = [];
        for (let i = 2; i < sheetData.length; i++) {
-         if (sheetData[i][0]) { 
-           dataRows.push({
-             data: sheetData[i],
-             originalTotal: Number(sheetData[i][1]) || 0
-           });
-         }
+         if (sheetData[i][0]) dataRows.push({ data: sheetData[i], originalTotal: Number(sheetData[i][1]) || 0 });
        }
-
-       // 計算總排名圖章
        dataRows.sort((a, b) => b.originalTotal - a.originalTotal);
        dataRows.forEach((item, index) => item.overallRank = index + 1);
-
-       // 最終動態排序
        dataRows.sort((a, b) => {
          let valA, valB;
-         if (currentSortCol === 'total') {
-           valA = a.originalTotal;
-           valB = b.originalTotal;
-         } else {
+         if (currentSortCol === 'total') { valA = a.originalTotal; valB = b.originalTotal; }
+         else {
            valA = a.data[currentSortCol] === "" ? -Infinity : (Number(a.data[currentSortCol]) || 0);
            valB = b.data[currentSortCol] === "" ? -Infinity : (Number(b.data[currentSortCol]) || 0);
          }
@@ -439,40 +398,24 @@
 
        dataRows.forEach((item) => {
          const row = item.data;
-         let rankHTML = '';
-         if (item.overallRank === 1) rankHTML = `<span class="rank-circle rank-1">1</span>`;
-         else if (item.overallRank === 2) rankHTML = `<span class="rank-circle rank-2">2</span>`;
-         else if (item.overallRank === 3) rankHTML = `<span class="rank-circle rank-3">3</span>`;
-         else rankHTML = `<span class="rank-other">${item.overallRank}</span>`;
-
-         html += `<tr>`;
-         html += `<td>${rankHTML}</td>`;
-         html += `<td>${row[0]}</td>`; 
-         
-         const totalScore = item.originalTotal;
-         const totalClass = totalScore > 0 ? 'win' : (totalScore < 0 ? 'lose' : '');
-         html += `<td class="${totalClass}">${totalScore || 0}</td>`; 
-         
+         let rankHTML = (item.overallRank <= 3) ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` : `<span class="rank-other">${item.overallRank}</span>`;
+         html += `<tr><td>${rankHTML}</td><td>${row[0]}</td><td class="${item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '')}">${item.originalTotal || 0}</td>`;
          for (let j = 2; j <= maxColIndex; j++) {
+           if (focusedDateCol !== null && focusedDateCol !== j) continue;
            const cellData = row[j];
-           const isNum = !isNaN(cellData) && cellData !== "";
-           const colorClass = isNum && cellData > 0 ? 'win' : (isNum && cellData < 0 ? 'lose' : '');
+           const colorClass = cellData > 0 ? 'win' : (cellData < 0 ? 'lose' : '');
            html += `<td class="${colorClass}">${cellData !== "" ? cellData : '-'}</td>`;
          }
          html += `</tr>`;
        });
-       
        html += `</table></div></div>`;
        contentArea.innerHTML += html;
     }
 
     function formatDate(dateString) {
       const d = new Date(dateString);
-      if(isNaN(d)) return dateString;
-      return `${d.getMonth() + 1}/${d.getDate()}`;
+      return isNaN(d) ? dateString : `${d.getMonth() + 1}/${d.getDate()}`;
     }
-
-    // 啟動程式
     fetchData();
   </script>
 </body>
