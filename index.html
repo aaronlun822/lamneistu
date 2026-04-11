@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lam Nei Studio</title>
   <style>
-    /* 現代化、類 iOS 介面設計 */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: #F2F2F7;
@@ -18,7 +17,6 @@
       margin: 0 auto;
     }
 
-    /* 標題與圖示區域 */
     .header-wrapper {
       position: relative;
       margin-bottom: 24px;
@@ -34,17 +32,15 @@
       padding: 0 40px; 
     }
     
-    /* ✨ 更新：設定預設靠右對齊 (右上角) */
     .sheet-link-icon {
       position: absolute;
       top: 50%;
-      right: 0; /* 確保 Google Sheet 按鈕預設在最右邊 */
+      right: 0; 
       transform: translateY(-50%);
       text-decoration: none;
       cursor: pointer;
     }
 
-    /* --- ✨ logo 視覺統一與容器設計 --- */
     .logo-container {
       width: 36px;
       height: 36px;
@@ -65,7 +61,6 @@
       transition: all 0.2s ease;
     }
 
-    /* 視差微調：PDF 較方，縮小至 60%；Sheets 設定 75% */
     .pdf-logo img {
       width: 60%;
       height: 60%;
@@ -80,7 +75,6 @@
       transform: scale(1.05);
     }
     
-    /* 按鈕選單設計 */
     .button-group {
       display: flex;
       overflow-x: auto;
@@ -124,7 +118,6 @@
       padding: 0 20px;
     }
     
-    /* 表格滾動控制 */
     .table-container {
       width: 100%;
       max-height: 70vh; 
@@ -162,7 +155,6 @@
     th:hover { background-color: #F2F2F7; }
     tr:hover td { background-color: #F2F2F7 !important; }
 
-    /* 左側固定欄位 */
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 50px; min-width: 50px; z-index: 2; border-right: 1px solid #F2F2F7; }
     td:nth-child(2), th:nth-child(2) { position: sticky; left: 50px; width: 80px; min-width: 80px; text-align: left; font-weight: 600; z-index: 2; }
     td:nth-child(3), th:nth-child(3) { position: sticky; left: 130px; width: 85px; min-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
@@ -187,7 +179,6 @@
     .lose { color: #FF3B30; font-weight: bold; }
     .sort-icon { font-size: 10px; margin-left: 2px; }
 
-    /* 骨架屏載入動畫 */
     .skeleton-wrapper { padding: 20px; }
     .sk-box {
       background: #E5E5EA;
@@ -287,7 +278,6 @@
         sortAscending = false;
       }
       
-      // 點擊日期時觸發 Focus 模式，點擊總數時恢復
       focusedDateCol = (colIndex === 'total') ? null : colIndex;
       renderData();
     };
