@@ -302,9 +302,9 @@
           <div class="table-container">
             <table>
               <tr>
-                <th onclick="handleSort('total')">排名 ${getSortIcon('total')}</th>
-                <th>名字</th>
-                <th onclick="handleSort('total')">本月總數 ${getSortIcon('total')}</th>`;
+                <th onclick="handleSort('total')">Rank ${getSortIcon('total')}</th>
+                <th>Name</th>
+                <th onclick="handleSort('total')">Total ${getSortIcon('total')}</th>`;
       
       for (let j = 2; j <= 16; j++) {
         if (focusedDateCol !== null && focusedDateCol !== j) continue;
@@ -358,11 +358,11 @@
        let maxColIndex = 1;
        if (sheetData[1]) {
          for (let j = 2; j < sheetData[1].length; j++) {
-           if (!sheetData[1][j] || String(sheetData[1][j]).includes('排行')) break;
+           if (!sheetData[1][j] || String(sheetData[1][j]).includes('Rank')) break;
            maxColIndex = j;
          }
        }
-       html += `<tr><th onclick="handleSort('total')">排名 ${getSortIcon('total')}</th><th>名字</th><th onclick="handleSort('total')">總數 ${getSortIcon('total')}</th>`;
+       html += `<tr><th onclick="handleSort('total')">Rank ${getSortIcon('total')}</th><th>Name</th><th onclick="handleSort('total')">Total ${getSortIcon('total')}</th>`;
        for (let j = 2; j <= maxColIndex; j++) {
          if (focusedDateCol !== null && focusedDateCol !== j) continue;
          html += `<th onclick="handleSort(${j})">${sheetData[1][j]} ${getSortIcon(j)}</th>`;
