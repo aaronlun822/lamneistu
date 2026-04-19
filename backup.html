@@ -155,9 +155,9 @@
     th:hover { background-color: #F2F2F7; }
     tr:hover td { background-color: #F2F2F7 !important; }
 
-    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 50px; min-width: 50px; z-index: 2; border-right: 1px solid #F2F2F7; }
-    td:nth-child(2), th:nth-child(2) { position: sticky; left: 50px; width: 80px; min-width: 80px; text-align: left; font-weight: 600; z-index: 2; }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 130px; width: 85px; min-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
+    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
+    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 80px; min-width: 80px; text-align: left; font-weight: 600; z-index: 2; }
+    td:nth-child(3), th:nth-child(3) { position: sticky; left: 140px; width: 85px; min-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
     th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
 
     .rank-circle {
@@ -190,6 +190,20 @@
       0% { opacity: 0.5; }
       50% { opacity: 1; }
       100% { opacity: 0.5; }
+    }
+    
+    .error-container {
+      text-align: center;
+      padding: 40px;
+      color: #8E8E93;
+    }
+    .retry-btn {
+      margin-top: 16px;
+      background-color: #007AFF;
+      color: #FFFFFF;
+    }
+    .retry-btn:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
@@ -237,15 +251,24 @@
       renderSkeleton();
       try {
         const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('網絡連線異常');
+        
         globalData = await response.json();
         const sheetNames = Object.keys(globalData);
         if (sheetNames.length > 0) {
           activeSheetName = sheetNames[0]; 
           renderButtons();
-          renderData();
+          renderTableLayout(); // 初始化表格結構
+        } else {
+          throw new Error('未獲取到資料');
         }
       } catch (error) {
-        document.getElementById('contentArea').innerHTML = '<div style="text-align:center; padding: 40px; color: #8E8E93;">載入失敗。</div>';
+        document.getElementById('contentArea').innerHTML = `
+          <div class="error-container">
+            <div>載入失敗 (${error.message})，請檢查網絡連線或稍後再試。</div>
+            <button class="sheet-btn retry-btn" onclick="fetchData()">重新載入</button>
+          </div>
+        `;
       }
     }
 
@@ -263,7 +286,7 @@
             sortAscending = false;
             focusedDateCol = null; 
             renderButtons();
-            renderData();   
+            renderTableLayout();
           }
         };
         btnContainer.appendChild(btn);
@@ -271,6 +294,8 @@
     }
 
     window.handleSort = function(colIndex) {
+      const prevFocused = focusedDateCol;
+
       if (currentSortCol === colIndex) {
         sortAscending = !sortAscending;
       } else {
@@ -279,7 +304,13 @@
       }
       
       focusedDateCol = (colIndex === 'total') ? null : colIndex;
-      renderData();
+
+      if (prevFocused !== focusedDateCol) {
+        renderTableLayout();
+      } else {
+        updateHeaderIcons();
+        renderTableBody();
+      }
     };
 
     function getSortIcon(colIndex) {
@@ -287,35 +318,84 @@
       return '';
     }
 
-    function renderData() {
+    function updateHeaderIcons() {
+      const ths = document.querySelectorAll('#tableHead th[data-col]');
+      ths.forEach(th => {
+        const col = th.getAttribute('data-col');
+        const parsedCol = col === 'total' ? 'total' : parseInt(col, 10);
+        const iconContainer = th.querySelector('.sort-icon-container');
+        if (iconContainer) iconContainer.innerHTML = getSortIcon(parsedCol);
+      });
+    }
+
+    function getColLimit(sheetData, isOverall) {
+       if (isOverall && sheetData[1]) {
+         for (let j = 2; j < sheetData[1].length; j++) {
+           if (!sheetData[1][j] || String(sheetData[1][j]).includes('Rank')) return j;
+         }
+       }
+       return 17;
+    }
+
+    function formatDate(dateString) {
+      const d = new Date(dateString);
+      return isNaN(d) ? dateString : `${d.getMonth() + 1}/${d.getDate()}`;
+    }
+
+    function renderTableLayout() {
       const sheetData = globalData[activeSheetName];
+      const isOverall = activeSheetName === '總排名';
       const contentArea = document.getElementById('contentArea');
-      contentArea.innerHTML = '';
+      const colLimit = getColLimit(sheetData, isOverall);
 
-      if (activeSheetName === '總排名') {
-        renderOverallRanking(sheetData, contentArea);
-        return;
+      let html = `<div class="card">`;
+      if (isOverall) {
+        html += `<h2>🌟 總排名</h2>`;
       }
-
-      let detailHTML = `
-        <div class="card">
-          <div class="table-container">
-            <table>
-              <tr>
-                <th onclick="handleSort('total')">Rank ${getSortIcon('total')}</th>
-                <th>Name</th>
-                <th onclick="handleSort('total')">Total ${getSortIcon('total')}</th>`;
       
-      for (let j = 2; j <= 16; j++) {
+      html += `
+        <div class="table-container">
+          <table>
+            <thead id="tableHead">
+              <tr>
+                <th data-col="total" onclick="handleSort('total')">Rank <span class="sort-icon-container">${getSortIcon('total')}</span></th>
+                <th>Name</th>
+                <th data-col="total" onclick="handleSort('total')">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
+      
+      for (let j = 2; j < colLimit; j++) {
         if (focusedDateCol !== null && focusedDateCol !== j) continue;
-        const dateStr = sheetData[1][j];
-        if (dateStr) detailHTML += `<th onclick="handleSort(${j})">${formatDate(dateStr)} ${getSortIcon(j)}</th>`;
+        const cellVal = sheetData[1][j];
+        if (cellVal) {
+          const headerText = isOverall ? cellVal : formatDate(cellVal);
+          html += `<th data-col="${j}" onclick="handleSort(${j})">${headerText} <span class="sort-icon-container">${getSortIcon(j)}</span></th>`;
+        }
       }
-      detailHTML += `</tr>`;
+
+      html += `
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>`;
+      
+      contentArea.innerHTML = html;
+      renderTableBody();
+    }
+
+    function renderTableBody() {
+      const tbody = document.getElementById('tableBody');
+      if (!tbody) return;
+
+      const sheetData = globalData[activeSheetName];
+      const isOverall = activeSheetName === '總排名';
+      const colLimit = getColLimit(sheetData, isOverall);
 
       let playerRows = [];
       for (let i = 2; i < sheetData.length; i++) {
-        if (sheetData[i][0]) playerRows.push({ data: sheetData[i], originalTotal: Number(sheetData[i][1]) || 0 });
+        if (sheetData[i][0]) {
+          playerRows.push({ data: sheetData[i], originalTotal: Number(sheetData[i][1]) || 0 });
+        }
       }
 
       playerRows.sort((a, b) => b.originalTotal - a.originalTotal);
@@ -333,79 +413,30 @@
         return sortAscending ? valA - valB : valB - valA; 
       });
 
+      let tbodyHTML = '';
       playerRows.forEach((item) => {
         const row = item.data;
         const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
-        let rankHTML = (item.overallRank <= 3) ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` : `<span class="rank-other">${item.overallRank}</span>`;
+        let rankHTML = (item.overallRank <= 3) 
+          ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` 
+          : `<span class="rank-other">${item.overallRank}</span>`;
         
-        detailHTML += `<tr><td>${rankHTML}</td><td>${row[0]}</td><td class="${totalClass}">${item.originalTotal || 0}</td>`;
-        for (let j = 2; j <= 16; j++) {
+        tbodyHTML += `<tr><td>${rankHTML}</td><td>${row[0]}</td><td class="${totalClass}">${item.originalTotal || 0}</td>`;
+        
+        for (let j = 2; j < colLimit; j++) {
           if (focusedDateCol !== null && focusedDateCol !== j) continue;
-          const dailyScore = row[j];
           if (sheetData[1][j] !== "") {
+            const dailyScore = row[j];
             const dailyClass = dailyScore > 0 ? 'win' : (dailyScore < 0 ? 'lose' : '');
-            detailHTML += `<td class="${dailyClass}">${dailyScore !== "" ? dailyScore : '-'}</td>`;
+            tbodyHTML += `<td class="${dailyClass}">${dailyScore !== "" ? dailyScore : '-'}</td>`;
           }
         }
-        detailHTML += `</tr>`;
+        tbodyHTML += `</tr>`;
       });
-      detailHTML += `</table></div></div>`;
-      contentArea.innerHTML += detailHTML;
+      
+      tbody.innerHTML = tbodyHTML;
     }
 
-    function renderOverallRanking(sheetData, contentArea) {
-       let html = `<div class="card"><h2>🌟 總排名</h2><div class="table-container"><table>`;
-       let maxColIndex = 1;
-       if (sheetData[1]) {
-         for (let j = 2; j < sheetData[1].length; j++) {
-           if (!sheetData[1][j] || String(sheetData[1][j]).includes('Rank')) break;
-           maxColIndex = j;
-         }
-       }
-       html += `<tr><th onclick="handleSort('total')">Rank ${getSortIcon('total')}</th><th>Name</th><th onclick="handleSort('total')">Total ${getSortIcon('total')}</th>`;
-       for (let j = 2; j <= maxColIndex; j++) {
-         if (focusedDateCol !== null && focusedDateCol !== j) continue;
-         html += `<th onclick="handleSort(${j})">${sheetData[1][j]} ${getSortIcon(j)}</th>`;
-       }
-       html += `</tr>`;
-
-       let dataRows = [];
-       for (let i = 2; i < sheetData.length; i++) {
-         if (sheetData[i][0]) dataRows.push({ data: sheetData[i], originalTotal: Number(sheetData[i][1]) || 0 });
-       }
-       dataRows.sort((a, b) => b.originalTotal - a.originalTotal);
-       dataRows.forEach((item, index) => item.overallRank = index + 1);
-       dataRows.sort((a, b) => {
-         let valA, valB;
-         if (currentSortCol === 'total') { valA = a.originalTotal; valB = b.originalTotal; }
-         else {
-           valA = a.data[currentSortCol] === "" ? -Infinity : (Number(a.data[currentSortCol]) || 0);
-           valB = b.data[currentSortCol] === "" ? -Infinity : (Number(b.data[currentSortCol]) || 0);
-         }
-         if (valA === valB) return a.overallRank - b.overallRank;
-         return sortAscending ? valA - valB : valB - valA; 
-       });
-
-       dataRows.forEach((item) => {
-         const row = item.data;
-         let rankHTML = (item.overallRank <= 3) ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` : `<span class="rank-other">${item.overallRank}</span>`;
-         html += `<tr><td>${rankHTML}</td><td>${row[0]}</td><td class="${item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '')}">${item.originalTotal || 0}</td>`;
-         for (let j = 2; j <= maxColIndex; j++) {
-           if (focusedDateCol !== null && focusedDateCol !== j) continue;
-           const cellData = row[j];
-           const colorClass = cellData > 0 ? 'win' : (cellData < 0 ? 'lose' : '');
-           html += `<td class="${colorClass}">${cellData !== "" ? cellData : '-'}</td>`;
-         }
-         html += `</tr>`;
-       });
-       html += `</table></div></div>`;
-       contentArea.innerHTML += html;
-    }
-
-    function formatDate(dateString) {
-      const d = new Date(dateString);
-      return isNaN(d) ? dateString : `${d.getMonth() + 1}/${d.getDate()}`;
-    }
     fetchData();
   </script>
 </body>
