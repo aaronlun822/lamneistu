@@ -86,7 +86,8 @@
     }
     .button-group::-webkit-scrollbar { display: none; }
     .sheet-btn {
-      padding: 10px 20px;
+      padding: 0 10px;
+      width: 110px;
       border-radius: 20px;
       background-color: #E5E5EA;
       color: #1C1C1E;
@@ -95,7 +96,12 @@
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       transition: all 0.2s ease;
+      height: 38px;
+      box-sizing: border-box;
+      flex-shrink: 0;
     }
     .sheet-btn.active {
       background-color: #007AFF;
@@ -186,6 +192,16 @@
       animation: sk-pulse 1.5s infinite ease-in-out;
       margin-bottom: 12px;
     }
+    
+    .sk-btn {
+      height: 38px;
+      width: 110px;
+      border-radius: 20px;
+      background: #E5E5EA;
+      animation: sk-pulse 1.5s infinite ease-in-out;
+      flex-shrink: 0;
+    }
+
     @keyframes sk-pulse {
       0% { opacity: 0.5; }
       50% { opacity: 1; }
@@ -240,6 +256,12 @@
     let focusedDateCol = null;
 
     function renderSkeleton() {
+      let btnHtml = '';
+      for(let i=0; i<5; i++) {
+        btnHtml += `<div class="sk-btn"></div>`;
+      }
+      document.getElementById('sheetButtons').innerHTML = btnHtml;
+
       let html = '<div class="card skeleton-wrapper">';
       html += '<div class="sk-box" style="height: 30px; width: 40%; margin-bottom: 24px;"></div>';
       for(let i=0; i<8; i++) html += `<div class="sk-box" style="height: 45px; width: 100%;"></div>`;
@@ -258,11 +280,12 @@
         if (sheetNames.length > 0) {
           activeSheetName = sheetNames[0]; 
           renderButtons();
-          renderTableLayout(); // 初始化表格結構
+          renderTableLayout();
         } else {
           throw new Error('未獲取到資料');
         }
       } catch (error) {
+        document.getElementById('sheetButtons').innerHTML = '';
         document.getElementById('contentArea').innerHTML = `
           <div class="error-container">
             <div>載入失敗 (${error.message})，請檢查網絡連線或稍後再試。</div>
