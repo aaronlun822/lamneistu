@@ -131,7 +131,7 @@
       -webkit-overflow-scrolling: touch;
     }
     table {
-      width: 100%;
+      width: max-content;
       border-collapse: separate; 
       border-spacing: 0;
       white-space: nowrap;
@@ -145,6 +145,9 @@
       box-sizing: border-box;
       background-color: #FFFFFF;
       transition: background-color 0.1s ease;
+      height: 48px; 
+      vertical-align: middle; 
+      line-height: 1.2;
     }
     
     th {
@@ -161,9 +164,9 @@
     th:hover { background-color: #F2F2F7; }
     tr:hover td { background-color: #F2F2F7 !important; }
 
-    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
-    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; text-align: left; font-weight: 600; z-index: 2; }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
+    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
+    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: 2; }
+    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
     th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
 
     .rank-circle {
@@ -372,9 +375,6 @@
       const colLimit = getColLimit(sheetData, isOverall);
 
       let html = `<div class="card">`;
-      if (isOverall) {
-        html += `<h2>🌟 總排名</h2>`;
-      }
       
       html += `
         <div class="table-container">
