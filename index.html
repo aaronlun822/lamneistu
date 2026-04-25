@@ -70,6 +70,17 @@
       height: 75%;
     }
 
+    .card.focused-mode {
+      max-width: fit-content; 
+      margin-left: auto;
+      margin-right: auto;
+      transition: all 0.3s ease; 
+    }
+
+    .focused-mode table {
+      width: auto;
+    }
+
     .sheet-link-icon:hover .logo-container {
       background-color: rgba(0, 0, 0, 0.05);
       transform: scale(1.05);
@@ -164,8 +175,8 @@
     tr:hover td { background-color: #F2F2F7 !important; }
 
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
-    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 80px; min-width: 80px; max-width: 80px; text-align: left; font-weight: 600; z-index: 2; overflow: hidden; text-overflow: ellipsis; }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 140px; width: 85px; min-width: 85px; max-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
+    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: 2; overflow: hidden; text-overflow: ellipsis; }
+    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160x; width: 85px; min-width: 85px; max-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
     th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
 
     .rank-circle {
@@ -373,7 +384,8 @@
       const contentArea = document.getElementById('contentArea');
       const colLimit = getColLimit(sheetData, isOverall);
 
-      let html = `<div class="card">`;
+const focusedClass = (focusedDateCol !== null) ? 'focused-mode' : '';
+let html = `<div class="card ${focusedClass}">`;
       
       html += `
         <div class="table-container">
