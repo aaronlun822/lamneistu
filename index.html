@@ -62,8 +62,8 @@
     }
 
     .pdf-logo img {
-      width: 60%;
-      height: 60%;
+      width: 75%;
+      height: 75%;
     }
     .sheets-logo img {
       width: 75%;
@@ -292,19 +292,19 @@
 
       /* 4. 壓縮 Name 欄位 (原 100px -> 75px) */
       td:nth-child(2), th:nth-child(2) { 
-        left: 46px; /* Rank 的寬度 */
+        left: 50px; /* Rank 的寬度 */
         width: 75px; min-width: 75px; max-width: 75px; 
       }
 
       /* 5. 壓縮 Total 欄位 (原 85px -> 65px) */
       td:nth-child(3), th:nth-child(3) { 
-        left: 121px; /* 46 + 75 */
+        left: 125px; /* 50 + 75 */
         width: 65px; min-width: 65px; max-width: 65px; 
       }
 
       /* 6. 修正點擊單日數據時的「凍結欄位」位置 (原 245px -> 186px) */
       td.focused-sticky, th.focused-sticky {
-        left: 186px; /* 46 + 75 + 65 */
+        left: 191px; /* 50 + 75 + 65 */
       }
     }
   </style>
@@ -315,7 +315,7 @@
     <div class="header-wrapper">
       <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" rel="noopener noreferrer" title="打開番表" class="sheet-link-icon" style="left: 0; right: auto;">
         <div class="logo-container pdf-logo">
-          <img src="pdf.svg" alt="PDF">
+          <img src="pdf-svg.svg" alt="PDF">
         </div>
       </a>
       
@@ -323,7 +323,7 @@
       
       <a href="https://docs.google.com/spreadsheets/d/1YlyI7xdtf4wCtY9E4kPyNRFsU9UhnOFOnX81o8z4lbs/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sheet-link-icon" title="開啟 Google Sheet">
         <div class="logo-container sheets-logo">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets Logo">
+          <img src="sheet-svg.svg" alt="Google Sheets Logo">
         </div>
       </a>
     </div>
