@@ -61,10 +61,7 @@
       transition: all 0.2s ease;
     }
 
-    .pdf-logo img {
-      width: 75%;
-      height: 75%;
-    }
+    .pdf-logo img,
     .sheets-logo img {
       width: 75%;
       height: 75%;
@@ -204,7 +201,6 @@
   }
 
     .total-no-shadow { 
-      /*box-shadow: none !important; */
       border-right: 1px solid #E5E5EA; 
     }
 
@@ -264,47 +260,40 @@
       background-color: #0056b3;
     }
 
-    /* ===== 手機版緊湊模式 (Mobile Compact Mode) ===== */
     @media (max-width: 600px) {
-      /* 1. 縮小整體文字與留白 */
       th, td {
         padding: 8px 4px; 
         font-size: 13px;
         height: 40px;
-        width: 55px; /* 一般數據欄位稍微縮窄 */
+        width: 55px; 
       }
       th {
         font-size: 12px;
         padding: 8px 2px;
       }
       
-      /* 2. 縮小名次圈圈 */
       .rank-circle {
         width: 22px;
         height: 22px;
         font-size: 11px;
       }
 
-      /* 3. 壓縮 Rank 欄位 (原 60px -> 46px) */
       td:nth-child(1), th:nth-child(1) { 
         width: 46px; min-width: 46px; max-width: 46px; 
       }
 
-      /* 4. 壓縮 Name 欄位 (原 100px -> 75px) */
       td:nth-child(2), th:nth-child(2) { 
-        left: 50px; /* Rank 的寬度 */
+        left: 46px;
         width: 75px; min-width: 75px; max-width: 75px; 
       }
 
-      /* 5. 壓縮 Total 欄位 (原 85px -> 65px) */
       td:nth-child(3), th:nth-child(3) { 
-        left: 125px; /* 50 + 75 */
+        left: 121px;
         width: 65px; min-width: 65px; max-width: 65px; 
       }
 
-      /* 6. 修正點擊單日數據時的「凍結欄位」位置 (原 245px -> 186px) */
       td.focused-sticky, th.focused-sticky {
-        left: 191px; /* 50 + 75 + 65 */
+        left: 186px;
       }
     }
   </style>
