@@ -451,7 +451,7 @@
       renderTableBody();
     }
 
-    function renderTableBody() {
+function renderTableBody() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
@@ -459,7 +459,6 @@
       const isOverall = activeSheetName === '總排名';
       const colLimit = getColLimit(sheetData, isOverall);
       
-      // 取得排列好的欄位順序
       const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol);
 
       let playerRows = [];
@@ -469,10 +468,17 @@
         }
       }
 
-      playerRows.sort((a, b) => b.originalTotal - a.originalTotal);
+      playerRows.sort((a, b) => {
+        if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
+        if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
+        return b.originalTotal - a.originalTotal;
+      });
       playerRows.forEach((item, index) => item.overallRank = index + 1);
 
       playerRows.sort((a, b) => {
+        if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
+        if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
+
         let valA, valB;
         if (currentSortCol === 'total') {
           valA = a.originalTotal; valB = b.originalTotal;
@@ -488,9 +494,15 @@
       playerRows.forEach((item) => {
         const row = item.data;
         const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
-        let rankHTML = (item.overallRank <= 3) 
-          ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` 
-          : `<span class="rank-other">${item.overallRank}</span>`;
+        
+        let rankHTML = '';
+        if (item.originalTotal === 0) {
+          rankHTML = `<span class="rank-other">-</span>`;
+        } else {
+          rankHTML = (item.overallRank <= 3) 
+            ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` 
+            : `<span class="rank-other">${item.overallRank}</span>`;
+        }
         
         tbodyHTML += `<tr>
           <td>${rankHTML}</td>
