@@ -255,6 +255,50 @@
     .retry-btn:hover {
       background-color: #0056b3;
     }
+
+    /* ===== 手機版緊湊模式 (Mobile Compact Mode) ===== */
+    @media (max-width: 600px) {
+      /* 1. 縮小整體文字與留白 */
+      th, td {
+        padding: 8px 4px; 
+        font-size: 13px;
+        height: 40px;
+        width: 55px; /* 一般數據欄位稍微縮窄 */
+      }
+      th {
+        font-size: 12px;
+        padding: 8px 2px;
+      }
+      
+      /* 2. 縮小名次圈圈 */
+      .rank-circle {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+      }
+
+      /* 3. 壓縮 Rank 欄位 (原 60px -> 46px) */
+      td:nth-child(1), th:nth-child(1) { 
+        width: 46px; min-width: 46px; max-width: 46px; 
+      }
+
+      /* 4. 壓縮 Name 欄位 (原 100px -> 75px) */
+      td:nth-child(2), th:nth-child(2) { 
+        left: 46px; /* Rank 的寬度 */
+        width: 75px; min-width: 75px; max-width: 75px; 
+      }
+
+      /* 5. 壓縮 Total 欄位 (原 85px -> 65px) */
+      td:nth-child(3), th:nth-child(3) { 
+        left: 121px; /* 46 + 75 */
+        width: 65px; min-width: 65px; max-width: 65px; 
+      }
+
+      /* 6. 修正點擊單日數據時的「凍結欄位」位置 (原 245px -> 186px) */
+      td.focused-sticky, th.focused-sticky {
+        left: 186px; /* 46 + 75 + 65 */
+      }
+    }
   </style>
 </head>
 <body>
@@ -459,6 +503,7 @@ function renderTableBody() {
       const isOverall = activeSheetName === '總排名';
       const colLimit = getColLimit(sheetData, isOverall);
       
+      // 取得排列好的欄位順序
       const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol);
 
       let playerRows = [];
@@ -468,6 +513,7 @@ function renderTableBody() {
         }
       }
 
+      // 1. 初次計算總排名排序：強制將 total 為 0 的玩家排在最底，其餘依分數由高至低排
       playerRows.sort((a, b) => {
         if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
         if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
@@ -475,7 +521,9 @@ function renderTableBody() {
       });
       playerRows.forEach((item, index) => item.overallRank = index + 1);
 
+      // 2. 點擊表格標題的動態排序
       playerRows.sort((a, b) => {
+        // 不論正序或倒序，強制將 total 為 0 的玩家永遠沉澱在底部
         if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
         if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
 
@@ -495,6 +543,7 @@ function renderTableBody() {
         const row = item.data;
         const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
         
+        // 3. 名次顯示邏輯：total 為 0 時強制顯示 "-"
         let rankHTML = '';
         if (item.originalTotal === 0) {
           rankHTML = `<span class="rank-other">-</span>`;
