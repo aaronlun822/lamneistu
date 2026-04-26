@@ -265,11 +265,12 @@
         padding: 8px 4px; 
         font-size: 13px;
         height: 40px;
-        width: 55px; 
+        box-sizing: border-box;
       }
       th {
-        font-size: 12px;
-        padding: 8px 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
       }
       
       .rank-circle {
@@ -279,21 +280,29 @@
       }
 
       td:nth-child(1), th:nth-child(1) { 
-        width: 46px; min-width: 46px; max-width: 46px; 
+        width: 46px !important; 
+        min-width: 46px !important; 
+        max-width: 46px !important;
       }
 
       td:nth-child(2), th:nth-child(2) { 
-        left: 46px;
-        width: 75px; min-width: 75px; max-width: 75px; 
+        left: 46px !important;
+        width: 75px !important; 
+        min-width: 75px !important; 
+        max-width: 75px !important; 
+        text-align: left !important;
+        padding-left: 8px !important;
       }
 
       td:nth-child(3), th:nth-child(3) { 
-        left: 121px;
-        width: 65px; min-width: 65px; max-width: 65px; 
+        left: 121px !important; 
+        width: 65px !important; 
+        min-width: 65px !important; 
+        max-width: 65px !important;
       }
 
       td.focused-sticky, th.focused-sticky {
-        left: 186px;
+        left: 186px !important;
       }
     }
   </style>
