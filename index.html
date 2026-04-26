@@ -165,7 +165,7 @@
     
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
     td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: 2; }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: 2; box-shadow: 2px 0 5px rgba(0,0,0,0.03); }
+    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: 2; border-right: 1px solid #E5E5EA; }
     th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
 
     td.focused-sticky {
@@ -173,7 +173,8 @@
       left: 245px;
       z-index: 3;
       background-color: #F8FBFF;
-      box-shadow: 3px 0 6px rgba(0,0,0,0.04);
+      box-shadow: 1px 0 0 #E5E5EA; 
+      border-bottom: 1px solid #E5E5EA !important;
     }
     th.focused-sticky {
       position: sticky;
@@ -182,14 +183,20 @@
       background-color: #EBF3FF;
       color: #007AFF;
       font-weight: 700;
-      box-shadow: 3px 0 6px rgba(0,0,0,0.04);
+      box-shadow: 1px 0 0 #E5E5EA, 0 1px 0 #E5E5EA;
     }
 
-    tr:hover td { background-color: #F2F2F7 !important; }
-    tr:hover td.focused-sticky { background-color: #E2EFFF !important; }
+    tr:hover td { 
+      background-color: #F2F2F7 !important; 
+    }
+
+    tr:hover td.focused-sticky { 
+      background-color: #E2EFFF !important; 
+      border-bottom: 1px solid #E5E5EA !important;
+    }
 
     .total-no-shadow { 
-      box-shadow: none !important; 
+      /*box-shadow: none !important; */
       border-right: 1px solid #E5E5EA; 
     }
 
@@ -343,7 +350,6 @@
       });
     }
 
-    // ★ 修改：處理排序與選中邏輯
     window.handleSort = function(colIndex) {
       const prevFocused = focusedDateCol;
 
@@ -354,14 +360,11 @@
         sortAscending = false;
       }
       
-      // 如果點擊的是 Total，就解除單日選中狀態；否則將點擊的日期設為選中
       focusedDateCol = (colIndex === 'total') ? null : colIndex;
 
-      // 如果選中狀態有變，或者我們點擊了任何一個日期，都需要重新整理佈局（因為要把日期拉到前面）
       if (prevFocused !== focusedDateCol || focusedDateCol !== null) {
         renderTableLayout(); 
       } else {
-        // 如果只是 Total 正反排切換，更新圖標和內容即可
         updateHeaderIcons();
         renderTableBody();
       }
@@ -396,30 +399,25 @@
       return isNaN(d) ? dateString : `${d.getMonth() + 1}/${d.getDate()}`;
     }
 
-    // ★ 新增：計算欄位順序的函式，將選中日期拉到最前面
     function getValidColumnsOrder(sheetData, colLimit, focusedCol) {
       let cols = [];
-      // 先放入所有「非選中」的有效欄位
       for (let j = 2; j < colLimit; j++) {
         if (sheetData[1][j] !== "" && sheetData[1][j] !== undefined && j !== focusedCol) {
           cols.push(j);
         }
       }
-      // 如果有選中某一天，把它「插隊」到陣列最前面
       if (focusedCol !== null && sheetData[1][focusedCol] !== undefined) {
         cols.unshift(focusedCol);
       }
       return cols;
     }
 
-    // ★ 修改：渲染表格頭部，依照新的陣列順序生成
     function renderTableLayout() {
       const sheetData = globalData[activeSheetName];
       const isOverall = activeSheetName === '總排名';
       const contentArea = document.getElementById('contentArea');
       const colLimit = getColLimit(sheetData, isOverall);
       
-      // 取得排列好的欄位順序
       const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol);
 
       let html = `<div class="card">`;
@@ -432,7 +430,6 @@
                 <th>Name</th>
                 <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}" onclick="handleSort('total')">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
       
-      // 依序渲染日期欄位
       colIndices.forEach(j => {
         const cellVal = sheetData[1][j];
         const headerText = isOverall ? cellVal : formatDate(cellVal);
@@ -454,7 +451,6 @@
       renderTableBody();
     }
 
-    // ★ 修改：渲染表格內容，同樣依照新的陣列順序生成
     function renderTableBody() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
@@ -501,7 +497,6 @@
           <td>${row[0]}</td>
           <td class="${totalClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${item.originalTotal || 0}</td>`;
         
-        // 依序渲染該玩家的單日分數
         colIndices.forEach(j => {
           const dailyScore = row[j];
           const dailyClass = dailyScore > 0 ? 'win' : (dailyScore < 0 ? 'lose' : '');
