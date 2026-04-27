@@ -2,15 +2,22 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>番表 - Lam Nei Studio</title>
   <style>
-@media print {
-  body {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: #F2F2F7;
@@ -19,71 +26,93 @@
       color: #1C1C1E;
     }
 
-/* 抽屜核心樣式 */
-.drawer { position: fixed; inset: 0; z-index: 1000; visibility: hidden; transition: visibility 0.3s; }
-.drawer.open { visibility: visible; }
-.drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s; }
-.drawer.open .drawer-overlay { opacity: 1; }
-/* 統一抽屜為底部滑出，並增加頂部圓角 */
-.drawer-content { 
-  position: absolute; 
-  bottom: 0; 
-  left: 0; 
-  width: 100%; 
-  max-height: 80vh; /* 避免定義太長時超出頂部 */
-  background: white; 
-  transition: transform 0.3s ease-out; 
-  padding: 24px; 
-  box-shadow: 0 -8px 24px rgba(0,0,0,0.15); 
-  border-radius: 24px 24px 0 0; /* 這裡實現了頂部兩邊圓角 */
-  transform: translateY(100%); 
-  box-sizing: border-box;
-  overflow-y: auto; /* 內容過多時允許內部捲動 */
-}
+    .drawer { position: fixed; inset: 0; z-index: 1000; visibility: hidden; transition: visibility 0.3s; }
+    .drawer.open { visibility: visible; }
+    .drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s; }
+    .drawer.open .drawer-overlay { opacity: 1; }
 
-.drawer.open .drawer-content { 
-  transform: translateY(0); /* 開啟時由底部向上滑出 */
-}
+    .drawer-content { 
+      position: absolute; 
+      bottom: 0; 
+      left: 0; 
+      width: 100%; 
+      max-height: 80vh; 
+      background: white; 
+      transition: transform 0.3s ease-out; 
+      padding: 24px; 
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.15); 
+      border-radius: 24px 24px 0 0; 
+      transform: translateY(100%); 
+      box-sizing: border-box;
+      overflow-y: auto; 
+    }
 
-/* 針對電腦版 (27" 螢幕) 的優化：讓面板不要橫向撐太開，看起來更精緻 */
-@media (min-width: 801px) {
-  .drawer-content {
-    width: 600px; /* 限制電腦版寬度，避免在寬螢幕上顯得太扁平 */
-    left: 50%;
-    transform: translate(-50%, 100%); /* 預設在中心下方 */
-  }
-  .drawer.open .drawer-content {
-    transform: translate(-50%, 0); /* 開啟時滑動到中心底部 */
-  }
-}
+    .drawer.open .drawer-content { 
+      transform: translateY(0); 
+    }
 
-/* 內容細節樣式 */
-.drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F2F2F7; padding-bottom: 12px; margin-bottom: 15px; }
-#drawerTitle { font-size: 18px; font-weight: 700; color: #007AFF; }
-.close-btn { border: none; background: #F2F2F7; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
-.desc-label { font-size: 12px; color: #8E8E93; margin-bottom: 4px; font-weight: 600; }
-.desc-text { font-size: 15px; margin-bottom: 20px; line-height: 1.5; color: #1C1C1E; }
-/* 麻將圖片容器 */
-.mj-tiles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px; /* 牌與牌之間的間距 */
-  margin-top: 8px;
-}
+    @media (min-width: 801px) {
+      .drawer-content {
+        width: auto; 
+        min-width: 600px;
+        max-width: 95vw;
+        left: 50%;
+        transform: translate(-50%, 100%); 
+      }
+      .drawer.open .drawer-content {
+        transform: translate(-50%, 0); 
+      }
+    }
 
-/* 單張麻將 SVG 樣式 */
-.mj-tile-img {
-  width: 32px;      /* 根據 27 吋螢幕需求可調整大小 */
-  height: auto;
-  border: 1px solid #E5E5EA; /* 加上淡灰色邊框更有牌感 */
-  border-radius: 4px;
-  background-color: #fff;
-  padding: 2px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 微陰影 */
-}
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F2F2F7; padding-bottom: 12px; margin-bottom: 15px; }
+    #drawerTitle { font-size: 18px; font-weight: 700; color: #007AFF; }
+    .close-btn { border: none; background: #F2F2F7; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
+    .desc-label { font-size: 12px; color: #8E8E93; margin-bottom: 4px; font-weight: 600; }
+    .desc-text { font-size: 15px; margin-bottom: 20px; line-height: 1.5; color: #1C1C1E; }
+    
+    .mj-tiles {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 4px; 
+      margin-top: 8px;
+    }
 
-/* 讓表格項目看起來可以點擊 */
-.clickable-item { cursor: pointer; text-decoration: underline dotted #C7C7CC; text-underline-offset: 4px; }
+    .mj-text-sep {
+      font-size: 14px;
+      color: #8E8E93;
+      padding: 0 10px;       
+      display: inline-flex;  
+      align-items: center;   
+      height: 36px;          
+      vertical-align: middle;
+    }
+
+    .mj-tile-img {
+      width: 32px;      
+      height: auto;
+      border: 1px solid #E5E5EA; 
+      border-radius: 4px;
+      background-color: #fff;
+      padding: 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    @media (max-width: 800px) {
+      .mj-tiles {
+        flex-wrap: nowrap;
+        gap: 2px;
+        justify-content: flex-start;
+      }
+      .mj-tile-img {
+        flex: 0 1 32px;
+        min-width: 0;
+        object-fit: contain;
+      }
+    }
+
+    .clickable-item { cursor: pointer; text-decoration: underline dotted #C7C7CC; text-underline-offset: 4px; }
     
     .container {
       max-width: 98vw;
@@ -129,7 +158,8 @@
       justify-content: center;
       letter-spacing: 6px;
       flex-shrink: 0;
-      user-select: none;
+      width: 22px;         
+      box-sizing: border-box; 
     }
 
     .page-content {
@@ -150,7 +180,6 @@
       padding: 6px 12px;
       font-weight: 600;
       font-size: 15px;
-      user-select: none;
     }
 
     table {
@@ -182,6 +211,30 @@
       width: 45%;
     }
 
+    #drawerSP {
+      font-size: 12px;
+      color: #FFFFFF;
+      background-color: #FF3B30; 
+      padding: 2px 8px;
+      border-radius: 12px;      
+      font-weight: 700;         
+      margin-left: 10px;        
+      display: none;            
+    }
+
+    .mj-tile-img.mj-highlight {
+      border: 1.5px solid #32D74B !important; 
+      background-color: #F2FFF2;            
+      box-shadow: 0 0 8px rgba(50, 215, 75, 0.5); 
+      position: relative;
+      z-index: 1;
+    }
+
+    .mj-tile-img.mj-horizontal {
+      transform: rotate(-90deg);
+      margin: 0 4px; 
+    }
+
     @media (hover: hover) {
       tr:hover td { 
         background-color: #F2F2F7 !important; 
@@ -196,10 +249,57 @@
       padding-left: 10px;
     }
 
+    .fade-overlay { display: none; }
+
     @media (max-width: 800px) {
       .col {
         min-width: 45%;
         max-width: 100%;
+      }
+      
+      .collapsible-mobile .table-wrapper {
+        position: relative;
+        max-height: 250px; 
+        overflow: hidden;
+        transition: max-height 0.4s ease-out;
+      }
+
+      .collapsible-mobile .table-wrapper.expanded {
+        max-height: 2500px;
+      }
+
+      .collapsible-mobile .fade-overlay {
+        display: flex;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        background: linear-gradient(transparent, #FFFFFF 75%);
+        justify-content: center;
+        align-items: flex-end;
+        padding-bottom: 8px;
+        cursor: pointer;
+        transition: opacity 0.3s;
+      }
+
+      .collapsible-mobile .table-wrapper.expanded .fade-overlay {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .arrow-down {
+        border: solid #003B73;
+        border-width: 0 3px 3px 0;
+        display: inline-block;
+        padding: 5px;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        margin-bottom: 6px;
+      }
+      
+      .card:nth-child(2) .arrow-down {
+        border-color: #7D8000;
       }
     }
 
@@ -210,42 +310,47 @@
     }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onselectstart="return false;" ondragstart="return false;">
 
   <div class="container">
     <div class="board">
       
       <div class="col">
         <div class="card" style="--theme-color: #003B73;">
-          <div class="page-sidebar">第二頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
-            <div class="category">
+            <div class="category collapsible-mobile">
               <div class="category-header">一般</div>
-              <table>
-                <tbody>
-                  <tr><td>花</td><td>1</td></tr>
-                  <tr><td>無字</td><td>1</td></tr>
-                  <tr><td>風牌</td><td>1</td></tr>
-                  <tr><td>三元牌</td><td>2</td></tr>
-                  <tr><td>無字花</td><td>8</td></tr>
-                  <tr><td>平糊</td><td>5</td></tr>
-                  <tr><td>無字花大平</td><td>15</td></tr>
-                  <tr><td>槓</td><td>1 / 2</td></tr>
-                  <tr><td>搶槓</td><td>5</td></tr>
-                  <tr><td>門清</td><td>5</td></tr>
-                  <tr><td>將眼</td><td>2</td></tr>
-                  <tr><td>假獨</td><td>1</td></tr>
-                  <tr><td>獨獨</td><td>2</td></tr>
-                  <tr><td>對碰</td><td>2</td></tr>
-                  <tr><td>叮</td><td>10</td></tr>
-                  <tr><td>即叮</td><td>20</td></tr>
-                  <tr><td>叮銃</td><td>5</td></tr>
-                  <tr><td>自摸</td><td>1</td></tr>
-                  <tr><td>門清自摸</td><td>7</td></tr>
-                  <tr><td>莊家</td><td>1</td></tr>
-                  <tr><td>連莊</td><td>2n+1</td></tr>
-                </tbody>
-              </table>
+              <div class="table-wrapper">
+                <table>
+                  <tbody>
+                    <tr><td>花</td><td>1</td></tr>
+                    <tr><td>無字</td><td>1</td></tr>
+                    <tr><td>風牌</td><td>1</td></tr>
+                    <tr><td>三元牌</td><td>2</td></tr>
+                    <tr><td>無字花</td><td>8</td></tr>
+                    <tr><td>平糊</td><td>5</td></tr>
+                    <tr><td>無字花大平</td><td>15</td></tr>
+                    <tr><td>槓 / 暗槓</td><td>1 / 2</td></tr>
+                    <tr><td>搶槓</td><td>5</td></tr>
+                    <tr><td>門清</td><td>5</td></tr>
+                    <tr><td>將眼</td><td>2</td></tr>
+                    <tr><td>假獨</td><td>1</td></tr>
+                    <tr><td>獨獨</td><td>2</td></tr>
+                    <tr><td>對碰</td><td>2</td></tr>
+                    <tr><td>叮</td><td>10</td></tr>
+                    <tr><td>即叮</td><td>20</td></tr>
+                    <tr><td>叮銃</td><td>5</td></tr>
+                    <tr><td>自摸</td><td>1</td></tr>
+                    <tr><td>門清自摸</td><td>7</td></tr>
+                    <tr><td>莊家</td><td>1</td></tr>
+                    <tr><td>連莊</td><td>2n+1</td></tr>
+                  </tbody>
+                </table>
+                <div class="fade-overlay" onclick="toggleCollapse(this)">
+                  <span class="arrow-down"></span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -253,38 +358,43 @@
 
       <div class="col">
         <div class="card" style="--theme-color: #7D8000;">
-          <div class="page-sidebar">第三頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
-            <div class="category">
+            <div class="category collapsible-mobile">
               <div class="category-header">特殊及獎罰</div>
-              <table>
-                <tbody>
-                  <tr><td>天叮</td><td>40</td></tr>
-                  <tr><td>地叮</td><td>40</td></tr>
-                  <tr><td>花上自摸</td><td>3</td></tr>
-                  <tr><td>槓上自摸</td><td>5</td></tr>
-                  <tr><td>海底撈月</td><td>30</td></tr>
-                  <tr><td>河底撈魚</td><td>20</td></tr>
-                  <tr><td>一炮雙響</td><td>5</td></tr>
-                  <tr><td>一炮三響</td><td>15</td></tr>
-                  <tr><td>天糊</td><td>160</td></tr>
-                  <tr><td>地糊</td><td>120</td></tr>
-                  <tr><td>人糊</td><td>80</td></tr>
-                  <tr><td>七隻內</td><td>20</td></tr>
-                  <tr><td>十隻內</td><td>10</td></tr>
-                  <tr><td>細雞糊</td><td>30</td></tr>
-                  <tr><td>大雞糊</td><td>50</td></tr>
-                  <tr><td>半求人</td><td>20</td></tr>
-                  <tr><td>全求人</td><td>40</td></tr>
-                  <tr><td>詐糊</td><td>50</td></tr>
-                  <tr><td>連骰</td><td>賠1底</td></tr>
-                  <tr><td>圍骰</td><td>獎1底</td></tr>
-                  <tr><td>一台花</td><td>獎1底</td></tr>
-                  <tr><td>七搶一</td><td>30</td></tr>
-                  <tr><td>一搶七</td><td>30</td></tr>
-                  <tr><td>八隻花</td><td>40</td></tr>
-                </tbody>
-              </table>
+              <div class="table-wrapper">
+                <table>
+                  <tbody>
+                    <tr><td>天叮</td><td>40</td></tr>
+                    <tr><td>地叮</td><td>40</td></tr>
+                    <tr><td>花上自摸</td><td>3</td></tr>
+                    <tr><td>槓上自摸</td><td>5</td></tr>
+                    <tr><td>海底撈月</td><td>30</td></tr>
+                    <tr><td>河底撈魚</td><td>20</td></tr>
+                    <tr><td>一炮雙響</td><td>5</td></tr>
+                    <tr><td>一炮三響</td><td>15</td></tr>
+                    <tr><td>天糊</td><td>160</td></tr>
+                    <tr><td>地糊</td><td>120</td></tr>
+                    <tr><td>人糊 / 四隻內</td><td>80</td></tr>
+                    <tr><td>七隻內</td><td>20</td></tr>
+                    <tr><td>十隻內</td><td>10</td></tr>
+                    <tr><td>細雞糊</td><td>30</td></tr>
+                    <tr><td>大雞糊</td><td>50</td></tr>
+                    <tr><td>半求人</td><td>20</td></tr>
+                    <tr><td>全求人</td><td>40</td></tr>
+                    <tr><td>詐糊</td><td>50</td></tr>
+                    <tr><td>連骰</td><td>賠1底</td></tr>
+                    <tr><td>圍骰</td><td>獎1底</td></tr>
+                    <tr><td>一台花</td><td>獎1底</td></tr>
+                    <tr><td>七搶一</td><td>30</td></tr>
+                    <tr><td>一搶七</td><td>30</td></tr>
+                    <tr><td>八隻花</td><td>40</td></tr>
+                  </tbody>
+                </table>
+                <div class="fade-overlay" onclick="toggleCollapse(this)">
+                  <span class="arrow-down"></span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -292,7 +402,7 @@
 
       <div class="col">
         <div class="card" style="--theme-color: #8F205A;">
-          <div class="page-sidebar">第四頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">姊妹</div>
@@ -301,7 +411,7 @@
                   <tr><td>兩姊妹</td><td>5</td></tr>
                   <tr><td>三姊妹</td><td>10 / 15</td></tr>
                   <tr><td>四姊妹</td><td>25 / 40</td></tr>
-                  <tr><td>四五姊妹</td><td>60 / 80</td></tr>
+                  <tr><td>五姊妹</td><td>60 / 80</td></tr>
                   <tr><td>六姊妹</td><td>220</td></tr>
                 </tbody>
               </table>
@@ -319,7 +429,7 @@
         </div>
 
         <div class="card" style="--theme-color: #A32626;">
-          <div class="page-sidebar">第七頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">暗刻 / 對對糊</div>
@@ -362,7 +472,7 @@
 
       <div class="col">
         <div class="card" style="--theme-color: #1B8585;">
-          <div class="page-sidebar">第五頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">相逢</div>
@@ -399,7 +509,7 @@
         </div>
 
         <div class="card" style="--theme-color: #C05C1E;">
-          <div class="page-sidebar">第八頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">四歸</div>
@@ -438,7 +548,7 @@
 
       <div class="col">
         <div class="card" style="--theme-color: #356E11;">
-          <div class="page-sidebar">第六頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">步高</div>
@@ -466,7 +576,7 @@
         </div>
 
         <div class="card" style="--theme-color: #666666;">
-          <div class="page-sidebar">第九頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">混帶 / 全帶</div>
@@ -491,7 +601,7 @@
         </div>
 
         <div class="card" style="--theme-color: #4E2A0E;">
-          <div class="page-sidebar">第十頁</div>
+          <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
               <div class="category-header">嚦咕嚦咕</div>
@@ -507,8 +617,8 @@
               <table>
                 <tbody>
                   <tr><td>十六不搭</td><td>50</td></tr>
-                  <tr><td>不搭三相逢</td><td>65</td></tr>
-                  <tr><td>純正不搭</td><td>70</td></tr>
+                  <tr><td>十六不搭三相逢</td><td>65</td></tr>
+                  <tr><td>純正十六不搭</td><td>70</td></tr>
                 </tbody>
               </table>
             </div>
@@ -536,67 +646,590 @@
   <div class="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="drawer-content">
     <div class="drawer-header">
-      <span id="drawerTitle">項目名稱</span>
+      <div style="display: flex; align-items: center;">
+        <span id="drawerTitle">項目名稱</span>
+        <span id="drawerSP"></span>
+      </div>
       <button onclick="closeDrawer()" class="close-btn">✕</button>
     </div>
     <div class="drawer-body">
       <p class="desc-label">定義</p>
       <div id="drawerDefinition" class="desc-text"></div>
-      <p class="desc-label">例子</p>
+      <p class="desc-label" id="drawerExampleLabel">例子</p>
       <div id="drawerExample" class="desc-text mj-tiles"></div>
     </div>
   </div>
 </div>
 
-</body>
 <script>
-// 1. 定義資料 (未來可在此增加更多項)
 const noteData = {
   "清一色": {
     def: "沒有番子，由筒索萬其中一門組成",
-    ex: "1t 1t 1t 2t 3t 4t 5t 6t 7t 8t 9t 9t 9t"
+    ex: "1t 2t 3t  1t 2t 3t  4t 5t 6t  4t 5t 6t  7t 8t 9t  9t 9t-h"
   },
   "平糊": {
     def: "由四組順子及一對將眼組成，沒有刻子及番子",
-    ex: "1t 2t 3t 4s 5s 6s 7m 8m 9m 2s 3s 4s 5t 5t"
+    ex: "1t 2t 3t  1m 2m 3m  4s 5s 6s  7m 8m 9m  2s 3s 4s  5t 5t-h"
+  },
+  "花": {
+    "def": "有花或無花，正花再加一番，可覆計",
+    "ex": ""
+  },
+  "無字": {
+    "def": "沒有番子",
+    "ex": ""
+  },
+  "風牌": {
+    "def": "風牌（東、南、西及北）的刻或槓，正風再加一番，可覆計",
+    "ex": ""
+  },
+  "三元牌": {
+    "def": "三元牌（中、發及白）的刻或槓,可覆計",
+    "ex": ""
+  },
+  "無字花": {
+    "def": "沒有花及番子，不再計無字",
+    "ex": ""
+  },
+  "平糊": {
+    "def": "由四組順子及一對將眼組成，沒有刻子及番子",
+    "ex": "1m 2m 3m  4m 5m 6m  7t 8t 9t  1s 2s 3s  4s 4s-h"
+  },
+  "無字花大平": {
+    "def": "沒有花及番子的平糊，不再計無字花及平糊",
+    "ex": ""
+  },
+  "槓 / 暗槓": {
+    "def": "暗槓再加一番",
+    "ex": ""
+  },
+  "搶槓": {
+    "def": "食其他三家加槓的牌，十三么可搶暗槓",
+    "ex": ""
+  },
+  "門清": {
+    "def": "沒有上或碰，可明槓補槓當門清",
+    "ex": ""
+  },
+  "將眼": {
+    "def": "以數字（二、五或八）為眼",
+    "ex": "2m 2m 或 5t 5t 或 8s 8s"
+  },
+  "假獨": {
+    "def": "以單吊、偏章或卡窿形式食糊，但實際聽多於一飛",
+    "ex": "9m 9m 9m 8m 7m-h 8m-h 或 2s 3s 4s 5s 2s-h 5s-h"
+  },
+  "獨獨": {
+    "def": "以單吊、偏章或卡窿形式聽一飛食糊",
+    "ex": "green green green  7m 7m-h 或 red red  8t 9t 7t-h 或 east east  1s 3s 2s-h"
+  },
+  "對碰": {
+    "def": "以兩對形式食糊",
+    "ex": "east east  9t 9t 9t-h"
+  },
+  "叮(聽牌)": {
+    "def": "叮牌後不得加槓及轉章",
+    "ex": ""
+  },
+  "即叮": {
+    "def": "叮牌後下一次摸牌食糊或一巡內食糊",
+    "ex": ""
+  },
+  "叮銃": {
+    "def": "食其他三家的叮牌",
+    "ex": ""
+  },
+  "自摸": {
+    "def": "自己摸到食糊的牌",
+    "ex": ""
+  },
+  "門清自摸": {
+    "def": "門清狀態下自摸",
+    "ex": ""
+  },
+  "莊家": {
+    "def": "食糊或出銃時加一番",
+    "ex": ""
+  },
+  "連莊": {
+    "def": "莊家連續食糊或流局會連莊，食糊或出銃時加 2n+1 番",
+    "ex": ""
+  },
+  "天叮": {
+    "def": "莊家限定，莊家在第一次摸牌或之前聽牌，不再計門清",
+    "sp": "莊家限定",
+    "ex": ""
+  },
+  "地叮": {
+    "def": "閒家限定，閒家在第一次摸牌或之前聽牌，不再計門清",
+    "sp": "閒家限定",
+    "ex": ""
+  },
+  "花上自摸": {
+    "def": "補花後自摸",
+    "ex": ""
+  },
+  "槓上自摸": {
+    "def": "暗槓或補槓後自摸",
+    "ex": ""
+  },
+  "海底撈月": {
+    "def": "最後一隻自摸",
+    "ex": ""
+  },
+  "河底撈魚": {
+    "def": "最後一隻出銃",
+    "ex": ""
+  },
+  "一炮雙響": {
+    "def": "兩位玩家同時食糊",
+    "ex": ""
+  },
+  "一炮三響": {
+    "def": "三位玩家同時食糊",
+    "ex": ""
+  },
+  "天糊": {
+    "def": "莊家起手自摸，不再計門清",
+    "ex": ""
+  },
+  "地糊": {
+    "def": "閒家食莊家第一隻牌",
+    "ex": ""
+  },
+  "人糊 / 四隻內": {
+    "def": "食糊時池內只有四隻牌或以下，食糊的牌不計算在內",
+    "ex": ""
+  },
+  "七隻內": {
+    "def": "食糊時池內只有七隻牌或以下，食糊的牌不計算在內",
+    "ex": ""
+  },
+  "十隻內": {
+    "def": "食糊時池內只有十隻牌或以下，食糊的牌不計算在內",
+    "ex": ""
+  },
+  "細雞糊": {
+    "def": "只有兩番",
+    "ex": ""
+  },
+  "大雞糊": {
+    "def": "只有一番",
+    "ex": ""
+  },
+  "半求人": {
+    "def": "全部牌靠人上、碰或明槓（暗槓不算），最尾靠自摸",
+    "ex": ""
+  },
+  "全求人": {
+    "def": "全部牌靠人上、碰或明槓（暗槓不算），最尾食出",
+    "ex": ""
+  },
+  "詐糊": {
+    "def": "打開所有手牌且無效牌型",
+    "ex": ""
+  },
+  "連骰": {
+    "def": "擲出 123、345 等連骰",
+    "ex": ""
+  },
+  "圍骰": {
+    "def": "擲出 111、444 等圍骰",
+    "ex": ""
+  },
+  "一台花": {
+    "def": "集齊一至四號花，打後每隻花收 2 番",
+    "ex": ""
+  },
+  "七搶一": {
+    "def": "玩家 A 先摸一隻花，玩家 B 再摸七隻花，玩家 A 賠 30 番，牌局繼續",
+    "ex": ""
+  },
+  "一搶七": {
+    "def": "玩家 A 先摸七隻花，玩家 B 再摸一隻花，玩家 A 賠 30 番，牌局繼續",
+    "ex": ""
+  },
+  "八隻花": {
+    "def": "集齊八隻花，收每家 40 番，牌局繼續",
+    "ex": ""
+  },
+  "兩姊妹": {
+    "def": "兩組同色且連續的刻或槓",
+    "sp": "",
+    "ex": "1t 1t 1t  2t 2t 2t"
+  },
+  "三姊妹": {
+    "def": "三組同色且連續的刻或槓，若其中一組為眼，則當小三姊妹計算，10番",
+    "sp": "",
+    "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t"
+  },
+  "四姊妹": {
+    "def": "四組同色且連續的刻或槓，若其中一組為眼，則當小四姊妹計算，25番",
+    "sp": "",
+    "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t  4t 4t 4t"
+  },
+  "五姊妹": {
+    "def": "五組同色且連續的刻或槓，若其中一組為眼，則當小五姊妹計算，60番",
+    "sp": "",
+    "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t  4t 4t 4t  5t 5t 5t"
+  },
+  "六姊妹": {
+    "def": "六組同色且連續的眼及刻或槓，不再計清一色",
+    "sp": "",
+    "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t  4t 4t 4t  5t 5t 5t  6t 6t"
+  },
+  "兩兄弟": {
+    "def": "筒索萬其中兩門組成兩組相同數字的刻或槓",
+    "sp": "",
+    "ex": "5m 5m 5m  5t 5t 5t"
+  },
+  "三兄弟": {
+    "def": "筒索萬組成各三組相同數字的刻或槓，若其中一組為眼，則當小三兄弟計算，10番",
+    "sp": "",
+    "ex": "5m 5m 5m  5t 5t 5t  5s 5s 5s"
+  },
+  "相逢": {
+    "def": "由筒索萬其中兩門組成兩組相同數字的順子",
+    "sp": "",
+    "ex": "2m 3m 4m  2s 3s 4s"
+  },
+  "雙相逢": {
+    "def": "兩組相逢",
+    "sp": "",
+    "ex": "2m 3m 4m  2s 3s 4s  5t 6t 7t  5m 6m 7m" 
+  },
+  "三相逢": {
+    "def": "由筒索萬分別組成三組相同數字的順子",
+    "sp": "",
+    "ex": "2m 3m 4m  2s 3s 4s  2t 3t 4t"
+  },
+  "全姊妹": {
+    "def": "由一組三相逢或三般高，再加一組相逢或般高，不再計平糊、相逢或般高",
+    "sp": "",
+    "ex": "2m 3m 4m  2s 3s 4s  5t 6t 7t  5t 6t 7t  5m 6m 7m  east east"
+  },
+  "般高": {
+    "def": "兩組相同的順子",
+    "sp": "",
+    "ex": "2m 3m 4m  2m 3m 4m"
+  },
+  "雙般高": {
+    "def": "兩組般高",
+    "sp": "",
+    "ex": "2s 3s 4s  2s 3s 4s  2t 3t 4t  2t 3t 4t"
+  },
+  "三般高": {
+    "def": "三組相同的順子",
+    "sp": "",
+    "ex": "5t 6t 7t  5t 6t 7t  5t 6t 7t"
+  },
+  "四般高": {
+    "def": "四組相同的順子",
+    "sp": "",
+    "ex": "2s 3s 4s  2s 3s 4s  2s 3s 4s  2s 3s 4s"
+  },
+  "四同順": {
+    "def": "四組相同數字的順子，可計明 / 暗三相逢、雙般高及三般高",
+    "sp": "",
+    "ex": "5m 6m 7m  5m 6m 7m  5s 6s 7s  5t 6t 7t"
+  },
+  "五同順": {
+    "def": "五組相同數字的順子，可計平糊、明 / 暗三相逢、雙般高及三般高",
+    "sp": "",
+    "ex": "2s 3s 4s  2s 3s 4s  2t 3t 4t  2t 3t 4t  2m 3m 4m"
+  },
+  "三色三步高": {
+    "def": "筒索萬組成三組依序遞增的連續順子",
+    "sp": "",
+    "ex": "2s 3s 4s  3t 4t 5t  4m 5m 6m"
+  },
+  "三色四步高": {
+    "def": "由筒索萬組成四組依序遞增的連續順子，筒索萬次序必須相同",
+    "sp": "",
+    "ex": "2s 3s 4s  3t 4t 5t  4m 5m 6m  5s 6s 7s"
+  },
+  "三色五步高": {
+    "def": "由筒索萬組成五組依序遞增的連續順子，筒索萬次序必須相同，不再計平糊",
+    "sp": "",
+    "ex": "2s 3s 4s  3t 4t 5t  4m 5m 6m  5s 6s 7s  6t 7t 8t"
+  },
+  "一色三步高": {
+    "def": "筒索萬其中一門組成三組依序遞增的連續順子",
+    "sp": "",
+    "ex": "2s 3s 4s  3s 4s 5s  4s 5s 6s"
+  },
+  "一色四步高": {
+    "def": "筒索萬其中一門組成四組依序遞增的連續順子",
+    "sp": "",
+    "ex": "2t 3t 4t  3t 4t 5t  4t 5t 6t  5t 6t 7t"
+  },
+  "一色五步高": {
+    "def": "筒索萬其中一門組成五組依序遞增的連續順子，不再計平糊",
+    "sp": "",
+    "ex": "2m 3m 4m  3m 4m 5m  4m 5m 6m  5m 6m 7m  6m 7m 8m"
+  },
+  "雜龍": {
+    "def": "由筒索萬三門其中兩門或三門組成的「一二三」、「四五六」及「七八九」",
+    "sp": "",
+    "ex": "1t 2t 3t  4s 5s 6s  7m 8m 9m"
+  },
+  "清龍": {
+    "def": "由筒索萬其中一門組成的「一二三」、「四五六」及「七八九」",
+    "sp": "",
+    "ex": "1m 2m 3m  4m 5m 6m  7m 8m 9m"
+  },
+  "兩暗刻": {
+    "def": "兩組暗刻",
+    "sp": "",
+    "ex": ""
+  },
+  "三暗刻": {
+    "def": "三組暗刻",
+    "sp": "",
+    "ex": ""
+  },
+  "四暗刻": {
+    "def": "四組暗刻",
+    "sp": "",
+    "ex": ""
+  },
+  "五暗刻": {
+    "def": "五組暗刻",
+    "sp": "",
+    "ex": ""
+  },
+  "對對糊": {
+    "def": "只有刻或槓，可加計暗刻",
+    "sp": "",
+    "ex": "1t 1t 1t  7s 7s 7s  5m 5m 5m  red red red  west west west  9t 9t"
+  },
+  "坎坎糊": {
+    "def": "自摸五暗刻，如食出只當五暗刻（不能有槓，不再計對對糊、門清及自摸）",
+    "sp": "門清限定",
+    "ex": ""
+  },
+  "混一色": {
+    "def": "由番子及筒索萬其中一門組成",
+    "sp": "",
+    "ex": "1m 2m 3m  3m 4m 5m  4m 5m 6m  7m 7m 7m  east east east  west west"
+  },
+  "清一色": {
+    "def": "沒有番子，由筒索萬其中一門組成",
+    "sp": "",
+    "ex": "1s 1s 1s  2s 3s 4s  5s 6s 7s  5s 6s 7s  6s 7s 8s  9s 9s"
+  },
+  "字一色": {
+    "def": "全部由番子組成，可加計風牌及三元牌",
+    "sp": "",
+    "ex": "east east east  south south south  west west west  north north north  red red red  green green"
+  },
+  "老少": {
+    "def": "筒索萬其中一門「一二三」及「七八九」的順子 或 筒索萬同一門「一」及「九」的刻或槓",
+    "sp": "",
+    "ex": "1m 2m 3m  7m 8m 9m 或 1t 1t 1t  9t 9t 9t"
+  },
+  "混全帶么": {
+    "def": "由番子及每組牌都有至少一隻幺九牌組成",
+    "sp": "",
+    "ex": "1m 2m 3m  7m 8m 9m  1t 1t 1t  7s 8s 9s  east east east  south south"
+  },
+  "全帶么": {
+    "def": "沒有番子，由每組牌都有至少一隻幺九牌組成",
+    "sp": "",
+    "ex": "1m 2m 3m  1t 2t 3t  7t 8t 9t  1s 1s 1s  7s 8s 9s  9m 9m"
+  },
+  "混么九": {
+    "def": "由番子、「一」及「九」的刻或槓組成，可加計對對糊",
+    "sp": "",
+    "ex": "1t 1t 1t  9t 9t 9t  1m 1m 1m  9s 9s 9s  east east east  south south"
+  },
+  "清么九": {
+    "def": "沒有番子，由「一」及「九」的刻或槓組成，可加計對對糊",
+    "sp": "",
+    "ex": "1t 1t 1t  9t 9t 9t  1s 1s 1s  9s 9s 9s  1m 1m 1m  9m 9m"
+  },
+  "四歸一": {
+    "def": "有四隻一樣的牌，該四隻牌分別出現在一組順子及一組刻子內",
+    "sp": "",
+    "ex": "5m-hl 6m 7m  5m-hl 5m-hl 5m-hl"
+  },
+  "四歸二": {
+    "def": "有四隻一樣的牌，該四隻牌分別出現在兩組順子及一組眼內",
+    "sp": "",
+    "ex": "5t-hl 6t 7t  3t 4t 5t-hl  5t-hl 5t-hl"
+  },
+  "四歸四": {
+    "def": "有四隻一樣的牌，該四隻牌分別出現在四組順子內，可加計般高及步高",
+    "sp": "",
+    "ex": "6s-hl 7s 8s  6s-hl 7s 8s  4s 5s 6s-hl  4s 5s 6s-hl"
+  },
+  "五門齊": {
+    "def": "筒索萬三門、門風牌及三元牌組成，若其中一門做眼，則當小五門齊計算，10番",
+    "sp": "",
+    "ex": "2m 2m 2m  5t 6t 7t  4s 5s 6s  south south south  white white white  7m 7m"
+  },
+  "七門齊": {
+    "def": "五門齊再加各兩款花組成，梅蘭菊竹為一門，春夏秋冬為一門",
+    "sp": "",
+    "ex": "f1 f2 f3 f4  h1 h2 h3 h4"
+  },
+  "缺一門": {
+    "def": "沒有番子，只有筒索萬其中兩門",
+    "sp": "",
+    "ex": "2m 3m 4m  4m 5m 6m  1s 2s 3s  5s 6s 7s  9s 9s 9s  8s 8s"
+  },
+  "缺五": {
+    "def": "沒有番子及數字「五」",
+    "sp": "",
+    "ex": "2m 3m 4m  6m 6m 6m  3t 3t 3t  1s 2s 3s  9s 9s 9s  8s 8s"
+  },
+  "斷么": {
+    "def": "沒有番子、數字「一」及「九」",
+    "sp": "",
+    "ex": "3s 4s 5s  6s 7s 8s  2m 3m 4m  5m 6m 7m  2t 3t 4t  5t 5t"
+  },
+  "大於五": {
+    "def": "沒有番子及數字「五」且所有數字大於五",
+    "sp": "",
+    "ex": "6m 7m 8m  7m 8m 9m  6t 7t 8t  6t 7t 8t  7t 7t 7t  9s 9s"
+  },
+  "小於五": {
+    "def": "沒有番子及數字「五」且所有數字小於五",
+    "sp": "",
+    "ex": "1m 1m 1m  2m 3m 4m  2t 2t 2t  3t 3t 3t  2s 3s 4s  3m 3m"
+  },
+  "混帶X": {
+    "def": "由番子及筒索萬組成。筒索萬的順子、刻子、槓子、及眼均含有同一個或以上數字的牌,最多三個數字,每一個數字 20 番",
+    "sp": "",
+    "ex": "3m 4m-hl 5m  4m-hl 5m 6m  4t-hl 5t 6t  3s 4s-hl 5s  south south south  4t-hl 4t-hl"
+  },
+  "全帶X": {
+    "def": "沒有番子,所有順子、刻子、槓子、及眼均含有一樣數字的牌",
+    "sp": "",
+    "ex": "2s 3s 4s-hl  3s 4s-hl 5s  4s-hl 5s 6s  4t-hl 5t 6t  3m 4m-hl 5m  4t-hl 4t-hl"
+  },
+  "三元": {
+    "def": "由中、發及白組成三組刻子或槓子，若其中一組做眼，則當小三元計算，40番",
+    "sp": "",
+    "ex": "red red red  green green green  white white white"
+  },
+  "三風": {
+    "def": "由東、南、西或北組成三組刻子或槓子，若其中一組做眼，則當小三風計算，15番",
+    "sp": "",
+    "ex": "east east east  south south south  west west west"
+  },
+  "四喜": {
+    "def": "由東、南、西或北組成四組刻子或槓子，若其中一組做眼，則當小四喜計算，60番",
+    "sp": "",
+    "ex": "east east east  south south south  west west west  north north north"
+  },
+  "嚦咕嚦咕": {
+    "def": "由八對半所組成",
+    "sp": "門清限定",
+    "ex": "1m 1m  5m 5m  9m 9m  2t 2t  3t 3t  8s 8s  9s 9s 9s  red red-h"
+  },
+  "純正嚦咕": {
+    "def": "由八對半所組成",
+    "sp": "門清限定",
+    "ex": "1m 1m-hl  5m 5m-hl  9m 9m-hl  2t 2t-hl  3t 3t-hl  8s 8s-hl  9s 9s-hl  red red-hl"
+  },
+  "十六不搭": {
+    "def": "七隻番子各一隻及筒索萬三門每一門三隻，且數字相差不少於三組成，十六隻牌其中一隻做眼",
+    "sp": "門清限定",
+    "ex": "1m 4m 8m  2t 6t 9t  1s 5s 8s  east south west north red green white"
+  },
+  "十六不搭三相逢": {
+    "def": "筒索萬三門每一門三隻的數字相同的十六不搭",
+    "sp": "門清限定",
+    "ex": "1m 4m 8m  1t 4t 8t  1s 4s 8s  east south west north red green white"
+  },
+  "純正十六不搭": {
+    "def": "筒索萬三門每一門三隻的數字為「一四七」、「二五八」及「三六九」的十六不搭",
+    "sp": "門清限定",
+    "ex": "2m 5m 8m  1t 4t 7t  3s 6s 9s  east south west north red green white"
+  },
+  "十三么": {
+    "def": "六隻么九及七隻番子各一隻,其中一隻做眼,再加一組暗刻或順子,叫一至兩飛,可加計混全帶么",
+    "sp": "門清限定",
+    "ex": "1m 9m  1t 9t  1s 9s  5m 6m 7m  east east west north red green white south-h"
+  },
+  "純正十三么": {
+    "def": "六隻么九及七隻番子各一隻,其中一隻做眼,再加一組暗刻或順子,叫十三飛,可加計混全帶么",
+    "sp": "門清限定",
+    "ex": "1m 9m  1t 9t  1s 9s  5m 6m 7m  east south west north red green white"
   }
 };
 
-// 2. 建立 SVG 渲染函數
 function renderTiles(exString) {
   if (!exString) return "";
   return exString.split(' ').map(code => {
-    // 指向你存放 SVG 的資料夾路徑
-    return `<img src="tiles/${code}.svg" class="mj-tile-img" alt="${code}">`;
+    if (!code) return `<span style="display: inline-block; width: 8px;"></span>`;
+    if (code === "或") return `<span class="mj-text-sep">或</span>`;
+    
+    const isHorizontal = code.endsWith('-h');
+    const isHighlight = code.includes('-hl');
+    const fileName = code.replace('-hl', '').replace('-h', '');
+    let classList = ["mj-tile-img"];
+    if (isHorizontal) classList.push("mj-horizontal");
+    if (isHighlight) classList.push("mj-highlight");
+
+    const className = classList.join(' ');
+    
+    return `<img src="tiles/${fileName}.svg" class="${className}" draggable="false" style="vertical-align: middle;">`;
   }).join('');
 }
 
-// 3. 顯示抽屜函數
 function showInfo(name) {
   const data = noteData[name];
   if (!data) return;
   
   document.getElementById('drawerTitle').innerText = name;
   document.getElementById('drawerDefinition').innerText = data.def;
-  document.getElementById('drawerExample').innerHTML = renderTiles(data.ex);
+
+  const spElement = document.getElementById('drawerSP');
+  if (data.sp && data.sp.trim() !== "") {
+    spElement.innerText = data.sp;
+    spElement.style.display = 'inline-block';
+  } else {
+    spElement.style.display = 'none';
+  }
+  
+  
+  const exLabel = document.getElementById('drawerExampleLabel');
+  const exContainer = document.getElementById('drawerExample');
+  
+  
+  if (data.ex && data.ex.trim() !== "") {
+    exLabel.style.display = 'block';            
+    exContainer.style.display = 'flex';         
+    exContainer.innerHTML = renderTiles(data.ex);
+  } else {
+    exLabel.style.display = 'none';             
+    exContainer.style.display = 'none';         
+    exContainer.innerHTML = '';
+  }
   
   document.getElementById('infoDrawer').classList.add('open');
 }
 
-// 4. 關閉抽屜函數 (補回原本漏掉的部分)
 function closeDrawer() {
   document.getElementById('infoDrawer').classList.remove('open');
 }
 
-// 5. 初始化：自動幫表格中的項目加上點擊事件 (補回原本漏掉的部分)
+function toggleCollapse(btn) {
+  const wrapper = btn.closest('.table-wrapper');
+  wrapper.classList.toggle('expanded');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('td:first-child').forEach(td => {
     const itemName = td.innerText.trim();
     if (noteData[itemName]) {
-      td.classList.add('clickable-item'); // 讓它出現虛線底線
+      td.classList.add('clickable-item');
       td.onclick = () => showInfo(itemName);
     }
   });
 });
 </script>
+</body>
 </html>
