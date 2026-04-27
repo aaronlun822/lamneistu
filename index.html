@@ -223,7 +223,6 @@
     .lose { color: #FF3B30; font-weight: bold; }
     .sort-icon { font-size: 10px; margin-left: 2px; }
 
-    .skeleton-wrapper { padding: 20px; }
     .sk-box {
       background: #E5E5EA;
       border-radius: 8px;
@@ -339,17 +338,39 @@
     let sortAscending = false;
     let focusedDateCol = null;
 
-    function renderSkeleton() {
+function renderSkeleton() {
       let btnHtml = '';
       for(let i=0; i<5; i++) {
         btnHtml += `<div class="sk-btn"></div>`;
       }
       document.getElementById('sheetButtons').innerHTML = btnHtml;
 
-      let html = '<div class="card skeleton-wrapper">';
-      html += '<div class="sk-box" style="height: 30px; width: 40%; margin-bottom: 24px;"></div>';
-      for(let i=0; i<8; i++) html += `<div class="sk-box" style="height: 45px; width: 100%;"></div>`;
-      html += '</div>';
+      let html = '<div class="card">';
+      html += '<div class="table-container">';
+      html += '<table>';
+      
+      html += '<thead><tr>';
+      html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
+      html += '<th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>';
+      html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
+      for(let i=0; i<9; i++) {
+        html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
+      }
+      html += '</tr></thead>';
+
+      html += '<tbody>';
+      for(let i=0; i<8; i++) {
+        html += '<tr>';
+        html += '<td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>';
+        html += '<td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>';
+        html += '<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>';
+        for(let j=0; j<9; j++) {
+          html += '<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>';
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table></div></div>';
+
       document.getElementById('contentArea').innerHTML = html;
     }
 
