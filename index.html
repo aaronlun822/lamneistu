@@ -158,6 +158,67 @@
       cursor: pointer;
       user-select: none;
     }
+
+.modal-overlay {
+  display: none; 
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px); 
+}
+
+.modal-content {
+  background: #FFFFFF;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 1600px;
+  height: 85vh; 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: #F8F8F8;
+  border-bottom: 1px solid #E5E5EA;
+  gap: 12px;
+}
+
+.modal-btn {
+  background: transparent;
+  border: none;
+  color: #1C1C1E;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.modal-btn:hover { background-color: #E5E5EA; }
+.close-btn:hover { color: #FF3B30; }
+
+.modal-body {
+  flex: 1;
+  width: 100%;
+}
+
+.modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
     @media (hover: hover) {
   th:hover { background-color: #F2F2F7; }
   .sheet-link-icon:hover .logo-container {
@@ -310,7 +371,7 @@
 
   <div class="container">
     <div class="header-wrapper">
-      <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" rel="noopener noreferrer" title="打開番表" class="sheet-link-icon" style="left: 0; right: auto;">
+      <a onclick="openPdfModal()" title="打開番表" class="sheet-link-icon" style="left: 0; right: auto; cursor: pointer;">
         <div class="logo-container pdf-logo">
           <img src="pdf-svg.svg" alt="PDF">
         </div>
@@ -330,6 +391,32 @@
     <div id="contentArea"></div>
   </div>
 
+  <div id="pdfModal" class="modal-overlay" onclick="closePdfModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header" style="justify-content: space-between;"> <a href="list.html" target="_blank" class="modal-btn" title="全螢幕展開">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 3 21 3 21 9"></polyline>
+      <polyline points="9 21 3 21 3 15"></polyline>
+      <line x1="21" y1="3" x2="14" y2="10"></line>
+      <line x1="3" y1="21" x2="10" y2="14"></line>
+    </svg>
+  </a>
+
+  <div style="display: flex; gap: 12px;">
+    <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="modal-btn" title="下載">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    </a>
+    <button class="modal-btn close-btn" onclick="closePdfModal()" title="關閉">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+</div>
+    <div class="modal-body">
+      <iframe src="list.html"></iframe>
+    </div>
+  </div>
+</div>
+
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
     let globalData = {};
@@ -337,6 +424,18 @@
     let currentSortCol = 'total';
     let sortAscending = false;
     let focusedDateCol = null;
+
+    // 打開彈出視窗
+function openPdfModal() {
+  document.getElementById('pdfModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden'; 
+}
+
+// 關閉彈出視窗
+function closePdfModal() {
+  document.getElementById('pdfModal').style.display = 'none';
+  document.body.style.overflow = ''; 
+}
 
 function renderSkeleton() {
       let btnHtml = '';
