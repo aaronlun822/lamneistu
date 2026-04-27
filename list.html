@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>番表 - Lam Nei Studio</title>
+  <style>
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #F2F2F7;
+      margin: 0;
+      padding: 24px 16px;
+      color: #1C1C1E;
+    }
+    
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .board {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 220px;
+      max-width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .page-sidebar {
+      background-color: var(--theme-color);
+      color: #FFFFFF;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      padding: 12px 6px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 4px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .page-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #FFFFFF;
+    }
+
+    .category {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .category-header {
+      background-color: var(--theme-color);
+      color: #FFFFFF;
+      padding: 8px 12px;
+      font-weight: 600;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    td {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-bottom: 1px solid #E5E5EA;
+      vertical-align: middle;
+      color: #1C1C1E;
+      transition: background-color 0.1s ease;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    td:first-child {
+      text-align: left;
+    }
+
+    td:last-child {
+      text-align: left;
+      font-weight: 500;
+      width: 45%;
+    }
+
+    @media (hover: hover) {
+      tr:hover td { 
+        background-color: #F2F2F7 !important; 
+      }
+    }
+
+    .footer {
+      max-width: 1300px;
+      margin: 30px auto 0;
+      font-size: 12px;
+      color: #8E8E93;
+      padding-left: 10px;
+    }
+
+    @media (max-width: 800px) {
+      .col {
+        min-width: 45%;
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .col {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="board">
+      
+      <div class="col">
+        <div class="card" style="--theme-color: #003B73;">
+          <div class="page-sidebar">第二頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">一般</div>
+              <table>
+                <tbody>
+                  <tr><td>花</td><td>1</td></tr>
+                  <tr><td>無字</td><td>1</td></tr>
+                  <tr><td>風牌</td><td>1</td></tr>
+                  <tr><td>三元牌</td><td>2</td></tr>
+                  <tr><td>無字花</td><td>8</td></tr>
+                  <tr><td>平糊</td><td>5</td></tr>
+                  <tr><td>無字花大平</td><td>15</td></tr>
+                  <tr><td>槓</td><td>1 / 2</td></tr>
+                  <tr><td>搶槓</td><td>5</td></tr>
+                  <tr><td>門清</td><td>5</td></tr>
+                  <tr><td>將眼</td><td>2</td></tr>
+                  <tr><td>假獨</td><td>1</td></tr>
+                  <tr><td>獨獨</td><td>2</td></tr>
+                  <tr><td>對碰</td><td>2</td></tr>
+                  <tr><td>叮</td><td>10</td></tr>
+                  <tr><td>即叮</td><td>20</td></tr>
+                  <tr><td>叮銃</td><td>5</td></tr>
+                  <tr><td>自摸</td><td>1</td></tr>
+                  <tr><td>門清自摸</td><td>7</td></tr>
+                  <tr><td>莊家</td><td>1</td></tr>
+                  <tr><td>連莊</td><td>2n+1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card" style="--theme-color: #7D8000;">
+          <div class="page-sidebar">第三頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">特殊及獎罰</div>
+              <table>
+                <tbody>
+                  <tr><td>天叮</td><td>40</td></tr>
+                  <tr><td>地叮</td><td>40</td></tr>
+                  <tr><td>花上自摸</td><td>3</td></tr>
+                  <tr><td>槓上自摸</td><td>5</td></tr>
+                  <tr><td>海底撈月</td><td>30</td></tr>
+                  <tr><td>河底撈魚</td><td>20</td></tr>
+                  <tr><td>一炮雙響</td><td>5</td></tr>
+                  <tr><td>一炮三響</td><td>15</td></tr>
+                  <tr><td>天糊</td><td>160</td></tr>
+                  <tr><td>地糊</td><td>120</td></tr>
+                  <tr><td>人糊</td><td>80</td></tr>
+                  <tr><td>七隻內</td><td>20</td></tr>
+                  <tr><td>十隻內</td><td>10</td></tr>
+                  <tr><td>細雞糊</td><td>30</td></tr>
+                  <tr><td>大雞糊</td><td>50</td></tr>
+                  <tr><td>半求人</td><td>20</td></tr>
+                  <tr><td>全求人</td><td>40</td></tr>
+                  <tr><td>詐糊</td><td>50</td></tr>
+                  <tr><td>連骰</td><td>賠1底</td></tr>
+                  <tr><td>圍骰</td><td>獎1底</td></tr>
+                  <tr><td>一台花</td><td>獎1底</td></tr>
+                  <tr><td>七搶一</td><td>30</td></tr>
+                  <tr><td>一搶七</td><td>30</td></tr>
+                  <tr><td>八隻花</td><td>40</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card" style="--theme-color: #8F205A;">
+          <div class="page-sidebar">第四頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">姊妹</div>
+              <table>
+                <tbody>
+                  <tr><td>兩姊妹</td><td>5</td></tr>
+                  <tr><td>三姊妹</td><td>10 / 15</td></tr>
+                  <tr><td>四姊妹</td><td>25 / 40</td></tr>
+                  <tr><td>四五姊妹</td><td>60 / 80</td></tr>
+                  <tr><td>六姊妹</td><td>220</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">兄弟</div>
+              <table>
+                <tbody>
+                  <tr><td>兩兄弟</td><td>5</td></tr>
+                  <tr><td>三兄弟</td><td>10 / 15</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="--theme-color: #A32626;">
+          <div class="page-sidebar">第七頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">暗刻 / 對對糊</div>
+              <table>
+                <tbody>
+                  <tr><td>兩暗刻</td><td>5</td></tr>
+                  <tr><td>三暗刻</td><td>15</td></tr>
+                  <tr><td>四暗刻</td><td>40</td></tr>
+                  <tr><td>五暗刻</td><td>120</td></tr>
+                  <tr><td>對對糊</td><td>40</td></tr>
+                  <tr><td>坎坎糊</td><td>160</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">一色</div>
+              <table>
+                <tbody>
+                  <tr><td>混一色</td><td>40</td></tr>
+                  <tr><td>清一色</td><td>100</td></tr>
+                  <tr><td>字一色</td><td>120</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">么九</div>
+              <table>
+                <tbody>
+                  <tr><td>老少</td><td>5</td></tr>
+                  <tr><td>混全帶么</td><td>30</td></tr>
+                  <tr><td>全帶么</td><td>70</td></tr>
+                  <tr><td>混么九</td><td>40</td></tr>
+                  <tr><td>清么九</td><td>120</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card" style="--theme-color: #1B8585;">
+          <div class="page-sidebar">第五頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">相逢</div>
+              <table>
+                <tbody>
+                  <tr><td>相逢</td><td>3 / 6</td></tr>
+                  <tr><td>雙相逢</td><td>10 / 20</td></tr>
+                  <tr><td>三相逢</td><td>10 / 20</td></tr>
+                  <tr><td>全姊妹</td><td>60 / 100</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">般高</div>
+              <table>
+                <tbody>
+                  <tr><td>般高</td><td>5 / 10</td></tr>
+                  <tr><td>雙般高</td><td>15 / 30</td></tr>
+                  <tr><td>三般高</td><td>15 / 30</td></tr>
+                  <tr><td>四般高</td><td>40 / 60</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">同順</div>
+              <table>
+                <tbody>
+                  <tr><td>四同順</td><td>30</td></tr>
+                  <tr><td>五同順</td><td>50</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="--theme-color: #C05C1E;">
+          <div class="page-sidebar">第八頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">四歸</div>
+              <table>
+                <tbody>
+                  <tr><td>四歸一</td><td>5 / 10</td></tr>
+                  <tr><td>四歸二</td><td>10 / 20</td></tr>
+                  <tr><td>四歸三</td><td>20 / 40</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">五 / 七門齊</div>
+              <table>
+                <tbody>
+                  <tr><td>五門齊</td><td>10 / 15</td></tr>
+                  <tr><td>七門齊</td><td>20 / 25</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">缺 / 大小</div>
+              <table>
+                <tbody>
+                  <tr><td>缺一門</td><td>10</td></tr>
+                  <tr><td>缺五</td><td>10</td></tr>
+                  <tr><td>斷么</td><td>10</td></tr>
+                  <tr><td>大於五</td><td>50</td></tr>
+                  <tr><td>小於五</td><td>50</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card" style="--theme-color: #356E11;">
+          <div class="page-sidebar">第六頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">步高</div>
+              <table>
+                <tbody>
+                  <tr><td>三色三步高</td><td>8 / 16</td></tr>
+                  <tr><td>三色四步高</td><td>20 / 40</td></tr>
+                  <tr><td>三色五步高</td><td>60 / 120</td></tr>
+                  <tr><td>一色三步高</td><td>15 / 30</td></tr>
+                  <tr><td>一色四步高</td><td>40 / 80</td></tr>
+                  <tr><td>一色五步高</td><td>80 / 160</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">清 / 雜龍</div>
+              <table>
+                <tbody>
+                  <tr><td>雜龍</td><td>5 / 10</td></tr>
+                  <tr><td>清龍</td><td>15 / 25</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="--theme-color: #666666;">
+          <div class="page-sidebar">第九頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">混帶 / 全帶</div>
+              <table>
+                <tbody>
+                  <tr><td>混帶X</td><td>20 / 40 / 60</td></tr>
+                  <tr><td>全帶X</td><td>70</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">三元 / 風 / 四喜</div>
+              <table>
+                <tbody>
+                  <tr><td>三元</td><td>40 / 80</td></tr>
+                  <tr><td>三風</td><td>15 / 30</td></tr>
+                  <tr><td>四喜</td><td>60 / 120</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="--theme-color: #4E2A0E;">
+          <div class="page-sidebar">第十頁</div>
+          <div class="page-content">
+            <div class="category">
+              <div class="category-header">嚦咕嚦咕</div>
+              <table>
+                <tbody>
+                  <tr><td>嚦咕嚦咕</td><td>50</td></tr>
+                  <tr><td>純正嚦咕</td><td>70</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">十六不搭</div>
+              <table>
+                <tbody>
+                  <tr><td>十六不搭</td><td>50</td></tr>
+                  <tr><td>不搭三相逢</td><td>65</td></tr>
+                  <tr><td>純正不搭</td><td>70</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="category">
+              <div class="category-header">十三么</div>
+              <table>
+                <tbody>
+                  <tr><td>十三么</td><td>130</td></tr>
+                  <tr><td>純正十三么</td><td>150</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      updated on 25/08/2025
+    </div>
+  </div>
+
+</body>
+</html>
