@@ -18,6 +18,72 @@
       padding: 12px 16px;
       color: #1C1C1E;
     }
+
+/* 抽屜核心樣式 */
+.drawer { position: fixed; inset: 0; z-index: 1000; visibility: hidden; transition: visibility 0.3s; }
+.drawer.open { visibility: visible; }
+.drawer-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.3s; }
+.drawer.open .drawer-overlay { opacity: 1; }
+/* 統一抽屜為底部滑出，並增加頂部圓角 */
+.drawer-content { 
+  position: absolute; 
+  bottom: 0; 
+  left: 0; 
+  width: 100%; 
+  max-height: 80vh; /* 避免定義太長時超出頂部 */
+  background: white; 
+  transition: transform 0.3s ease-out; 
+  padding: 24px; 
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.15); 
+  border-radius: 24px 24px 0 0; /* 這裡實現了頂部兩邊圓角 */
+  transform: translateY(100%); 
+  box-sizing: border-box;
+  overflow-y: auto; /* 內容過多時允許內部捲動 */
+}
+
+.drawer.open .drawer-content { 
+  transform: translateY(0); /* 開啟時由底部向上滑出 */
+}
+
+/* 針對電腦版 (27" 螢幕) 的優化：讓面板不要橫向撐太開，看起來更精緻 */
+@media (min-width: 801px) {
+  .drawer-content {
+    width: 600px; /* 限制電腦版寬度，避免在寬螢幕上顯得太扁平 */
+    left: 50%;
+    transform: translate(-50%, 100%); /* 預設在中心下方 */
+  }
+  .drawer.open .drawer-content {
+    transform: translate(-50%, 0); /* 開啟時滑動到中心底部 */
+  }
+}
+
+/* 內容細節樣式 */
+.drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F2F2F7; padding-bottom: 12px; margin-bottom: 15px; }
+#drawerTitle { font-size: 18px; font-weight: 700; color: #007AFF; }
+.close-btn { border: none; background: #F2F2F7; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
+.desc-label { font-size: 12px; color: #8E8E93; margin-bottom: 4px; font-weight: 600; }
+.desc-text { font-size: 15px; margin-bottom: 20px; line-height: 1.5; color: #1C1C1E; }
+/* 麻將圖片容器 */
+.mj-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px; /* 牌與牌之間的間距 */
+  margin-top: 8px;
+}
+
+/* 單張麻將 SVG 樣式 */
+.mj-tile-img {
+  width: 32px;      /* 根據 27 吋螢幕需求可調整大小 */
+  height: auto;
+  border: 1px solid #E5E5EA; /* 加上淡灰色邊框更有牌感 */
+  border-radius: 4px;
+  background-color: #fff;
+  padding: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 微陰影 */
+}
+
+/* 讓表格項目看起來可以點擊 */
+.clickable-item { cursor: pointer; text-decoration: underline dotted #C7C7CC; text-underline-offset: 4px; }
     
     .container {
       max-width: 98vw;
@@ -466,5 +532,71 @@
     </div>
   </div>
 
+<div id="infoDrawer" class="drawer">
+  <div class="drawer-overlay" onclick="closeDrawer()"></div>
+  <div class="drawer-content">
+    <div class="drawer-header">
+      <span id="drawerTitle">項目名稱</span>
+      <button onclick="closeDrawer()" class="close-btn">✕</button>
+    </div>
+    <div class="drawer-body">
+      <p class="desc-label">定義</p>
+      <div id="drawerDefinition" class="desc-text"></div>
+      <p class="desc-label">例子</p>
+      <div id="drawerExample" class="desc-text mj-tiles"></div>
+    </div>
+  </div>
+</div>
+
 </body>
+<script>
+// 1. 定義資料 (未來可在此增加更多項)
+const noteData = {
+  "清一色": {
+    def: "沒有番子，由筒索萬其中一門組成",
+    ex: "1t 1t 1t 2t 3t 4t 5t 6t 7t 8t 9t 9t 9t"
+  },
+  "平糊": {
+    def: "由四組順子及一對將眼組成，沒有刻子及番子",
+    ex: "1t 2t 3t 4s 5s 6s 7m 8m 9m 2s 3s 4s 5t 5t"
+  }
+};
+
+// 2. 建立 SVG 渲染函數
+function renderTiles(exString) {
+  if (!exString) return "";
+  return exString.split(' ').map(code => {
+    // 指向你存放 SVG 的資料夾路徑
+    return `<img src="tiles/${code}.svg" class="mj-tile-img" alt="${code}">`;
+  }).join('');
+}
+
+// 3. 顯示抽屜函數
+function showInfo(name) {
+  const data = noteData[name];
+  if (!data) return;
+  
+  document.getElementById('drawerTitle').innerText = name;
+  document.getElementById('drawerDefinition').innerText = data.def;
+  document.getElementById('drawerExample').innerHTML = renderTiles(data.ex);
+  
+  document.getElementById('infoDrawer').classList.add('open');
+}
+
+// 4. 關閉抽屜函數 (補回原本漏掉的部分)
+function closeDrawer() {
+  document.getElementById('infoDrawer').classList.remove('open');
+}
+
+// 5. 初始化：自動幫表格中的項目加上點擊事件 (補回原本漏掉的部分)
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('td:first-child').forEach(td => {
+    const itemName = td.innerText.trim();
+    if (noteData[itemName]) {
+      td.classList.add('clickable-item'); // 讓它出現虛線底線
+      td.onclick = () => showInfo(itemName);
+    }
+  });
+});
+</script>
 </html>
