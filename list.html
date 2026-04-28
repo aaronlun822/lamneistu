@@ -1272,12 +1272,34 @@ function closeDrawer() {
   document.getElementById('infoDrawer').classList.remove('open');
 }
 
+function preloadTiles() {
+  const uniqueTiles = new Set();
+  
+  Object.values(noteData).forEach(data => {
+    if (data.ex) {
+      data.ex.split(' ').forEach(code => {
+        if (code && code !== "或") {
+          const fileName = code.replace('-hl', '').replace('-h', '');
+          uniqueTiles.add(fileName);
+        }
+      });
+    }
+  });
+
+  uniqueTiles.forEach(fileName => {
+    const img = new Image();
+    img.src = `tiles/${fileName}.svg`;
+  });
+}
+
 function toggleCollapse(btn) {
   const wrapper = btn.closest('.table-wrapper');
   wrapper.classList.toggle('expanded');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  preloadTiles();
+
   document.querySelectorAll('td:first-child').forEach(td => {
     const itemName = td.innerText.trim();
     if (noteData[itemName]) {
