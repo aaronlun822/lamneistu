@@ -51,6 +51,49 @@
       transform: translateY(0); 
     }
 
+    /* --- 懸浮 PDF 按鈕樣式 --- */
+    .fab-container {
+      position: fixed;
+      /* 使用 env(safe-area-inset-bottom) 避免被 iPhone 底部的橫條遮擋 */
+      bottom: max(20px, env(safe-area-inset-bottom));
+      right: 20px;
+      z-index: 990; /* 設在 990，確保在 Drawer (1000) 之下，但在卡片之上 */
+    }
+
+    .fab-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.75);
+      /* 毛玻璃效果 */
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      /* 邊框與陰影增加立體感與精緻度 */
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      color: #1C1C1E;
+      text-decoration: none;
+      transition: all 0.2s ease-out;
+      /* 避免長按選取 */
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 滑鼠懸停時的微互動效果（主要針對電腦版） */
+    @media (hover: hover) {
+      .fab-button:hover {
+        transform: scale(1.05) translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        background-color: rgba(255, 255, 255, 0.9);
+      }
+    }
+    
+    .fab-button:active {
+      transform: scale(0.95);
+    }
+
     @media (min-width: 801px) {
       .drawer-content {
         width: auto; 
@@ -660,7 +703,16 @@
     </div>
   </div>
 </div>
-
+<div class="fab-container">
+    <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" class="fab-button" title="下載 PDF 版" aria-label="下載 PDF 版">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="12" y1="18" x2="12" y2="12"></line>
+        <polyline points="9 15 12 18 15 15"></polyline>
+      </svg>
+    </a>
+  </div>
 <script>
 const noteData = {
   "清一色": {
