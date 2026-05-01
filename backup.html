@@ -61,10 +61,7 @@
       transition: all 0.2s ease;
     }
 
-    .pdf-logo img {
-      width: 60%;
-      height: 60%;
-    }
+    .doc-logo img,
     .sheets-logo img {
       width: 75%;
       height: 75%;
@@ -161,7 +158,13 @@
       cursor: pointer;
       user-select: none;
     }
-    th:hover { background-color: #F2F2F7; }
+    @media (hover: hover) {
+  th:hover { background-color: #F2F2F7; }
+  .sheet-link-icon:hover .logo-container {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.05);
+  }
+}
     
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
     td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: 2; }
@@ -186,6 +189,7 @@
       box-shadow: 1px 0 0 #E5E5EA, 0 1px 0 #E5E5EA;
     }
 
+    @media (hover: hover) {
     tr:hover td { 
       background-color: #F2F2F7 !important; 
     }
@@ -194,9 +198,9 @@
       background-color: #E2EFFF !important; 
       border-bottom: 1px solid #E5E5EA !important;
     }
+  }
 
     .total-no-shadow { 
-      /*box-shadow: none !important; */
       border-right: 1px solid #E5E5EA; 
     }
 
@@ -219,7 +223,6 @@
     .lose { color: #FF3B30; font-weight: bold; }
     .sort-icon { font-size: 10px; margin-left: 2px; }
 
-    .skeleton-wrapper { padding: 20px; }
     .sk-box {
       background: #E5E5EA;
       border-radius: 8px;
@@ -256,47 +259,49 @@
       background-color: #0056b3;
     }
 
-    /* ===== 手機版緊湊模式 (Mobile Compact Mode) ===== */
     @media (max-width: 600px) {
-      /* 1. 縮小整體文字與留白 */
       th, td {
         padding: 8px 4px; 
         font-size: 13px;
         height: 40px;
-        width: 55px; /* 一般數據欄位稍微縮窄 */
+        box-sizing: border-box;
       }
       th {
-        font-size: 12px;
-        padding: 8px 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
       }
       
-      /* 2. 縮小名次圈圈 */
       .rank-circle {
         width: 22px;
         height: 22px;
         font-size: 11px;
       }
 
-      /* 3. 壓縮 Rank 欄位 (原 60px -> 46px) */
       td:nth-child(1), th:nth-child(1) { 
-        width: 46px; min-width: 46px; max-width: 46px; 
+        width: 46px !important; 
+        min-width: 46px !important; 
+        max-width: 46px !important;
       }
 
-      /* 4. 壓縮 Name 欄位 (原 100px -> 75px) */
       td:nth-child(2), th:nth-child(2) { 
-        left: 46px; /* Rank 的寬度 */
-        width: 75px; min-width: 75px; max-width: 75px; 
+        left: 46px !important;
+        width: 75px !important; 
+        min-width: 75px !important; 
+        max-width: 75px !important; 
+        text-align: left !important;
+        padding-left: 8px !important;
       }
 
-      /* 5. 壓縮 Total 欄位 (原 85px -> 65px) */
       td:nth-child(3), th:nth-child(3) { 
-        left: 121px; /* 46 + 75 */
-        width: 65px; min-width: 65px; max-width: 65px; 
+        left: 121px !important; 
+        width: 65px !important; 
+        min-width: 65px !important; 
+        max-width: 65px !important;
       }
 
-      /* 6. 修正點擊單日數據時的「凍結欄位」位置 (原 245px -> 186px) */
       td.focused-sticky, th.focused-sticky {
-        left: 186px; /* 46 + 75 + 65 */
+        left: 186px !important;
       }
     }
   </style>
@@ -305,9 +310,9 @@
 
   <div class="container">
     <div class="header-wrapper">
-      <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" rel="noopener noreferrer" title="打開番表" class="sheet-link-icon" style="left: 0; right: auto;">
-        <div class="logo-container pdf-logo">
-          <img src="pdf.svg" alt="PDF">
+      <a href="list.html" target="_blank" rel="noopener noreferrer" title="番表" class="sheet-link-icon" style="left: 0; right: auto;">
+        <div class="logo-container doc-logo">
+          <img src="doc-svg.svg" alt="DOC">
         </div>
       </a>
       
@@ -315,7 +320,7 @@
       
       <a href="https://docs.google.com/spreadsheets/d/1YlyI7xdtf4wCtY9E4kPyNRFsU9UhnOFOnX81o8z4lbs/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sheet-link-icon" title="開啟 Google Sheet">
         <div class="logo-container sheets-logo">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets Logo">
+          <img src="sheet-svg.svg" alt="Google Sheets Logo">
         </div>
       </a>
     </div>
@@ -333,17 +338,39 @@
     let sortAscending = false;
     let focusedDateCol = null;
 
-    function renderSkeleton() {
+function renderSkeleton() {
       let btnHtml = '';
       for(let i=0; i<5; i++) {
         btnHtml += `<div class="sk-btn"></div>`;
       }
       document.getElementById('sheetButtons').innerHTML = btnHtml;
 
-      let html = '<div class="card skeleton-wrapper">';
-      html += '<div class="sk-box" style="height: 30px; width: 40%; margin-bottom: 24px;"></div>';
-      for(let i=0; i<8; i++) html += `<div class="sk-box" style="height: 45px; width: 100%;"></div>`;
-      html += '</div>';
+      let html = '<div class="card">';
+      html += '<div class="table-container">';
+      html += '<table>';
+      
+      html += '<thead><tr>';
+      html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
+      html += '<th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>';
+      html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
+      for(let i=0; i<9; i++) {
+        html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
+      }
+      html += '</tr></thead>';
+
+      html += '<tbody>';
+      for(let i=0; i<8; i++) {
+        html += '<tr>';
+        html += '<td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>';
+        html += '<td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>';
+        html += '<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>';
+        for(let j=0; j<9; j++) {
+          html += '<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>';
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table></div></div>';
+
       document.getElementById('contentArea').innerHTML = html;
     }
 
@@ -503,7 +530,6 @@ function renderTableBody() {
       const isOverall = activeSheetName === '總排名';
       const colLimit = getColLimit(sheetData, isOverall);
       
-      // 取得排列好的欄位順序
       const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol);
 
       let playerRows = [];
@@ -513,7 +539,6 @@ function renderTableBody() {
         }
       }
 
-      // 1. 初次計算總排名排序：強制將 total 為 0 的玩家排在最底，其餘依分數由高至低排
       playerRows.sort((a, b) => {
         if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
         if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
@@ -521,9 +546,7 @@ function renderTableBody() {
       });
       playerRows.forEach((item, index) => item.overallRank = index + 1);
 
-      // 2. 點擊表格標題的動態排序
       playerRows.sort((a, b) => {
-        // 不論正序或倒序，強制將 total 為 0 的玩家永遠沉澱在底部
         if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
         if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
 
@@ -543,7 +566,6 @@ function renderTableBody() {
         const row = item.data;
         const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
         
-        // 3. 名次顯示邏輯：total 為 0 時強制顯示 "-"
         let rankHTML = '';
         if (item.originalTotal === 0) {
           rankHTML = `<span class="rank-other">-</span>`;
