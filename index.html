@@ -462,7 +462,7 @@ function renderSkeleton() {
            if (!sheetData[1][j] || String(sheetData[1][j]).includes('Rank')) return j;
          }
        }
-       return 17;
+       return 15;
     }
 
     function formatDate(dateString) {
@@ -470,14 +470,14 @@ function renderSkeleton() {
       return isNaN(d) ? dateString : `${d.getMonth() + 1}/${d.getDate()}`;
     }
 
-    function getValidColumnsOrder(sheetData, colLimit, focusedCol) {
+function getValidColumnsOrder(sheetData, colLimit, focusedCol) {
       let cols = [];
       for (let j = 2; j < colLimit; j++) {
-        if (sheetData[1][j] !== "" && sheetData[1][j] !== undefined && j !== focusedCol) {
+        if (j !== focusedCol) {
           cols.push(j);
         }
       }
-      if (focusedCol !== null && sheetData[1][focusedCol] !== undefined) {
+      if (focusedCol !== null) {
         cols.unshift(focusedCol);
       }
       return cols;
@@ -501,13 +501,23 @@ function renderSkeleton() {
                 <th>Name</th>
                 <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}" onclick="handleSort('total')">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
       
-      colIndices.forEach(j => {
+colIndices.forEach(j => {
         const cellVal = sheetData[1][j];
-        const headerText = isOverall ? cellVal : formatDate(cellVal);
         const isFocused = (j === focusedDateCol);
         const stickyClass = isFocused ? 'focused-sticky' : '';
         
-        html += `<th data-col="${j}" class="${stickyClass}" onclick="handleSort(${j})">${headerText} <span class="sort-icon-container">${getSortIcon(j)}</span></th>`;
+        let headerText = '-';
+        let onClickAttr = '';
+        let sortIconHtml = '';
+
+        // 只有在有表頭資料時才顯示文字、允許點擊排序
+        if (cellVal !== "" && cellVal !== undefined) {
+          headerText = isOverall ? cellVal : formatDate(cellVal);
+          onClickAttr = `onclick="handleSort(${j})"`;
+          sortIconHtml = `<span class="sort-icon-container">${getSortIcon(j)}</span>`;
+        }
+        
+        html += `<th data-col="${j}" class="${stickyClass}" ${onClickAttr}>${headerText} ${sortIconHtml}</th>`;
       });
 
       html += `
@@ -580,13 +590,16 @@ function renderTableBody() {
           <td>${row[0]}</td>
           <td class="${totalClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${item.originalTotal || 0}</td>`;
         
-        colIndices.forEach(j => {
+colIndices.forEach(j => {
           const dailyScore = row[j];
-          const dailyClass = dailyScore > 0 ? 'win' : (dailyScore < 0 ? 'lose' : '');
+          const hasValue = dailyScore !== "" && dailyScore !== undefined;
+          
+          // 只有在確實有數字時才判定勝負顏色
+          const dailyClass = hasValue && dailyScore > 0 ? 'win' : (hasValue && dailyScore < 0 ? 'lose' : '');
           const isFocused = (j === focusedDateCol);
           const stickyClass = isFocused ? 'focused-sticky' : '';
           
-          tbodyHTML += `<td class="${dailyClass} ${stickyClass}">${dailyScore !== "" ? dailyScore : '-'}</td>`;
+          tbodyHTML += `<td class="${dailyClass} ${stickyClass}">${hasValue ? dailyScore : '-'}</td>`;
         });
         tbodyHTML += `</tr>`;
       });
