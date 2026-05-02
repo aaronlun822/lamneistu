@@ -159,12 +159,12 @@
       user-select: none;
     }
     @media (hover: hover) {
-  th:hover { background-color: #F2F2F7; }
-  .sheet-link-icon:hover .logo-container {
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: scale(1.05);
-  }
-}
+      th:hover { background-color: #F2F2F7; }
+      .sheet-link-icon:hover .logo-container {
+        background-color: rgba(0, 0, 0, 0.05);
+        transform: scale(1.05);
+      }
+    }
     
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
     td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: 2; }
@@ -190,15 +190,15 @@
     }
 
     @media (hover: hover) {
-    tr:hover td { 
-      background-color: #F2F2F7 !important; 
-    }
+      tr:hover td { 
+        background-color: #F2F2F7 !important; 
+      }
 
-    tr:hover td.focused-sticky { 
-      background-color: #E2EFFF !important; 
-      border-bottom: 1px solid #E5E5EA !important;
+      tr:hover td.focused-sticky { 
+        background-color: #E2EFFF !important; 
+        border-bottom: 1px solid #E5E5EA !important;
+      }
     }
-  }
 
     .total-no-shadow { 
       border-right: 1px solid #E5E5EA; 
@@ -338,7 +338,7 @@
     let sortAscending = false;
     let focusedDateCol = null;
 
-function renderSkeleton() {
+    function renderSkeleton() {
       let btnHtml = '';
       for(let i=0; i<5; i++) {
         btnHtml += `<div class="sk-btn"></div>`;
@@ -465,22 +465,77 @@ function renderSkeleton() {
        return 15;
     }
 
-    function formatDate(dateString) {
-      const d = new Date(dateString);
-      return isNaN(d) ? dateString : `${d.getMonth() + 1}/${d.getDate()}`;
-    }
-
-function getValidColumnsOrder(sheetData, colLimit, focusedCol) {
+    function getValidColumnsOrder(sheetData, colLimit, focusedCol, isOverall) {
       let cols = [];
       for (let j = 2; j < colLimit; j++) {
         if (j !== focusedCol) {
           cols.push(j);
         }
       }
+      
+      if (!isOverall) {
+        cols.sort((a, b) => {
+          const valA = sheetData[1][a];
+          const valB = sheetData[1][b];
+          
+          const hasValA = valA !== "" && valA !== undefined;
+          const hasValB = valB !== "" && valB !== undefined;
+          
+          if (hasValA && !hasValB) return -1;
+          if (!hasValA && hasValB) return 1;
+          
+          if (hasValA && hasValB) {
+            const numA = Number(valA);
+            const numB = Number(valB);
+            if (!isNaN(numA) && !isNaN(numB)) {
+              return numB - numA; 
+            }
+          }
+          return 0;
+        });
+      }
+
       if (focusedCol !== null) {
         cols.unshift(focusedCol);
       }
       return cols;
+    }
+
+    function formatHeaderDate(dayVal, sheetData, sheetName) {
+      const numDay = Number(dayVal);
+      if (isNaN(numDay)) return dayVal;
+
+      let monthStr = '';
+      const chineseMonths = {
+        '一': '1', '二': '2', '三': '3', '四': '4', '五': '5', '六': '6',
+        '七': '7', '八': '8', '九': '9', '十': '10', '十一': '11', '十二': '12'
+      };
+
+      try {
+        const f1Val = String(sheetData[0][5] || "");
+        if (f1Val) {
+          const twoChars = f1Val.substring(0, 2);
+          const firstChar = f1Val.charAt(0);
+          
+          if (chineseMonths[twoChars]) {
+            monthStr = chineseMonths[twoChars];
+          } else if (chineseMonths[firstChar]) {
+            monthStr = chineseMonths[firstChar];
+          }
+        }
+      } catch(e) {}
+
+      if (!monthStr) {
+        const digits = sheetName.match(/\d+/g);
+        if (digits && digits.length > 0) {
+          monthStr = String(Number(digits[digits.length - 1]));
+        } else {
+          monthStr = String(new Date().getMonth() + 1);
+        }
+      }
+
+      const dayDisplay = String(numDay);
+      return `${dayDisplay}/${monthStr}`;
     }
 
     function renderTableLayout() {
@@ -489,7 +544,7 @@ function getValidColumnsOrder(sheetData, colLimit, focusedCol) {
       const contentArea = document.getElementById('contentArea');
       const colLimit = getColLimit(sheetData, isOverall);
       
-      const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol);
+      const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol, isOverall);
 
       let html = `<div class="card">`;
       html += `
@@ -501,7 +556,7 @@ function getValidColumnsOrder(sheetData, colLimit, focusedCol) {
                 <th>Name</th>
                 <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}" onclick="handleSort('total')">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
       
-colIndices.forEach(j => {
+      colIndices.forEach(j => {
         const cellVal = sheetData[1][j];
         const isFocused = (j === focusedDateCol);
         const stickyClass = isFocused ? 'focused-sticky' : '';
@@ -510,9 +565,8 @@ colIndices.forEach(j => {
         let onClickAttr = '';
         let sortIconHtml = '';
 
-        // 只有在有表頭資料時才顯示文字、允許點擊排序
         if (cellVal !== "" && cellVal !== undefined) {
-          headerText = isOverall ? cellVal : formatDate(cellVal);
+          headerText = isOverall ? cellVal : formatHeaderDate(cellVal, sheetData, activeSheetName); 
           onClickAttr = `onclick="handleSort(${j})"`;
           sortIconHtml = `<span class="sort-icon-container">${getSortIcon(j)}</span>`;
         }
@@ -532,7 +586,7 @@ colIndices.forEach(j => {
       renderTableBody();
     }
 
-function renderTableBody() {
+    function renderTableBody() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
@@ -540,7 +594,7 @@ function renderTableBody() {
       const isOverall = activeSheetName === '總排名';
       const colLimit = getColLimit(sheetData, isOverall);
       
-      const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol);
+      const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol, isOverall);
 
       let playerRows = [];
       for (let i = 2; i < sheetData.length; i++) {
@@ -590,11 +644,10 @@ function renderTableBody() {
           <td>${row[0]}</td>
           <td class="${totalClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${item.originalTotal || 0}</td>`;
         
-colIndices.forEach(j => {
+        colIndices.forEach(j => {
           const dailyScore = row[j];
           const hasValue = dailyScore !== "" && dailyScore !== undefined;
           
-          // 只有在確實有數字時才判定勝負顏色
           const dailyClass = hasValue && dailyScore > 0 ? 'win' : (hasValue && dailyScore < 0 ? 'lose' : '');
           const isFocused = (j === focusedDateCol);
           const stickyClass = isFocused ? 'focused-sticky' : '';
