@@ -31,6 +31,11 @@
       margin: 0;
       padding: 0 40px; 
     }
+:root {
+  --z-sticky: 10;
+  --z-header: 20;
+  --z-modal: 1000;
+}
     
     .sheet-link-icon {
       position: absolute;
@@ -128,7 +133,7 @@
       -webkit-overflow-scrolling: touch;
     }
     table {
-      width: max-content;
+      width: 0;
       border-collapse: separate; 
       border-spacing: 0;
       white-space: nowrap;
@@ -139,6 +144,9 @@
       text-align: center;
       border-bottom: 1px solid #E5E5EA;
       width: 70px; 
+      min-width: 70px;      
+      max-width: 70px;      
+      overflow: hidden;
       box-sizing: border-box;
       background-color: #FFFFFF;
       transition: background-color 0.1s ease;
@@ -153,7 +161,7 @@
       font-size: 14px;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: var(--z-header);
       box-shadow: 0 1px 0 #E5E5EA;
       cursor: pointer;
       user-select: none;
@@ -166,15 +174,15 @@
       }
     }
     
-    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: 2; border-right: 1px solid #F2F2F7; }
-    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: 2; }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: 2; border-right: 1px solid #E5E5EA; }
-    th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: 15; }
+    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: var(--z-sticky); border-right: 1px solid #F2F2F7; }
+    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: var(--z-sticky); }
+    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: var(--z-sticky); border-right: 1px solid #E5E5EA; }
+    th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: calc(var(--z-header) + 1); }
 
     td.focused-sticky {
       position: sticky;
       left: 245px;
-      z-index: 3;
+      z-index: calc(var(--z-sticky) + 1);
       background-color: #F8FBFF;
       box-shadow: 1px 0 0 #E5E5EA; 
       border-bottom: 1px solid #E5E5EA !important;
@@ -182,7 +190,7 @@
     th.focused-sticky {
       position: sticky;
       left: 245px;
-      z-index: 16;
+      z-index: calc(var(--z-header) + 2);
       background-color: #EBF3FF;
       color: #007AFF;
       font-weight: 700;
@@ -394,9 +402,14 @@
         document.getElementById('contentArea').innerHTML = `
           <div class="error-container">
             <div>載入失敗 (${error.message})，請檢查網絡連線或稍後再試。</div>
-            <button class="sheet-btn retry-btn" onclick="fetchData()">重新載入</button>
+            <button class="sheet-btn retry-btn" id="retryBtn">重新載入</button>
           </div>
         `;
+
+const retryButton = document.getElementById('retryBtn');
+retryButton.addEventListener('click', () => {
+    fetchData();
+  });
       }
     }
 
@@ -407,7 +420,7 @@
         const btn = document.createElement('button');
         btn.className = `sheet-btn ${sheetName === activeSheetName ? 'active' : ''}`;
         btn.textContent = sheetName;
-        btn.onclick = () => {
+        btn.addEventListener('click', () => {
           if (activeSheetName !== sheetName) {
             activeSheetName = sheetName;
             currentSortCol = 'total';
@@ -416,7 +429,7 @@
             renderButtons();
             renderTableLayout();
           }
-        };
+        });
         btnContainer.appendChild(btn);
       });
     }
@@ -552,9 +565,9 @@
           <table>
             <thead id="tableHead">
               <tr>
-                <th data-col="total" onclick="handleSort('total')">Rank</th>
+                <th data-col="total">Rank</th>
                 <th>Name</th>
-                <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}" onclick="handleSort('total')">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
+                <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
       
       colIndices.forEach(j => {
         const cellVal = sheetData[1][j];
@@ -562,16 +575,14 @@
         const stickyClass = isFocused ? 'focused-sticky' : '';
         
         let headerText = '-';
-        let onClickAttr = '';
         let sortIconHtml = '';
 
         if (cellVal !== "" && cellVal !== undefined) {
           headerText = isOverall ? cellVal : formatHeaderDate(cellVal, sheetData, activeSheetName); 
-          onClickAttr = `onclick="handleSort(${j})"`;
           sortIconHtml = `<span class="sort-icon-container">${getSortIcon(j)}</span>`;
         }
         
-        html += `<th data-col="${j}" class="${stickyClass}" ${onClickAttr}>${headerText} ${sortIconHtml}</th>`;
+        html += `<th data-col="${j}" class="${stickyClass}">${headerText} ${sortIconHtml}</th>`;
       });
 
       html += `
@@ -584,6 +595,16 @@
       
       contentArea.innerHTML = html;
       renderTableBody();
+
+const sortableHeaders = document.querySelectorAll('#tableHead th[data-col]');
+sortableHeaders.forEach(th => {
+  th.addEventListener('click', () => {
+    const colValue = th.getAttribute('data-col');
+    // 因為 data-col 抓出來是字串，如果是數字需要轉換一下（或者讓 handleSort 自己處理）
+    const colIndex = colValue === 'total' ? 'total' : parseInt(colValue, 10);
+    handleSort(colIndex);
+  });
+});
     }
 
     function renderTableBody() {
