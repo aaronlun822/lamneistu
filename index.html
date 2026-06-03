@@ -351,24 +351,27 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
-    let globalData = {};
+    let globalData = {};      
+    let allSheetNames = [];   
     let activeSheetName = '';
     let currentSortCol = 'total';
     let sortAscending = false;
     let focusedDateCol = null;
 
-    function renderSkeleton() {
-      let btnHtml = '';
-      for(let i=0; i<5; i++) {
-        btnHtml += `<div class="sk-btn"></div>`;
+    function renderSkeleton(isFirstLoad = true) {
+      if (isFirstLoad) {
+        let btnHtml = '';
+        for(let i=0; i<5; i++) {
+          btnHtml += `<div class="sk-btn"></div>`;
+        }
+        document.getElementById('sheetButtons').innerHTML = btnHtml;
       }
-      document.getElementById('sheetButtons').innerHTML = btnHtml;
 
       let html = '<div class="card">';
       html += '<div class="table-container">';
       html += '<table>';
       
-      html += '<thead><tr>';
+      html += '<thead id="tableHead"><tr>';
       html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
       html += '<th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>';
       html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
@@ -394,15 +397,18 @@
     }
 
     async function fetchData() {
-      renderSkeleton();
+      renderSkeleton(true); 
       try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error('網絡連線異常');
         
-        globalData = await response.json();
-        const sheetNames = Object.keys(globalData);
-        if (sheetNames.length > 0) {
-          activeSheetName = sheetNames[0]; 
+        const resData = await response.json();
+        
+        if (resData.sheetNames && resData.sheetNames.length > 0) {
+          allSheetNames = resData.sheetNames;
+          activeSheetName = resData.firstSheetName; 
+          globalData[activeSheetName] = resData.firstSheetData; 
+          
           renderButtons();
           renderTableLayout();
         } else {
@@ -416,33 +422,65 @@
             <button class="sheet-btn retry-btn" id="retryBtn">重新載入</button>
           </div>
         `;
-
-const retryButton = document.getElementById('retryBtn');
-retryButton.addEventListener('click', () => {
-    fetchData();
-  });
+        const retryButton = document.getElementById('retryBtn');
+        if (retryButton) {
+          retryButton.addEventListener('click', () => {
+            fetchData();
+          });
+        }
       }
     }
 
     function renderButtons() {
       const btnContainer = document.getElementById('sheetButtons');
       btnContainer.innerHTML = '';
-      Object.keys(globalData).forEach(sheetName => {
+      allSheetNames.forEach(sheetName => {
         const btn = document.createElement('button');
         btn.className = `sheet-btn ${sheetName === activeSheetName ? 'active' : ''}`;
         btn.textContent = sheetName;
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           if (activeSheetName !== sheetName) {
             activeSheetName = sheetName;
             currentSortCol = 'total';
             sortAscending = false;
             focusedDateCol = null; 
             renderButtons();
-            renderTableLayout();
+            
+            if (!globalData[sheetName]) {
+              await fetchSingleSheetData(sheetName);
+            } else {
+              renderTableLayout();
+            }
           }
         });
         btnContainer.appendChild(btn);
       });
+    }
+
+    async function fetchSingleSheetData(sheetName) {
+      renderSkeleton(false); 
+      
+      try {
+        const response = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`);
+        if (!response.ok) throw new Error('連線失敗');
+        const data = await response.json();
+        
+        globalData[sheetName] = data; 
+        renderTableLayout();
+      } catch (error) {
+        document.getElementById('contentArea').innerHTML = `
+          <div class="error-container">
+            <div>分頁【${sheetName}】資料載入失敗 (${error.message})</div>
+            <button class="sheet-btn retry-btn" id="subRetryBtn">重試</button>
+          </div>
+        `;
+        const subRetryBtn = document.getElementById('subRetryBtn');
+        if (subRetryBtn) {
+          subRetryBtn.addEventListener('click', () => {
+            fetchSingleSheetData(sheetName);
+          });
+        }
+      }
     }
 
     window.handleSort = function(colIndex) {
@@ -607,15 +645,14 @@ retryButton.addEventListener('click', () => {
       contentArea.innerHTML = html;
       renderTableBody();
 
-const sortableHeaders = document.querySelectorAll('#tableHead th[data-col]');
-sortableHeaders.forEach(th => {
-  th.addEventListener('click', () => {
-    const colValue = th.getAttribute('data-col');
-    // 因為 data-col 抓出來是字串，如果是數字需要轉換一下（或者讓 handleSort 自己處理）
-    const colIndex = colValue === 'total' ? 'total' : parseInt(colValue, 10);
-    handleSort(colIndex);
-  });
-});
+      const sortableHeaders = document.querySelectorAll('#tableHead th[data-col]');
+      sortableHeaders.forEach(th => {
+        th.addEventListener('click', () => {
+          const colValue = th.getAttribute('data-col');
+          const colIndex = colValue === 'total' ? 'total' : parseInt(colValue, 10);
+          handleSort(colIndex);
+        });
+      });
     }
 
     function renderTableBody() {
