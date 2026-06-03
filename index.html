@@ -349,7 +349,7 @@
     <div id="contentArea"></div>
   </div>
 
-  <script>
+<script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
     let globalData = {};      
     let allSheetNames = [];   
@@ -357,6 +357,8 @@
     let currentSortCol = 'total';
     let sortAscending = false;
     let focusedDateCol = null;
+
+    let fetchPromises = {}; 
 
     function renderSkeleton(isFirstLoad = true) {
       if (isFirstLoad) {
@@ -411,6 +413,9 @@
           
           renderButtons();
           renderTableLayout();
+
+          preloadRemainingSheets();
+          
         } else {
           throw new Error('未獲取到資料');
         }
@@ -428,6 +433,29 @@
             fetchData();
           });
         }
+      }
+    }
+
+    async function preloadRemainingSheets() {
+      for (const sheetName of allSheetNames) {
+        if (globalData[sheetName] || fetchPromises[sheetName]) continue;
+
+        try {
+          fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`)
+            .then(res => {
+              if (!res.ok) throw new Error('背景連線失敗');
+              return res.json();
+            });
+
+          const data = await fetchPromises[sheetName];
+          globalData[sheetName] = data;
+          
+        } catch (error) {
+          console.error(`背景預載分頁【${sheetName}】失敗:`, error);
+          delete fetchPromises[sheetName]; 
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 300));
       }
     }
 
@@ -458,27 +486,44 @@
     }
 
     async function fetchSingleSheetData(sheetName) {
+      if (globalData[sheetName]) {
+        renderTableLayout();
+        return;
+      }
+
       renderSkeleton(false); 
       
       try {
-        const response = await fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`);
-        if (!response.ok) throw new Error('連線失敗');
-        const data = await response.json();
-        
+        if (!fetchPromises[sheetName]) {
+          fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`)
+            .then(res => {
+              if (!res.ok) throw new Error('連線失敗');
+              return res.json();
+            });
+        }
+
+        const data = await fetchPromises[sheetName];
         globalData[sheetName] = data; 
-        renderTableLayout();
+        
+        if (activeSheetName === sheetName) {
+          renderTableLayout();
+        }
       } catch (error) {
-        document.getElementById('contentArea').innerHTML = `
-          <div class="error-container">
-            <div>分頁【${sheetName}】資料載入失敗 (${error.message})</div>
-            <button class="sheet-btn retry-btn" id="subRetryBtn">重試</button>
-          </div>
-        `;
-        const subRetryBtn = document.getElementById('subRetryBtn');
-        if (subRetryBtn) {
-          subRetryBtn.addEventListener('click', () => {
-            fetchSingleSheetData(sheetName);
-          });
+        delete fetchPromises[sheetName];
+        
+        if (activeSheetName === sheetName) {
+          document.getElementById('contentArea').innerHTML = `
+            <div class="error-container">
+              <div>分頁【${sheetName}】資料載入失敗 (${error.message})</div>
+              <button class="sheet-btn retry-btn" id="subRetryBtn">重試</button>
+            </div>
+          `;
+          const subRetryBtn = document.getElementById('subRetryBtn');
+          if (subRetryBtn) {
+            subRetryBtn.addEventListener('click', () => {
+              fetchSingleSheetData(sheetName);
+            });
+          }
         }
       }
     }
