@@ -437,26 +437,30 @@
     }
 
     async function preloadRemainingSheets() {
-      for (const sheetName of allSheetNames) {
-        if (globalData[sheetName] || fetchPromises[sheetName]) continue;
-
-        try {
-          fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`)
-            .then(res => {
-              if (!res.ok) throw new Error('背景連線失敗');
-              return res.json();
-            });
-
-          const data = await fetchPromises[sheetName];
-          globalData[sheetName] = data;
-          
-        } catch (error) {
-          console.error(`背景預載分頁【${sheetName}】失敗:`, error);
-          delete fetchPromises[sheetName]; 
+      const loadPromises = allSheetNames.map(sheetName => {
+        if (globalData[sheetName] || fetchPromises[sheetName]) {
+          return Promise.resolve(); 
         }
 
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
+        const fetchPromise = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`)
+          .then(res => {
+            if (!res.ok) throw new Error('背景連線失敗');
+            return res.json();
+          });
+
+        fetchPromises[sheetName] = fetchPromise;
+
+        return fetchPromise
+          .then(data => {
+            globalData[sheetName] = data;
+          })
+          .catch(error => {
+            console.error(`背景預載分頁【${sheetName}】失敗:`, error);
+            delete fetchPromises[sheetName];
+          });
+      });
+
+      await Promise.all(loadPromises);
     }
 
     function renderButtons() {
