@@ -704,7 +704,7 @@
       });
     }
 
-    function renderTableBody() {
+function renderTableBody() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
@@ -741,7 +741,6 @@
         return b.originalTotal - a.originalTotal;
       });
 
-
       let actualRank = 1;
       let displayRank = 1;
       let prevScore = null;
@@ -752,12 +751,7 @@
           return;
         }
 
-        let currentScore;
-        if (currentSortCol === 'total') {
-          currentScore = item.originalTotal;
-        } else {
-          currentScore = item.data[currentSortCol] === "" || item.data[currentSortCol] === undefined ? -Infinity : (Number(item.data[currentSortCol]) || 0);
-        }
+        let currentScore = item.originalTotal; 
 
         if (currentScore !== prevScore) {
           displayRank = actualRank;
@@ -777,11 +771,11 @@
           valA = a.originalTotal; 
           valB = b.originalTotal;
         } else {
+
           valA = a.data[currentSortCol] === "" || a.data[currentSortCol] === undefined ? -Infinity : (Number(a.data[currentSortCol]) || 0);
           valB = b.data[currentSortCol] === "" || b.data[currentSortCol] === undefined ? -Infinity : (Number(b.data[currentSortCol]) || 0);
         }
         
-
         if (valA === valB) {
           return 0;
         }
