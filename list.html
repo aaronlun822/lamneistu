@@ -1256,7 +1256,16 @@ function showInfo(name, fan) {
   
   document.getElementById('drawerTitle').innerText = name;
   const fanElement = document.getElementById('drawerFan');
-  fanElement.innerText = fan;
+  
+  if (fan === "-") {
+    
+    fanElement.style.display = 'none';
+  } else {
+    
+    fanElement.style.display = 'inline-block';
+    fanElement.innerText = fan;
+  }
+  
   document.getElementById('drawerDefinition').innerText = data.def;
 
   const spElement = document.getElementById('drawerSP');
