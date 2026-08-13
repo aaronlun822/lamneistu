@@ -219,6 +219,17 @@
       font-size: 15px;
     }
 
+    #drawerFan {
+  font-size: 13px;
+  color: #FFFFFF;
+  background-color: #FF9500;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-weight: 700;
+  margin-left: 8px;
+  display: inline-block;
+}
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -685,6 +696,7 @@
     <div class="drawer-header">
       <div style="display: flex; align-items: center;">
         <span id="drawerTitle">項目名稱</span>
+        <span id="drawerFan"></span>
         <span id="drawerSP"></span>
       </div>
       <button onclick="closeDrawer()" class="close-btn">✕</button>
@@ -1152,7 +1164,7 @@ const noteData = {
     "ex": "3m 4m-hl 5m  4m-hl 5m 6m  4t-hl 5t 6t  3s 4s-hl 5s  south south south  4t-hl 4t-hl"
   },
   "全帶X": {
-    "def": "沒有番子,所有順子、刻子、槓子、及眼均含有一樣數字的牌",
+    "def": "沒有番子，所有順子、刻子、槓子、及眼均含有一樣數字的牌",
     "sp": "",
     "ex": "2s 3s 4s-hl  3s 4s-hl 5s  4s-hl 5s 6s  4t-hl 5t 6t  3m 4m-hl 5m  4t-hl 4t-hl"
   },
@@ -1227,11 +1239,13 @@ function renderTiles(exString) {
   }).join('');
 }
 
-function showInfo(name) {
+function showInfo(name, fan) {
   const data = noteData[name];
   if (!data) return;
   
   document.getElementById('drawerTitle').innerText = name;
+  const fanElement = document.getElementById('drawerFan');
+  fanElement.innerText = fan;
   document.getElementById('drawerDefinition').innerText = data.def;
 
   const spElement = document.getElementById('drawerSP');
@@ -1292,13 +1306,18 @@ function toggleCollapse(btn) {
 document.addEventListener('DOMContentLoaded', () => {
   preloadTiles();
 
-  document.querySelectorAll('td:first-child').forEach(td => {
-    const itemName = td.innerText.trim();
-    if (noteData[itemName]) {
-      td.classList.add('clickable-item');
-      td.onclick = () => showInfo(itemName);
-    }
-  });
+document.querySelectorAll('td:first-child').forEach(td => {
+  const itemName = td.innerText.trim();
+
+  if (noteData[itemName]) {
+    td.classList.add('clickable-item');
+
+    td.onclick = () => {
+      const fan = td.parentElement.cells[1].innerText.trim();
+      showInfo(itemName, fan);
+    };
+  }
+});
 });
 </script>
 </body>
