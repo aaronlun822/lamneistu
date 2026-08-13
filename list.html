@@ -51,13 +51,11 @@
       transform: translateY(0); 
     }
 
-    /* --- 懸浮 PDF 按鈕樣式 --- */
     .fab-container {
       position: fixed;
-      /* 使用 env(safe-area-inset-bottom) 避免被 iPhone 底部的橫條遮擋 */
       bottom: max(20px, env(safe-area-inset-bottom));
       right: 20px;
-      z-index: 990; /* 設在 990，確保在 Drawer (1000) 之下，但在卡片之上 */
+      z-index: 990;
     }
 
     .fab-button {
@@ -68,20 +66,16 @@
       height: 48px;
       border-radius: 50%;
       background-color: rgba(255, 255, 255, 0.75);
-      /* 毛玻璃效果 */
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
-      /* 邊框與陰影增加立體感與精緻度 */
       border: 1px solid rgba(0, 0, 0, 0.05);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
       color: #1C1C1E;
       text-decoration: none;
       transition: all 0.2s ease-out;
-      /* 避免長按選取 */
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* 滑鼠懸停時的微互動效果（主要針對電腦版） */
     @media (hover: hover) {
       .fab-button:hover {
         transform: scale(1.05) translateY(-2px);
@@ -408,7 +402,7 @@
               <div class="table-wrapper">
                 <table>
                   <tbody>
-                    <tr><td>天叮</td><td>40</td></tr>
+                    <tr><td>天叮</td><td>60</td></tr>
                     <tr><td>地叮</td><td>40</td></tr>
                     <tr><td>花上自摸</td><td>3</td></tr>
                     <tr><td>槓上自摸</td><td>5</td></tr>
@@ -812,13 +806,11 @@ const noteData = {
     "ex": ""
   },
   "天叮": {
-    "def": "莊家限定，莊家在第一次摸牌或之前聽牌，不再計門清",
-    "sp": "莊家限定",
+    "def": "在第一次摸牌前聽牌，不再計門清",
     "ex": ""
   },
   "地叮": {
-    "def": "閒家限定，閒家在第一次摸牌或之前聽牌，不再計門清",
-    "sp": "閒家限定",
+    "def": "在第一次摸牌後立即聽牌，不再計門清",
     "ex": ""
   },
   "花上自摸": {
