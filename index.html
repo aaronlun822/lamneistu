@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lam Nei Studio</title>
   <style>
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: #F2F2F7;
@@ -79,60 +84,132 @@
       background-color: rgba(0, 0, 0, 0.05);
       transform: scale(1.05);
     }
-    
-    .button-group {
-      display: flex;
-      overflow-x: auto;
-      gap: 12px;
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 0 0 20px 0;
       margin-bottom: 24px;
-      padding-bottom: 8px;
-      -ms-overflow-style: none; 
-      scrollbar-width: none; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      overflow: hidden;
     }
-    
-    .button-group::-webkit-scrollbar { 
+
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 20px 16px 20px;
+      background: #FFFFFF;
+    }
+
+.month-dropdown {
+      font-size: 22px;
+      font-weight: 700;
+      border: none;
+      background-color: transparent;
+      color: #1C1C1E;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      padding: 8px 36px 8px 12px; 
+      margin-left: -12px; 
+      border-radius: 12px; 
+      background-image: url('data:image/svg+xml;utf8,<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L8 8L14 2" stroke="%238E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      font-family: inherit;
+      transition: background-color 0.2s ease;
+    }
+
+    .month-dropdown:hover {
+      background-color: #F2F2F7;
+    }
+
+    .month-dropdown:active, .month-dropdown:focus {
+      background-color: #E5E5EA;
+    }
+
+    .custom-dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px); 
+      left: 0;
+      background: #FFFFFF;
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1);
+      min-width: 160px;
+      z-index: 1000;
+      overflow: hidden;
       display: none; 
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
-    
-    .sheet-btn {
-      padding: 0 10px;
-      width: 110px;
-      border-radius: 20px;
+
+    .custom-dropdown-menu.show {
+      display: block;
+      animation: fadeInDown 0.2s forwards;
+    }
+
+    @keyframes fadeInDown {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .custom-dropdown-item {
+      padding: 12px 16px;
+      font-size: 16px;
+      color: #1C1C1E;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FFFFFF;
+      transition: background-color 0.15s ease;
+      border-bottom: 1px solid #E5E5EA; 
+    }
+
+    .custom-dropdown-item:last-child {
+      border-bottom: none; 
+    }
+
+    @media (hover: hover) {
+      .custom-dropdown-item:hover {
+        background: #F2F2F7;
+      }
+    }
+
+    .custom-dropdown-item:active {
+      background: #E5E5EA;
+    }
+
+    .custom-dropdown-item.selected {
+      color: #007AFF;
+      font-weight: 600;
+    }
+
+    .overall-btn {
+      padding: 0 16px;
+      height: 36px;
+      border-radius: 18px;
       background-color: #E5E5EA;
       color: #1C1C1E;
       border: none;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       transition: all 0.2s ease;
-      height: 38px;
-      box-sizing: border-box;
       flex-shrink: 0;
     }
-    
-    .sheet-btn.active {
+
+    .overall-btn.active {
       background-color: #007AFF;
       color: #FFFFFF;
       box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
-    }
-
-    .card {
-      background: #FFFFFF;
-      border-radius: 16px;
-      padding: 20px 0;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      overflow: hidden;
-    }
-    
-    .card h2 {
-      margin-top: 0;
-      font-size: 20px;
-      margin-bottom: 16px;
-      padding: 0 20px;
     }
     
     .table-container {
@@ -179,10 +256,6 @@
     }
     @media (hover: hover) {
       th:hover { background-color: #F2F2F7; }
-      .sheet-link-icon:hover .logo-container {
-        background-color: rgba(0, 0, 0, 0.05);
-        transform: scale(1.05);
-      }
     }
     
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: var(--z-sticky); border-right: 1px solid #F2F2F7; }
@@ -248,15 +321,6 @@
       animation: sk-pulse 1.5s infinite ease-in-out;
       margin-bottom: 12px;
     }
-    
-    .sk-btn {
-      height: 38px;
-      width: 110px;
-      border-radius: 20px;
-      background: #E5E5EA;
-      animation: sk-pulse 1.5s infinite ease-in-out;
-      flex-shrink: 0;
-    }
 
     @keyframes sk-pulse {
       0% { opacity: 0.5; }
@@ -271,8 +335,15 @@
     }
     .retry-btn {
       margin-top: 16px;
+      padding: 0 20px;
+      height: 38px;
+      border-radius: 20px;
       background-color: #007AFF;
       color: #FFFFFF;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
     }
     .retry-btn:hover {
       background-color: #0056b3;
@@ -343,10 +414,11 @@
         </div>
       </a>
     </div>
-    
-    <div id="sheetButtons" class="button-group"></div>
 
-    <div id="contentArea"></div>
+    <div class="card">
+      <div id="controlsArea" class="table-controls"></div>
+      <div id="contentArea"></div>
+    </div>
   </div>
 
 <script>
@@ -362,15 +434,13 @@
 
     function renderSkeleton(isFirstLoad = true) {
       if (isFirstLoad) {
-        let btnHtml = '';
-        for(let i=0; i<5; i++) {
-          btnHtml += `<div class="sk-btn"></div>`;
-        }
-        document.getElementById('sheetButtons').innerHTML = btnHtml;
+        document.getElementById('controlsArea').innerHTML = `
+          <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
+          <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>
+        `;
       }
 
-      let html = '<div class="card">';
-      html += '<div class="table-container">';
+      let html = '<div class="table-container">';
       html += '<table>';
       
       html += '<thead id="tableHead"><tr>';
@@ -393,7 +463,7 @@
         }
         html += '</tr>';
       }
-      html += '</tbody></table></div></div>';
+      html += '</tbody></table></div>';
 
       document.getElementById('contentArea').innerHTML = html;
     }
@@ -411,7 +481,7 @@
           activeSheetName = resData.firstSheetName; 
           globalData[activeSheetName] = resData.firstSheetData; 
           
-          renderButtons();
+          renderControls();
           renderTableLayout();
 
           preloadRemainingSheets();
@@ -420,11 +490,11 @@
           throw new Error('未獲取到資料');
         }
       } catch (error) {
-        document.getElementById('sheetButtons').innerHTML = '';
+        document.getElementById('controlsArea').innerHTML = '';
         document.getElementById('contentArea').innerHTML = `
           <div class="error-container">
             <div>載入失敗 (${error.message})，請檢查網絡連線或稍後再試。</div>
-            <button class="sheet-btn retry-btn" id="retryBtn">重新載入</button>
+            <button class="retry-btn" id="retryBtn">重新載入</button>
           </div>
         `;
         const retryButton = document.getElementById('retryBtn');
@@ -463,38 +533,73 @@
       await Promise.all(loadPromises);
     }
 
-    function renderButtons() {
-      const btnContainer = document.getElementById('sheetButtons');
-      btnContainer.innerHTML = '';
-      allSheetNames.forEach(sheetName => {
-        const btn = document.createElement('button');
-        btn.className = `sheet-btn ${sheetName === activeSheetName ? 'active' : ''}`;
-        btn.textContent = sheetName;
-        btn.addEventListener('click', async () => {
-          if (activeSheetName !== sheetName) {
-            activeSheetName = sheetName;
-            currentSortCol = 'total';
-            sortAscending = false;
-            focusedDateCol = null; 
-            renderButtons();
-            
-            if (!globalData[sheetName]) {
-              await fetchSingleSheetData(sheetName);
-            } else {
-              renderTableLayout();
-            }
+function renderControls() {
+      const controlsArea = document.getElementById('controlsArea');
+      const isOverall = activeSheetName === '總排名';
+      const months = allSheetNames.filter(name => name !== '總排名');
+      
+      let menuHtml = '';
+      months.forEach(m => {
+        const isSelected = m === activeSheetName;
+        const checkIcon = isSelected ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : '';
+        menuHtml += `<div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" data-value="${m}">
+                       <span>${m}</span>
+                       ${checkIcon}
+                     </div>`;
+      });
+
+      controlsArea.innerHTML = `
+        <div class="custom-dropdown-container" id="dropdownContainer">
+          <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
+          <div id="monthSelectorMenu" class="custom-dropdown-menu">
+            ${menuHtml}
+          </div>
+        </div>
+        <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
+      `;
+
+      const triggerBtn = document.getElementById('monthSelectorTrigger');
+      const menu = document.getElementById('monthSelectorMenu');
+      const dropdownContainer = document.getElementById('dropdownContainer');
+
+      triggerBtn.addEventListener('click', (e) => {
+        menu.classList.toggle('show');
+        e.stopPropagation(); 
+      });
+
+      const items = menu.querySelectorAll('.custom-dropdown-item');
+      items.forEach(item => {
+        item.addEventListener('click', async (e) => {
+          const selectedValue = e.currentTarget.getAttribute('data-value');
+          menu.classList.remove('show'); 
+          if (activeSheetName !== selectedValue) {
+            await switchSheet(selectedValue);
           }
         });
-        btnContainer.appendChild(btn);
+      });
+
+      document.getElementById('overallBtn').addEventListener('click', async () => {
+        if (activeSheetName !== '總排名') {
+          await switchSheet('總排名');
+        }
       });
     }
 
-    async function fetchSingleSheetData(sheetName) {
-      if (globalData[sheetName]) {
+    async function switchSheet(sheetName) {
+      activeSheetName = sheetName;
+      currentSortCol = 'total';
+      sortAscending = false;
+      focusedDateCol = null; 
+      renderControls();
+      
+      if (!globalData[sheetName]) {
+        await fetchSingleSheetData(sheetName);
+      } else {
         renderTableLayout();
-        return;
       }
+    }
 
+    async function fetchSingleSheetData(sheetName) {
       renderSkeleton(false); 
       
       try {
@@ -519,7 +624,7 @@
           document.getElementById('contentArea').innerHTML = `
             <div class="error-container">
               <div>分頁【${sheetName}】資料載入失敗 (${error.message})</div>
-              <button class="sheet-btn retry-btn" id="subRetryBtn">重試</button>
+              <button class="retry-btn" id="subRetryBtn">重試</button>
             </div>
           `;
           const subRetryBtn = document.getElementById('subRetryBtn');
@@ -657,13 +762,12 @@
       
       const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol, isOverall);
 
-      let html = `<div class="card">`;
-      html += `
+      let html = `
         <div class="table-container">
           <table>
             <thead id="tableHead">
               <tr>
-                <th data-col="total">Rank</th>
+                <th>Rank</th>
                 <th>Name</th>
                 <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
       
@@ -688,8 +792,7 @@
             </thead>
             <tbody id="tableBody"></tbody>
           </table>
-        </div>
-      </div>`;
+        </div>`;
       
       contentArea.innerHTML = html;
       renderTableBody();
@@ -704,7 +807,7 @@
       });
     }
 
-function renderTableBody() {
+    function renderTableBody() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
@@ -771,7 +874,6 @@ function renderTableBody() {
           valA = a.originalTotal; 
           valB = b.originalTotal;
         } else {
-
           valA = a.data[currentSortCol] === "" || a.data[currentSortCol] === undefined ? -Infinity : (Number(a.data[currentSortCol]) || 0);
           valB = b.data[currentSortCol] === "" || b.data[currentSortCol] === undefined ? -Infinity : (Number(b.data[currentSortCol]) || 0);
         }
@@ -816,6 +918,14 @@ function renderTableBody() {
       
       tbody.innerHTML = tbodyHTML;
     }
+
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('monthSelectorMenu');
+      const container = document.getElementById('dropdownContainer');
+      if (menu && container && !container.contains(e.target)) {
+        menu.classList.remove('show');
+      }
+    });
 
     fetchData();
   </script>
