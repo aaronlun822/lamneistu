@@ -818,18 +818,18 @@ function renderControls() {
       const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol, isOverall);
 
       let playerRows = [];
+      
       for (let i = 2; i < sheetData.length; i++) {
         if (sheetData[i][0]) {
           const rowData = sheetData[i];
           let hasParticipated = false;
-          
           for (let j = 2; j < colLimit; j++) {
-            if (rowData[j] !== "" && rowData[j] !== undefined) {
+            const val = rowData[j];
+            if (val !== "" && val !== undefined && val !== "-" && val.toString().trim() !== "") {
               hasParticipated = true;
               break;
             }
-          }
-          
+          }    
           playerRows.push({ 
             data: rowData, 
             originalTotal: Number(rowData[1]) || 0,
