@@ -704,7 +704,7 @@
       });
     }
 
-    function renderTableBody() {
+function renderTableBody() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
@@ -717,29 +717,68 @@
       let playerRows = [];
       for (let i = 2; i < sheetData.length; i++) {
         if (sheetData[i][0]) {
-          playerRows.push({ data: sheetData[i], originalTotal: Number(sheetData[i][1]) || 0 });
+          const rowData = sheetData[i];
+          let hasParticipated = false;
+          
+          for (let j = 2; j < colLimit; j++) {
+            if (rowData[j] !== "" && rowData[j] !== undefined) {
+              hasParticipated = true;
+              break;
+            }
+          }
+          
+          playerRows.push({ 
+            data: rowData, 
+            originalTotal: Number(rowData[1]) || 0,
+            hasParticipated: hasParticipated
+          });
         }
       }
 
       playerRows.sort((a, b) => {
-        if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
-        if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
+        if (!a.hasParticipated && b.hasParticipated) return 1;
+        if (a.hasParticipated && !b.hasParticipated) return -1;
         return b.originalTotal - a.originalTotal;
       });
-      playerRows.forEach((item, index) => item.overallRank = index + 1);
+
+      let actualRank = 1;
+      let displayRank = 1;
+      let prevScore = null;
+
+      playerRows.forEach((item) => {
+        if (!item.hasParticipated) {
+          item.overallRank = '-';
+          return;
+        }
+
+        let currentScore = item.originalTotal; 
+
+        if (currentScore !== prevScore) {
+          displayRank = actualRank;
+          prevScore = currentScore;
+        }
+        
+        item.overallRank = displayRank;
+        actualRank++;
+      });
 
       playerRows.sort((a, b) => {
-        if (a.originalTotal === 0 && b.originalTotal !== 0) return 1;
-        if (a.originalTotal !== 0 && b.originalTotal === 0) return -1;
+        if (!a.hasParticipated && b.hasParticipated) return 1;
+        if (a.hasParticipated && !b.hasParticipated) return -1;
 
         let valA, valB;
         if (currentSortCol === 'total') {
-          valA = a.originalTotal; valB = b.originalTotal;
+          valA = a.originalTotal; 
+          valB = b.originalTotal;
         } else {
-          valA = a.data[currentSortCol] === "" ? -Infinity : (Number(a.data[currentSortCol]) || 0);
-          valB = b.data[currentSortCol] === "" ? -Infinity : (Number(b.data[currentSortCol]) || 0);
+
+          valA = a.data[currentSortCol] === "" || a.data[currentSortCol] === undefined ? -Infinity : (Number(a.data[currentSortCol]) || 0);
+          valB = b.data[currentSortCol] === "" || b.data[currentSortCol] === undefined ? -Infinity : (Number(b.data[currentSortCol]) || 0);
         }
-        if (valA === valB) return a.overallRank - b.overallRank;
+        
+        if (valA === valB) {
+          return 0;
+        }
         return sortAscending ? valA - valB : valB - valA; 
       });
 
@@ -749,7 +788,7 @@
         const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
         
         let rankHTML = '';
-        if (item.originalTotal === 0) {
+        if (!item.hasParticipated) {
           rankHTML = `<span class="rank-other">-</span>`;
         } else {
           rankHTML = (item.overallRank <= 3) 
