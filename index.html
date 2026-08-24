@@ -5,307 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lam Nei Studio</title>
   <style>
-    * {
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #F2F2F7;
-      margin: 0;
-      padding: 20px 16px;
-      color: #1C1C1E;
-    }
+    * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #F2F2F7; margin: 0; padding: 20px 16px; color: #1C1C1E; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header-wrapper { position: relative; margin-bottom: 24px; display: flex; justify-content: center; align-items: center; }
+    h1 { font-size: 28px; font-weight: 700; text-align: center; margin: 0; padding: 0 40px; }
     
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    :root { --z-sticky: 10; --z-header: 20; --z-modal: 1000; }
     
-    .header-wrapper {
-      position: relative;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+    .sheet-link-icon { position: absolute; top: 50%; right: 0; transform: translateY(-50%); text-decoration: none; cursor: pointer; }
+    .sheet-link-icon[style*="left: 0"] { left: 0; right: auto; }
     
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      text-align: center;
-      margin: 0;
-      padding: 0 40px; 
-    }
+    .logo-container { width: 36px; height: 36px; background-color: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; overflow: hidden; position: relative; }
+    .logo-container img { max-width: 75%; max-height: 75%; display: block; transition: all 0.2s ease; }
+    .sheet-link-icon:hover .logo-container { background-color: rgba(0, 0, 0, 0.05); transform: scale(1.05); }
+
+    .card { background: #FFFFFF; border-radius: 16px; padding: 0 0 20px 0; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); overflow: hidden; }
+    .table-controls { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 16px 20px; background: #FFFFFF; }
+
+    .month-dropdown { font-size: 22px; font-weight: 700; border: none; background-color: transparent; color: #1C1C1E; outline: none; cursor: pointer; appearance: none; padding: 8px 36px 8px 12px; margin-left: -12px; border-radius: 12px; background-image: url('data:image/svg+xml;utf8,<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L8 8L14 2" stroke="%238E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; font-family: inherit; transition: background-color 0.2s ease; }
+    .month-dropdown:hover { background-color: #F2F2F7; }
+    .month-dropdown:active, .month-dropdown:focus { background-color: #E5E5EA; }
+
+    .custom-dropdown-container { position: relative; display: inline-block; }
+    .custom-dropdown-menu { position: absolute; top: calc(100% + 4px); left: 0; background: #FFFFFF; border-radius: 14px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1); min-width: 160px; z-index: var(--z-modal); overflow: hidden; display: none; opacity: 0; transform: translateY(-5px); transition: opacity 0.2s ease, transform 0.2s ease; }
+    .custom-dropdown-menu.show { display: block; animation: fadeInDown 0.2s forwards; }
     
-    :root {
-      --z-sticky: 10;
-      --z-header: 20;
-      --z-modal: 1000;
-    }
+    @keyframes fadeInDown { to { opacity: 1; transform: translateY(0); } }
+
+    .custom-dropdown-item { padding: 12px 16px; font-size: 16px; color: #1C1C1E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #FFFFFF; transition: background-color 0.15s ease; border-bottom: 1px solid #E5E5EA; }
+    .custom-dropdown-item:last-child { border-bottom: none; }
+    @media (hover: hover) { .custom-dropdown-item:hover { background: #F2F2F7; } }
+    .custom-dropdown-item:active { background: #E5E5EA; }
+    .custom-dropdown-item.selected { color: #007AFF; font-weight: 600; }
+
+    .overall-btn { padding: 0 16px; height: 36px; border-radius: 18px; background-color: #E5E5EA; color: #1C1C1E; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
+    .overall-btn.active { background-color: #007AFF; color: #FFFFFF; box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); }
     
-    .sheet-link-icon {
-      position: absolute;
-      top: 50%;
-      right: 0; 
-      transform: translateY(-50%);
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .logo-container {
-      width: 36px;
-      height: 36px;
-      background-color: transparent;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .logo-container img {
-      max-width: 100%;
-      max-height: 100%;
-      display: block;
-      transition: all 0.2s ease;
-    }
-
-    .doc-logo img,
-    .sheets-logo img {
-      width: 75%;
-      height: 75%;
-    }
-
-    .sheet-link-icon:hover .logo-container {
-      background-color: rgba(0, 0, 0, 0.05);
-      transform: scale(1.05);
-    }
-
-    .card {
-      background: #FFFFFF;
-      border-radius: 16px;
-      padding: 0 0 20px 0;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      overflow: hidden;
-    }
-
-    .table-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 20px 16px 20px;
-      background: #FFFFFF;
-    }
-
-.month-dropdown {
-      font-size: 22px;
-      font-weight: 700;
-      border: none;
-      background-color: transparent;
-      color: #1C1C1E;
-      outline: none;
-      cursor: pointer;
-      -webkit-appearance: none;
-      appearance: none;
-      padding: 8px 36px 8px 12px; 
-      margin-left: -12px; 
-      border-radius: 12px; 
-      background-image: url('data:image/svg+xml;utf8,<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L8 8L14 2" stroke="%238E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-      font-family: inherit;
-      transition: background-color 0.2s ease;
-    }
-
-    .month-dropdown:hover {
-      background-color: #F2F2F7;
-    }
-
-    .month-dropdown:active, .month-dropdown:focus {
-      background-color: #E5E5EA;
-    }
-
-    .custom-dropdown-container {
-      position: relative;
-      display: inline-block;
-    }
-
-    .custom-dropdown-menu {
-      position: absolute;
-      top: calc(100% + 4px); 
-      left: 0;
-      background: #FFFFFF;
-      border-radius: 14px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1);
-      min-width: 160px;
-      z-index: 1000;
-      overflow: hidden;
-      display: none; 
-      opacity: 0;
-      transform: translateY(-5px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    .custom-dropdown-menu.show {
-      display: block;
-      animation: fadeInDown 0.2s forwards;
-    }
-
-    @keyframes fadeInDown {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .custom-dropdown-item {
-      padding: 12px 16px;
-      font-size: 16px;
-      color: #1C1C1E;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #FFFFFF;
-      transition: background-color 0.15s ease;
-      border-bottom: 1px solid #E5E5EA; 
-    }
-
-    .custom-dropdown-item:last-child {
-      border-bottom: none; 
-    }
-
-    @media (hover: hover) {
-      .custom-dropdown-item:hover {
-        background: #F2F2F7;
-      }
-    }
-
-    .custom-dropdown-item:active {
-      background: #E5E5EA;
-    }
-
-    .custom-dropdown-item.selected {
-      color: #007AFF;
-      font-weight: 600;
-    }
-
-    .overall-btn {
-      padding: 0 16px;
-      height: 36px;
-      border-radius: 18px;
-      background-color: #E5E5EA;
-      color: #1C1C1E;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
-
-    .overall-btn.active {
-      background-color: #007AFF;
-      color: #FFFFFF;
-      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
-    }
+    .table-container { width: 100%; max-height: 70vh; overflow: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 0; border-collapse: separate; border-spacing: 0; white-space: nowrap; table-layout: fixed; }
     
-    .table-container {
-      width: 100%;
-      max-height: 70vh; 
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    
-    table {
-      width: 0;
-      border-collapse: separate; 
-      border-spacing: 0;
-      white-space: nowrap;
-      table-layout: fixed; 
-    }
-    
-    th, td {
-      padding: 12px 8px;
-      text-align: center;
-      border-bottom: 1px solid #E5E5EA;
-      width: 70px; 
-      min-width: 70px;      
-      max-width: 70px;      
-      overflow: hidden;
-      box-sizing: border-box;
-      background-color: #FFFFFF;
-      transition: background-color 0.1s ease;
-      height: 48px; 
-      vertical-align: middle; 
-      line-height: 1.2;
-    }
-    
-    th {
-      color: #8E8E93;
-      font-weight: 500;
-      font-size: 14px;
-      position: sticky;
-      top: 0;
-      z-index: var(--z-header);
-      box-shadow: 0 1px 0 #E5E5EA;
-      cursor: pointer;
-      user-select: none;
-    }
-    @media (hover: hover) {
-      th:hover { background-color: #F2F2F7; }
-    }
+    th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #E5E5EA; width: 70px; min-width: 70px; max-width: 70px; overflow: hidden; box-sizing: border-box; background-color: #FFFFFF; transition: background-color 0.1s ease; height: 48px; vertical-align: middle; line-height: 1.2; }
+    th { color: #8E8E93; font-weight: 500; font-size: 14px; position: sticky; top: 0; z-index: var(--z-header); box-shadow: 0 1px 0 #E5E5EA; cursor: pointer; }
+    @media (hover: hover) { th:hover { background-color: #F2F2F7; } }
     
     td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: var(--z-sticky); border-right: 1px solid #F2F2F7; }
     td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: var(--z-sticky); }
     td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: var(--z-sticky); border-right: 1px solid #E5E5EA; }
     th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: calc(var(--z-header) + 1); }
 
-    td.focused-sticky {
-      position: sticky;
-      left: 245px;
-      z-index: calc(var(--z-sticky) + 1);
-      background-color: #F8FBFF;
-      box-shadow: 1px 0 0 #E5E5EA; 
-      border-bottom: 1px solid #E5E5EA !important;
-    }
-    th.focused-sticky {
-      position: sticky;
-      left: 245px;
-      z-index: calc(var(--z-header) + 2);
-      background-color: #EBF3FF;
-      color: #007AFF;
-      font-weight: 700;
-      box-shadow: 1px 0 0 #E5E5EA, 0 1px 0 #E5E5EA;
-    }
+    td.focused-sticky, th.focused-sticky { position: sticky; left: 245px; box-shadow: 1px 0 0 #E5E5EA; }
+    td.focused-sticky { z-index: calc(var(--z-sticky) + 1); background-color: #F8FBFF; border-bottom: 1px solid #E5E5EA !important; }
+    th.focused-sticky { z-index: calc(var(--z-header) + 2); background-color: #EBF3FF; color: #007AFF; font-weight: 700; box-shadow: 1px 0 0 #E5E5EA, 0 1px 0 #E5E5EA; }
 
     @media (hover: hover) {
-      tr:hover td { 
-        background-color: #F2F2F7 !important; 
-      }
-
-      tr:hover td.focused-sticky { 
-        background-color: #E2EFFF !important; 
-        border-bottom: 1px solid #E5E5EA !important;
-      }
+      tr:hover td { background-color: #F2F2F7 !important; }
+      tr:hover td.focused-sticky { background-color: #E2EFFF !important; }
     }
 
-    .total-no-shadow { 
-      border-right: 1px solid #E5E5EA; 
-    }
-
-    .rank-circle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      font-size: 13px;
-      font-weight: bold;
-    }
+    .total-no-shadow { border-right: 1px solid #E5E5EA; }
+    .rank-circle { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-size: 13px; font-weight: bold; }
     .rank-1 { background-color: #FFD700; color: #FFFFFF; }
     .rank-2 { background-color: #C0C0C0; color: #FFFFFF; }
     .rank-3 { background-color: #CD7F32; color: #FFFFFF; }
@@ -315,84 +74,21 @@
     .lose { color: #FF3B30; font-weight: bold; }
     .sort-icon { font-size: 10px; margin-left: 2px; }
 
-    .sk-box {
-      background: #E5E5EA;
-      border-radius: 8px;
-      animation: sk-pulse 1.5s infinite ease-in-out;
-      margin-bottom: 12px;
-    }
-
-    @keyframes sk-pulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 1; }
-      100% { opacity: 0.5; }
-    }
+    .sk-box { background: #E5E5EA; border-radius: 8px; animation: sk-pulse 1.5s infinite ease-in-out; margin-bottom: 12px; }
+    @keyframes sk-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
     
-    .error-container {
-      text-align: center;
-      padding: 40px;
-      color: #8E8E93;
-    }
-    .retry-btn {
-      margin-top: 16px;
-      padding: 0 20px;
-      height: 38px;
-      border-radius: 20px;
-      background-color: #007AFF;
-      color: #FFFFFF;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .retry-btn:hover {
-      background-color: #0056b3;
-    }
+    .error-container { text-align: center; padding: 40px; color: #8E8E93; }
+    .retry-btn { margin-top: 16px; padding: 0 20px; height: 38px; border-radius: 20px; background-color: #007AFF; color: #FFFFFF; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .retry-btn:hover { background-color: #0056b3; }
 
     @media (max-width: 600px) {
-      th, td {
-        padding: 8px 4px; 
-        font-size: 13px;
-        height: 40px;
-        box-sizing: border-box;
-      }
-      th {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: clip;
-      }
-      
-      .rank-circle {
-        width: 22px;
-        height: 22px;
-        font-size: 11px;
-      }
-
-      td:nth-child(1), th:nth-child(1) { 
-        width: 46px !important; 
-        min-width: 46px !important; 
-        max-width: 46px !important;
-      }
-
-      td:nth-child(2), th:nth-child(2) { 
-        left: 46px !important;
-        width: 75px !important; 
-        min-width: 75px !important; 
-        max-width: 75px !important; 
-        text-align: left !important;
-        padding-left: 8px !important;
-      }
-
-      td:nth-child(3), th:nth-child(3) { 
-        left: 121px !important; 
-        width: 65px !important; 
-        min-width: 65px !important; 
-        max-width: 65px !important;
-      }
-
-      td.focused-sticky, th.focused-sticky {
-        left: 186px !important;
-      }
+      th, td { padding: 8px 4px; font-size: 13px; height: 40px; }
+      th { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+      .rank-circle { width: 22px; height: 22px; font-size: 11px; }
+      td:nth-child(1), th:nth-child(1) { width: 46px !important; min-width: 46px !important; max-width: 46px !important; }
+      td:nth-child(2), th:nth-child(2) { left: 46px !important; width: 75px !important; min-width: 75px !important; max-width: 75px !important; padding-left: 8px !important; }
+      td:nth-child(3), th:nth-child(3) { left: 121px !important; width: 65px !important; min-width: 65px !important; max-width: 65px !important; }
+      td.focused-sticky, th.focused-sticky { left: 186px !important; }
     }
   </style>
 </head>
@@ -400,18 +96,12 @@
 
   <div class="container">
     <div class="header-wrapper">
-      <a href="list.html" target="_blank" rel="noopener noreferrer" title="番表" class="sheet-link-icon" style="left: 0; right: auto;">
-        <div class="logo-container doc-logo">
-          <img src="doc-svg.svg" alt="DOC">
-        </div>
+      <a href="list.html" target="_blank" rel="noopener noreferrer" title="番表" class="sheet-link-icon" style="left: 0;">
+        <div class="logo-container doc-logo"><img src="doc-svg.svg" alt="DOC"></div>
       </a>
-      
       <h1>Lam Nei Studio</h1>
-      
       <a href="https://docs.google.com/spreadsheets/d/1YlyI7xdtf4wCtY9E4kPyNRFsU9UhnOFOnX81o8z4lbs/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sheet-link-icon" title="開啟 Google Sheet">
-        <div class="logo-container sheets-logo">
-          <img src="sheet-svg.svg" alt="Google Sheets Logo">
-        </div>
+        <div class="logo-container sheets-logo"><img src="sheet-svg.svg" alt="Google Sheets Logo"></div>
       </a>
     </div>
 
@@ -421,15 +111,10 @@
     </div>
   </div>
 
-<script>
+  <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
-    let globalData = {};      
-    let allSheetNames = [];   
-    let activeSheetName = '';
-    let currentSortCol = 'total';
-    let sortAscending = false;
-    let focusedDateCol = null;
-
+    let globalData = {}, allSheetNames = [], activeSheetName = '';
+    let currentSortCol = 'total', sortAscending = false, focusedDateCol = null;
     let fetchPromises = {}; 
 
     function renderSkeleton(isFirstLoad = true) {
@@ -440,148 +125,91 @@
         `;
       }
 
-      let html = '<div class="table-container">';
-      html += '<table>';
-      
-      html += '<thead id="tableHead"><tr>';
-      html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
-      html += '<th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>';
-      html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
-      for(let i=0; i<9; i++) {
-        html += '<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>';
-      }
-      html += '</tr></thead>';
+      const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
+      const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
+      const emptyRows = Array(8).fill(`<tr>
+        <td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>
+        <td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>
+        <td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>
+        ${emptyTd}
+      </tr>`).join('');
 
-      html += '<tbody>';
-      for(let i=0; i<8; i++) {
-        html += '<tr>';
-        html += '<td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>';
-        html += '<td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>';
-        html += '<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>';
-        for(let j=0; j<9; j++) {
-          html += '<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>';
-        }
-        html += '</tr>';
-      }
-      html += '</tbody></table></div>';
-
-      document.getElementById('contentArea').innerHTML = html;
+      document.getElementById('contentArea').innerHTML = `
+        <div class="table-container">
+          <table>
+            <thead id="tableHead"><tr>
+              <th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>
+              <th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>
+              <th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>
+              ${emptyTh}
+            </tr></thead>
+            <tbody>${emptyRows}</tbody>
+          </table>
+        </div>`;
     }
 
     async function fetchData() {
       renderSkeleton(true); 
       try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('網絡連線異常');
+        const res = await (await fetch(API_URL)).json();
+        if (!res.sheetNames?.length) throw new Error('未獲取到資料');
         
-        const resData = await response.json();
+        allSheetNames = res.sheetNames;
+        activeSheetName = res.firstSheetName; 
+        globalData[activeSheetName] = res.firstSheetData; 
         
-        if (resData.sheetNames && resData.sheetNames.length > 0) {
-          allSheetNames = resData.sheetNames;
-          activeSheetName = resData.firstSheetName; 
-          globalData[activeSheetName] = resData.firstSheetData; 
-          
-          renderControls();
-          renderTableLayout();
-
-          preloadRemainingSheets();
-          
-        } else {
-          throw new Error('未獲取到資料');
-        }
-      } catch (error) {
+        renderControls();
+        renderTableLayout();
+        preloadRemainingSheets();
+      } catch (err) {
         document.getElementById('controlsArea').innerHTML = '';
         document.getElementById('contentArea').innerHTML = `
           <div class="error-container">
-            <div>載入失敗 (${error.message})，請檢查網絡連線或稍後再試。</div>
-            <button class="retry-btn" id="retryBtn">重新載入</button>
-          </div>
-        `;
-        const retryButton = document.getElementById('retryBtn');
-        if (retryButton) {
-          retryButton.addEventListener('click', () => {
-            fetchData();
-          });
-        }
+            <div>載入失敗 (${err.message})，請檢查網絡連線或稍後再試。</div>
+            <button class="retry-btn" onclick="fetchData()">重新載入</button>
+          </div>`;
       }
     }
 
     async function preloadRemainingSheets() {
-      const loadPromises = allSheetNames.map(sheetName => {
-        if (globalData[sheetName] || fetchPromises[sheetName]) {
-          return Promise.resolve(); 
-        }
-
-        const fetchPromise = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`)
-          .then(res => {
-            if (!res.ok) throw new Error('背景連線失敗');
-            return res.json();
-          });
-
-        fetchPromises[sheetName] = fetchPromise;
-
-        return fetchPromise
-          .then(data => {
-            globalData[sheetName] = data;
-          })
-          .catch(error => {
-            console.error(`背景預載分頁【${sheetName}】失敗:`, error);
-            delete fetchPromises[sheetName];
-          });
-      });
-
-      await Promise.all(loadPromises);
+      await Promise.all(allSheetNames.map(sheet => {
+        if (globalData[sheet] || fetchPromises[sheet]) return Promise.resolve();
+        fetchPromises[sheet] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheet)}`)
+          .then(res => res.json())
+          .then(data => globalData[sheet] = data)
+          .catch(() => delete fetchPromises[sheet]);
+        return fetchPromises[sheet];
+      }));
     }
 
-function renderControls() {
-      const controlsArea = document.getElementById('controlsArea');
+    function renderControls() {
       const isOverall = activeSheetName === '總排名';
-      const months = allSheetNames.filter(name => name !== '總排名');
-      
-      let menuHtml = '';
-      months.forEach(m => {
-        const isSelected = m === activeSheetName;
-        const checkIcon = isSelected ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : '';
-        menuHtml += `<div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" data-value="${m}">
-                       <span>${m}</span>
-                       ${checkIcon}
-                     </div>`;
-      });
+      const menuHtml = allSheetNames.filter(n => n !== '總排名').map(m => `
+        <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${m}">
+          <span>${m}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
+        </div>`).join('');
 
-      controlsArea.innerHTML = `
+      document.getElementById('controlsArea').innerHTML = `
         <div class="custom-dropdown-container" id="dropdownContainer">
           <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
-          <div id="monthSelectorMenu" class="custom-dropdown-menu">
-            ${menuHtml}
-          </div>
+          <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
         </div>
         <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
       `;
 
-      const triggerBtn = document.getElementById('monthSelectorTrigger');
       const menu = document.getElementById('monthSelectorMenu');
-      const dropdownContainer = document.getElementById('dropdownContainer');
-
-      triggerBtn.addEventListener('click', (e) => {
-        menu.classList.toggle('show');
-        e.stopPropagation(); 
-      });
-
-      const items = menu.querySelectorAll('.custom-dropdown-item');
-      items.forEach(item => {
-        item.addEventListener('click', async (e) => {
-          const selectedValue = e.currentTarget.getAttribute('data-value');
+      document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
+      
+      menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
+        item.addEventListener('click', async e => {
           menu.classList.remove('show'); 
-          if (activeSheetName !== selectedValue) {
-            await switchSheet(selectedValue);
-          }
+          const val = e.currentTarget.getAttribute('data-value');
+          if (activeSheetName !== val) await switchSheet(val);
         });
       });
 
       document.getElementById('overallBtn').addEventListener('click', async () => {
-        if (activeSheetName !== '總排名') {
-          await switchSheet('總排名');
-        }
+        if (activeSheetName !== '總排名') await switchSheet('總排名');
       });
     }
 
@@ -592,218 +220,113 @@ function renderControls() {
       focusedDateCol = null; 
       renderControls();
       
-      if (!globalData[sheetName]) {
-        await fetchSingleSheetData(sheetName);
-      } else {
-        renderTableLayout();
-      }
+      if (!globalData[sheetName]) await fetchSingleSheetData(sheetName);
+      else renderTableLayout();
     }
 
     async function fetchSingleSheetData(sheetName) {
       renderSkeleton(false); 
-      
       try {
         if (!fetchPromises[sheetName]) {
-          fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`)
-            .then(res => {
-              if (!res.ok) throw new Error('連線失敗');
-              return res.json();
-            });
+          fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`).then(res => res.json());
         }
-
-        const data = await fetchPromises[sheetName];
-        globalData[sheetName] = data; 
-        
-        if (activeSheetName === sheetName) {
-          renderTableLayout();
-        }
-      } catch (error) {
+        globalData[sheetName] = await fetchPromises[sheetName]; 
+        if (activeSheetName === sheetName) renderTableLayout();
+      } catch (err) {
         delete fetchPromises[sheetName];
-        
         if (activeSheetName === sheetName) {
           document.getElementById('contentArea').innerHTML = `
             <div class="error-container">
-              <div>分頁【${sheetName}】資料載入失敗 (${error.message})</div>
-              <button class="retry-btn" id="subRetryBtn">重試</button>
-            </div>
-          `;
-          const subRetryBtn = document.getElementById('subRetryBtn');
-          if (subRetryBtn) {
-            subRetryBtn.addEventListener('click', () => {
-              fetchSingleSheetData(sheetName);
-            });
-          }
+              <div>分頁【${sheetName}】資料載入失敗 (${err.message})</div>
+              <button class="retry-btn" onclick="fetchSingleSheetData('${sheetName}')">重試</button>
+            </div>`;
         }
       }
     }
 
     window.handleSort = function(colIndex) {
       const prevFocused = focusedDateCol;
-
-      if (currentSortCol === colIndex) {
-        sortAscending = !sortAscending;
-      } else {
-        currentSortCol = colIndex;
-        sortAscending = false;
-      }
-      
-      focusedDateCol = (colIndex === 'total') ? null : colIndex;
-
-      if (prevFocused !== focusedDateCol || focusedDateCol !== null) {
-        renderTableLayout(); 
-      } else {
-        updateHeaderIcons();
-        renderTableBody();
-      }
+      sortAscending = currentSortCol === colIndex ? !sortAscending : false;
+      currentSortCol = colIndex;
+      focusedDateCol = colIndex === 'total' ? null : colIndex;
+      (prevFocused !== focusedDateCol || focusedDateCol !== null) ? renderTableLayout() : (updateHeaderIcons(), renderTableBody());
     };
 
-    function getSortIcon(colIndex) {
-      if (currentSortCol === colIndex) return sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>';
-      return '';
-    }
+    const getSortIcon = (col) => currentSortCol === col ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>') : '';
 
     function updateHeaderIcons() {
-      const ths = document.querySelectorAll('#tableHead th[data-col]');
-      ths.forEach(th => {
-        const col = th.getAttribute('data-col');
-        const parsedCol = col === 'total' ? 'total' : parseInt(col, 10);
-        const iconContainer = th.querySelector('.sort-icon-container');
-        if (iconContainer) iconContainer.innerHTML = getSortIcon(parsedCol);
+      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+        const col = th.dataset.col;
+        const icon = th.querySelector('.sort-icon-container');
+        if (icon) icon.innerHTML = getSortIcon(col === 'total' ? 'total' : parseInt(col, 10));
       });
     }
 
-    function getColLimit(sheetData, isOverall) {
-       if (isOverall && sheetData[1]) {
-         for (let j = 2; j < sheetData[1].length; j++) {
-           if (!sheetData[1][j] || String(sheetData[1][j]).includes('Rank')) return j;
-         }
-       }
-       return 17;
+    function getColLimit(data, isOverall) {
+      if (isOverall && data[1]) {
+        const limitIndex = data[1].findIndex((v, i) => i >= 2 && (!v || String(v).includes('Rank')));
+        return limitIndex !== -1 ? limitIndex : data[1].length;
+      }
+      return 17;
     }
 
-    function getValidColumnsOrder(sheetData, colLimit, focusedCol, isOverall) {
-      let cols = [];
-      for (let j = 2; j < colLimit; j++) {
-        if (j !== focusedCol) {
-          cols.push(j);
-        }
-      }
-      
+    function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
+      let cols = Array.from({ length: colLimit - 2 }, (_, i) => i + 2).filter(c => c !== focusedCol);
       if (!isOverall) {
         cols.sort((a, b) => {
-          const valA = sheetData[1][a];
-          const valB = sheetData[1][b];
-          
-          const hasValA = valA !== "" && valA !== undefined;
-          const hasValB = valB !== "" && valB !== undefined;
-          
-          if (hasValA && !hasValB) return -1;
-          if (!hasValA && hasValB) return 1;
-          
-          if (hasValA && hasValB) {
-            const numA = Number(valA);
-            const numB = Number(valB);
-            if (!isNaN(numA) && !isNaN(numB)) {
-              return numB - numA; 
-            }
-          }
+          const vA = data[1][a], vB = data[1][b];
+          const hasA = vA !== "" && vA !== undefined, hasB = vB !== "" && vB !== undefined;
+          if (hasA && !hasB) return -1;
+          if (!hasA && hasB) return 1;
+          if (hasA && hasB && !isNaN(Number(vA)) && !isNaN(Number(vB))) return Number(vB) - Number(vA);
           return 0;
         });
       }
-
-      if (focusedCol !== null) {
-        cols.unshift(focusedCol);
-      }
-      return cols;
+      return focusedCol !== null ? [focusedCol, ...cols] : cols;
     }
 
-    function formatHeaderDate(dayVal, sheetData, sheetName) {
-      const numDay = Number(dayVal);
-      if (isNaN(numDay)) return dayVal;
-
+    function formatHeaderDate(dayVal, data, sheetName) {
+      if (isNaN(Number(dayVal))) return dayVal;
+      const chMap = { '一':'1','二':'2','三':'3','四':'4','五':'5','六':'6','七':'7','八':'8','九':'9','十':'10','十一':'11','十二':'12' };
       let monthStr = '';
-      const chineseMonths = {
-        '一': '1', '二': '2', '三': '3', '四': '4', '五': '5', '六': '6',
-        '七': '7', '八': '8', '九': '9', '十': '10', '十一': '11', '十二': '12'
-      };
-
       try {
-        const f1Val = String(sheetData[0][5] || "");
-        if (f1Val) {
-          const twoChars = f1Val.substring(0, 2);
-          const firstChar = f1Val.charAt(0);
-          
-          if (chineseMonths[twoChars]) {
-            monthStr = chineseMonths[twoChars];
-          } else if (chineseMonths[firstChar]) {
-            monthStr = chineseMonths[firstChar];
-          }
-        }
+        const f1 = String(data[0][5] || "");
+        monthStr = chMap[f1.substring(0, 2)] || chMap[f1.charAt(0)] || '';
       } catch(e) {}
-
+      
       if (!monthStr) {
-        const digits = sheetName.match(/\d+/g);
-        if (digits && digits.length > 0) {
-          monthStr = String(Number(digits[digits.length - 1]));
-        } else {
-          monthStr = String(new Date().getMonth() + 1);
-        }
+        const match = sheetName.match(/\d+/g);
+        monthStr = match ? String(Number(match[match.length - 1])) : String(new Date().getMonth() + 1);
       }
-
-      const dayDisplay = String(numDay);
-      return `${dayDisplay}/${monthStr}`;
+      return `${dayVal}/${monthStr}`;
     }
 
     function renderTableLayout() {
-      const sheetData = globalData[activeSheetName];
-      const isOverall = activeSheetName === '總排名';
-      const contentArea = document.getElementById('contentArea');
-      const colLimit = getColLimit(sheetData, isOverall);
-      
-      const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol, isOverall);
+      const data = globalData[activeSheetName], isOverall = activeSheetName === '總排名';
+      const colIndices = getValidColumnsOrder(data, getColLimit(data, isOverall), focusedDateCol, isOverall);
 
-      let html = `
+      let headHtml = colIndices.map(j => {
+        const val = data[1][j], isF = j === focusedDateCol;
+        const text = val !== "" && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data, activeSheetName)) : '-';
+        const icon = val !== "" && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
+        return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${text} ${icon}</th>`;
+      }).join('');
+
+      document.getElementById('contentArea').innerHTML = `
         <div class="table-container">
           <table>
-            <thead id="tableHead">
-              <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>`;
-      
-      colIndices.forEach(j => {
-        const cellVal = sheetData[1][j];
-        const isFocused = (j === focusedDateCol);
-        const stickyClass = isFocused ? 'focused-sticky' : '';
-        
-        let headerText = '-';
-        let sortIconHtml = '';
-
-        if (cellVal !== "" && cellVal !== undefined) {
-          headerText = isOverall ? cellVal : formatHeaderDate(cellVal, sheetData, activeSheetName); 
-          sortIconHtml = `<span class="sort-icon-container">${getSortIcon(j)}</span>`;
-        }
-        
-        html += `<th data-col="${j}" class="${stickyClass}">${headerText} ${sortIconHtml}</th>`;
-      });
-
-      html += `
-              </tr>
-            </thead>
+            <thead id="tableHead"><tr>
+              <th>Rank</th><th>Name</th>
+              <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
+              ${headHtml}
+            </tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>`;
       
-      contentArea.innerHTML = html;
       renderTableBody();
-
-      const sortableHeaders = document.querySelectorAll('#tableHead th[data-col]');
-      sortableHeaders.forEach(th => {
-        th.addEventListener('click', () => {
-          const colValue = th.getAttribute('data-col');
-          const colIndex = colValue === 'total' ? 'total' : parseInt(colValue, 10);
-          handleSort(colIndex);
-        });
+      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+        th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col, 10)));
       });
     }
 
@@ -811,120 +334,46 @@ function renderControls() {
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
-      const sheetData = globalData[activeSheetName];
-      const isOverall = activeSheetName === '總排名';
-      const colLimit = getColLimit(sheetData, isOverall);
-      
-      const colIndices = getValidColumnsOrder(sheetData, colLimit, focusedDateCol, isOverall);
+      const data = globalData[activeSheetName], isOverall = activeSheetName === '總排名';
+      const colLimit = getColLimit(data, isOverall);
+      const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
 
-      let playerRows = [];
-      
-      for (let i = 2; i < sheetData.length; i++) {
-        if (sheetData[i][0]) {
-          const rowData = sheetData[i];
-          let hasParticipated = false;
-          for (let j = 2; j < colLimit; j++) {
-            const val = rowData[j];
-            if (val !== "" && val !== undefined && val !== "-" && val.toString().trim() !== "") {
-              hasParticipated = true;
-              break;
-            }
-          }    
-          playerRows.push({ 
-            data: rowData, 
-            originalTotal: Number(rowData[1]) || 0,
-            hasParticipated: hasParticipated
-          });
-        }
-      }
+      let rows = data.slice(2).filter(r => r[0]).map(row => {
+        const hasPart = row.slice(2, colLimit).some(v => v !== "" && v !== undefined && v !== "-" && String(v).trim() !== "");
+        return { data: row, total: Number(row[1]) || 0, hasPart };
+      }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total);
 
-      playerRows.sort((a, b) => {
-        if (!a.hasParticipated && b.hasParticipated) return 1;
-        if (a.hasParticipated && !b.hasParticipated) return -1;
-        return b.originalTotal - a.originalTotal;
+      let rank = 1, displayRank = 1, prev = null;
+      rows.forEach(r => {
+        if (!r.hasPart) { r.rank = '-'; return; }
+        if (r.total !== prev) { displayRank = rank; prev = r.total; }
+        r.rank = displayRank; rank++;
       });
 
-      let actualRank = 1;
-      let displayRank = 1;
-      let prevScore = null;
-
-      playerRows.forEach((item) => {
-        if (!item.hasParticipated) {
-          item.overallRank = '-';
-          return;
-        }
-
-        let currentScore = item.originalTotal; 
-
-        if (currentScore !== prevScore) {
-          displayRank = actualRank;
-          prevScore = currentScore;
-        }
-        
-        item.overallRank = displayRank;
-        actualRank++;
+      rows.sort((a, b) => {
+        if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
+        let vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
+        let vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
+        return sortAscending ? vA - vB : vB - vA;
       });
 
-      playerRows.sort((a, b) => {
-        if (!a.hasParticipated && b.hasParticipated) return 1;
-        if (a.hasParticipated && !b.hasParticipated) return -1;
-
-        let valA, valB;
-        if (currentSortCol === 'total') {
-          valA = a.originalTotal; 
-          valB = b.originalTotal;
-        } else {
-          valA = a.data[currentSortCol] === "" || a.data[currentSortCol] === undefined ? -Infinity : (Number(a.data[currentSortCol]) || 0);
-          valB = b.data[currentSortCol] === "" || b.data[currentSortCol] === undefined ? -Infinity : (Number(b.data[currentSortCol]) || 0);
-        }
+      tbody.innerHTML = rows.map(r => {
+        const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
+        const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
         
-        if (valA === valB) {
-          return 0;
-        }
-        return sortAscending ? valA - valB : valB - valA; 
-      });
-
-      let tbodyHTML = '';
-      playerRows.forEach((item) => {
-        const row = item.data;
-        const totalClass = item.originalTotal > 0 ? 'win' : (item.originalTotal < 0 ? 'lose' : '');
+        let colsHtml = colIndices.map(j => {
+          const v = r.data[j], hasV = v !== "" && v !== undefined;
+          const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
+          return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
+        }).join('');
         
-        let rankHTML = '';
-        if (!item.hasParticipated) {
-          rankHTML = `<span class="rank-other">-</span>`;
-        } else {
-          rankHTML = (item.overallRank <= 3) 
-            ? `<span class="rank-circle rank-${item.overallRank}">${item.overallRank}</span>` 
-            : `<span class="rank-other">${item.overallRank}</span>`;
-        }
-        
-        tbodyHTML += `<tr>
-          <td>${rankHTML}</td>
-          <td>${row[0]}</td>
-          <td class="${totalClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${item.originalTotal || 0}</td>`;
-        
-        colIndices.forEach(j => {
-          const dailyScore = row[j];
-          const hasValue = dailyScore !== "" && dailyScore !== undefined;
-          
-          const dailyClass = hasValue && dailyScore > 0 ? 'win' : (hasValue && dailyScore < 0 ? 'lose' : '');
-          const isFocused = (j === focusedDateCol);
-          const stickyClass = isFocused ? 'focused-sticky' : '';
-          
-          tbodyHTML += `<td class="${dailyClass} ${stickyClass}">${hasValue ? dailyScore : '-'}</td>`;
-        });
-        tbodyHTML += `</tr>`;
-      });
-      
-      tbody.innerHTML = tbodyHTML;
+        return `<tr><td>${rHtml}</td><td>${r.data[0]}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+      }).join('');
     }
 
-    document.addEventListener('click', (e) => {
-      const menu = document.getElementById('monthSelectorMenu');
-      const container = document.getElementById('dropdownContainer');
-      if (menu && container && !container.contains(e.target)) {
-        menu.classList.remove('show');
-      }
+    document.addEventListener('click', e => {
+      const menu = document.getElementById('monthSelectorMenu'), container = document.getElementById('dropdownContainer');
+      if (menu && container && !container.contains(e.target)) menu.classList.remove('show');
     });
 
     fetchData();
