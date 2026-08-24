@@ -5,90 +5,790 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lam Nei Studio</title>
   <style>
-    * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #F2F2F7; margin: 0; padding: 20px 16px; color: #1C1C1E; }
-    .container { max-width: 900px; margin: 0 auto; }
-    .header-wrapper { position: relative; margin-bottom: 24px; display: flex; justify-content: center; align-items: center; }
-    h1 { font-size: 28px; font-weight: 700; text-align: center; margin: 0; padding: 0 40px; }
+    * { 
+      -webkit-touch-callout: none; 
+      -webkit-user-select: none; 
+      user-select: none; 
+    }
     
-    :root { --z-sticky: 10; --z-header: 20; --z-modal: 1000; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      background-color: #F2F2F7; 
+      margin: 0; 
+      padding: 20px 16px; 
+      color: #1C1C1E; 
+    }
     
-    .sheet-link-icon { position: absolute; top: 50%; right: 0; transform: translateY(-50%); text-decoration: none; cursor: pointer; }
-    .sheet-link-icon[style*="left: 0"] { left: 0; right: auto; }
+    .container { 
+      max-width: 900px; 
+      margin: 0 auto; 
+    }
     
-    .logo-container { width: 36px; height: 36px; background-color: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; overflow: hidden; position: relative; }
-    .logo-container img { max-width: 75%; max-height: 75%; display: block; transition: all 0.2s ease; }
-    .sheet-link-icon:hover .logo-container { background-color: rgba(0, 0, 0, 0.05); transform: scale(1.05); }
-
-    .card { background: #FFFFFF; border-radius: 16px; padding: 0 0 20px 0; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); overflow: hidden; }
-    .table-controls { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 16px 20px; background: #FFFFFF; }
-
-    .month-dropdown { font-size: 22px; font-weight: 700; border: none; background-color: transparent; color: #1C1C1E; outline: none; cursor: pointer; appearance: none; padding: 8px 36px 8px 12px; margin-left: -12px; border-radius: 12px; background-image: url('data:image/svg+xml;utf8,<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L8 8L14 2" stroke="%238E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'); background-repeat: no-repeat; background-position: right 12px center; font-family: inherit; transition: background-color 0.2s ease; }
-    .month-dropdown:hover { background-color: #F2F2F7; }
-    .month-dropdown:active, .month-dropdown:focus { background-color: #E5E5EA; }
-
-    .custom-dropdown-container { position: relative; display: inline-block; }
-    .custom-dropdown-menu { position: absolute; top: calc(100% + 4px); left: 0; background: #FFFFFF; border-radius: 14px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1); min-width: 160px; z-index: var(--z-modal); overflow: hidden; display: none; opacity: 0; transform: translateY(-5px); transition: opacity 0.2s ease, transform 0.2s ease; }
-    .custom-dropdown-menu.show { display: block; animation: fadeInDown 0.2s forwards; }
+    .header-wrapper { 
+      position: relative; 
+      margin-bottom: 24px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+    } 
     
-    @keyframes fadeInDown { to { opacity: 1; transform: translateY(0); } }
-
-    .custom-dropdown-item { padding: 12px 16px; font-size: 16px; color: #1C1C1E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #FFFFFF; transition: background-color 0.15s ease; border-bottom: 1px solid #E5E5EA; }
-    .custom-dropdown-item:last-child { border-bottom: none; }
-    @media (hover: hover) { .custom-dropdown-item:hover { background: #F2F2F7; } }
-    .custom-dropdown-item:active { background: #E5E5EA; }
-    .custom-dropdown-item.selected { color: #007AFF; font-weight: 600; }
-
-    .overall-btn { padding: 0 16px; height: 36px; border-radius: 18px; background-color: #E5E5EA; color: #1C1C1E; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
-    .overall-btn.active { background-color: #007AFF; color: #FFFFFF; box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); }
+    h1 { 
+      font-size: 28px; 
+      font-weight: 700; 
+      text-align: center; 
+      margin: 0; 
+      padding: 0 40px; 
+    }
     
-    .table-container { width: 100%; max-height: 70vh; overflow: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 0; border-collapse: separate; border-spacing: 0; white-space: nowrap; table-layout: fixed; }
+    :root { 
+      --z-sticky: 10; 
+      --z-header: 20; 
+      --z-modal: 1000; 
+    }
     
-    th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #E5E5EA; width: 70px; min-width: 70px; max-width: 70px; overflow: hidden; box-sizing: border-box; background-color: #FFFFFF; transition: background-color 0.1s ease; height: 48px; vertical-align: middle; line-height: 1.2; }
-    th { color: #8E8E93; font-weight: 500; font-size: 14px; position: sticky; top: 0; z-index: var(--z-header); box-shadow: 0 1px 0 #E5E5EA; cursor: pointer; }
-    @media (hover: hover) { th:hover { background-color: #F2F2F7; } }
+    .sheet-link-icon { 
+      position: absolute; 
+      top: 50%; 
+      right: 0; 
+      transform: translateY(-50%); 
+      text-decoration: none; 
+      cursor: pointer; 
+    }
     
-    td:nth-child(1), th:nth-child(1) { position: sticky; left: 0; width: 60px; min-width: 60px; max-width: 60px; z-index: var(--z-sticky); border-right: 1px solid #F2F2F7; }
-    td:nth-child(2), th:nth-child(2) { position: sticky; left: 60px; width: 100px; min-width: 100px; max-width: 100px; text-align: left; font-weight: 600; z-index: var(--z-sticky); }
-    td:nth-child(3), th:nth-child(3) { position: sticky; left: 160px; width: 85px; min-width: 85px; max-width: 85px; z-index: var(--z-sticky); border-right: 1px solid #E5E5EA; }
-    th:nth-child(1), th:nth-child(2), th:nth-child(3) { z-index: calc(var(--z-header) + 1); }
-
-    td.focused-sticky, th.focused-sticky { position: sticky; left: 245px; box-shadow: 1px 0 0 #E5E5EA; }
-    td.focused-sticky { z-index: calc(var(--z-sticky) + 1); background-color: #F8FBFF; border-bottom: 1px solid #E5E5EA !important; }
-    th.focused-sticky { z-index: calc(var(--z-header) + 2); background-color: #EBF3FF; color: #007AFF; font-weight: 700; box-shadow: 1px 0 0 #E5E5EA, 0 1px 0 #E5E5EA; }
-
-    @media (hover: hover) {
-      tr:hover td { background-color: #F2F2F7 !important; }
-      tr:hover td.focused-sticky { background-color: #E2EFFF !important; }
+    .sheet-link-icon[style*="left: 0"] { 
+      left: 0; 
+      right: auto; 
+    }
+    
+    .logo-container { 
+      width: 36px; 
+      height: 36px; 
+      background-color: transparent; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      transition: all 0.2s ease; 
+      overflow: hidden; 
+      position: relative; 
+    }
+    
+    .logo-container img { 
+      max-width: 75%; 
+      max-height: 75%; 
+      display: block; 
+      transition: all 0.2s ease; 
+    }
+    
+    .sheet-link-icon:hover .logo-container { 
+      background-color: rgba(0, 0, 0, 0.05); 
+      transform: scale(1.05); 
     }
 
-    .total-no-shadow { border-right: 1px solid #E5E5EA; }
-    .rank-circle { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; font-size: 13px; font-weight: bold; }
-    .rank-1 { background-color: #FFD700; color: #FFFFFF; }
-    .rank-2 { background-color: #C0C0C0; color: #FFFFFF; }
-    .rank-3 { background-color: #CD7F32; color: #FFFFFF; }
-    .rank-other { color: #8E8E93; font-weight: normal; }
-
-    .win { color: #34C759; font-weight: bold; }
-    .lose { color: #FF3B30; font-weight: bold; }
-    .sort-icon { font-size: 10px; margin-left: 2px; }
-
-    .sk-box { background: #E5E5EA; border-radius: 8px; animation: sk-pulse 1.5s infinite ease-in-out; margin-bottom: 12px; }
-    @keyframes sk-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    .card { 
+      background: #FFFFFF; 
+      border-radius: 16px; 
+      padding: 0 0 20px 0; 
+      margin-bottom: 24px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+      overflow: hidden; 
+    }
     
-    .error-container { text-align: center; padding: 40px; color: #8E8E93; }
-    .retry-btn { margin-top: 16px; padding: 0 20px; height: 38px; border-radius: 20px; background-color: #007AFF; color: #FFFFFF; border: none; font-size: 15px; font-weight: 600; cursor: pointer; }
-    .retry-btn:hover { background-color: #0056b3; }
+    .table-controls { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 20px 20px 16px 20px; 
+      background: #FFFFFF; 
+    }
+
+    .month-dropdown { 
+      font-size: 22px; 
+      font-weight: 700; 
+      border: none; 
+      background-color: transparent; 
+      color: #1C1C1E; 
+      outline: none; 
+      cursor: pointer; 
+      appearance: none; 
+      padding: 8px 36px 8px 12px; 
+      margin-left: -12px; 
+      border-radius: 12px; 
+      background-image: url('data:image/svg+xml;utf8,<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L8 8L14 2" stroke="%238E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'); 
+      background-repeat: no-repeat; 
+      background-position: right 12px center; 
+      font-family: inherit; 
+      transition: background-color 0.2s ease; 
+    }
+    
+    .month-dropdown:hover { 
+      background-color: #F2F2F7; 
+    }
+    
+    .month-dropdown:active, 
+    .month-dropdown:focus { 
+      background-color: #E5E5EA; 
+    }
+
+    .custom-dropdown-container { 
+      position: relative; 
+      display: inline-block; 
+    }
+    
+    .custom-dropdown-menu { 
+      position: absolute; 
+      top: calc(100% + 4px); 
+      left: 0; 
+      background: #FFFFFF; 
+      border-radius: 14px; 
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1); 
+      min-width: 160px; 
+      z-index: var(--z-modal); 
+      overflow: hidden; 
+      display: none; 
+      opacity: 0; 
+      transform: translateY(-5px); 
+      transition: opacity 0.2s ease, transform 0.2s ease; 
+    }
+    
+    .custom-dropdown-menu.show { 
+      display: block; 
+      animation: fadeInDown 0.2s forwards; 
+    }
+    
+    @keyframes fadeInDown { 
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      } 
+    }
+
+    .custom-dropdown-item { 
+      padding: 12px 16px; 
+      font-size: 16px; 
+      color: #1C1C1E; 
+      cursor: pointer; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: #FFFFFF; 
+      transition: background-color 0.15s ease; 
+      border-bottom: 1px solid #E5E5EA; 
+    }
+    
+    .custom-dropdown-item:last-child { 
+      border-bottom: none; 
+    }
+    
+    @media (hover: hover) { 
+      .custom-dropdown-item:hover { 
+        background: #F2F2F7; 
+      } 
+    }
+    
+    .custom-dropdown-item:active { 
+      background: #E5E5EA; 
+    }
+    
+    .custom-dropdown-item.selected { 
+      color: #007AFF; 
+      font-weight: 600; 
+    }
+
+    .overall-btn { 
+      padding: 0 16px; 
+      height: 36px; 
+      border-radius: 18px; 
+      background-color: #E5E5EA; 
+      color: #1C1C1E; 
+      border: none; 
+      font-size: 15px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      flex-shrink: 0; 
+    }
+    
+    .overall-btn.active { 
+      background-color: #007AFF; 
+      color: #FFFFFF; 
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); 
+    }
+    
+    .table-container { 
+      width: 100%; 
+      max-height: 70vh; 
+      overflow: auto; 
+      -webkit-overflow-scrolling: touch; 
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 0.3s ease;
+    }
+
+    .table-container.scrolling {
+      scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    }
+
+    .table-container::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .table-container.scrolling::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .table-container.scrolling::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    table { 
+      width: 0; 
+      border-collapse: separate; 
+      border-spacing: 0; 
+      white-space: nowrap; 
+      table-layout: fixed; 
+    }
+    
+    th, td { 
+      padding: 12px 8px; 
+      text-align: center; 
+      border-bottom: 1px solid #E5E5EA; 
+      width: 70px; 
+      min-width: 70px; 
+      max-width: 70px; 
+      overflow: hidden; 
+      box-sizing: border-box; 
+      background-color: #FFFFFF; 
+      transition: background-color 0.1s ease; 
+      height: 48px; 
+      vertical-align: middle; 
+      line-height: 1.2; 
+    }
+    
+    th { 
+      color: #8E8E93; 
+      font-weight: 500; 
+      font-size: 14px; 
+      position: sticky; 
+      top: 0; 
+      z-index: var(--z-header); 
+      box-shadow: 0 1px 0 #E5E5EA; 
+      cursor: pointer; 
+    }
+    
+    @media (hover: hover) { 
+      th:hover { 
+        background-color: #F2F2F7; 
+      } 
+    }
+    
+    td:nth-child(1), 
+    th:nth-child(1) { 
+      position: sticky; 
+      left: 0; 
+      width: 60px; 
+      min-width: 60px; 
+      max-width: 60px; 
+      z-index: var(--z-sticky); 
+      border-right: 1px solid #F2F2F7; 
+    }
+    
+    td:nth-child(2), 
+    th:nth-child(2) { 
+      position: sticky; 
+      left: 60px; 
+      width: 100px; 
+      min-width: 100px; 
+      max-width: 100px; 
+      text-align: left; 
+      font-weight: 600; 
+      z-index: var(--z-sticky); 
+    }
+    
+    td:nth-child(3), 
+    th:nth-child(3) { 
+      position: sticky; 
+      left: 160px; 
+      width: 85px; 
+      min-width: 85px; 
+      max-width: 85px; 
+      z-index: var(--z-sticky); 
+      border-right: 1px solid #E5E5EA; 
+    }
+    
+    th:nth-child(1), 
+    th:nth-child(2), 
+    th:nth-child(3) { 
+      z-index: calc(var(--z-header) + 1); 
+    }
+
+    td.focused-sticky, 
+    th.focused-sticky { 
+      position: sticky; 
+      left: 245px; 
+      box-shadow: 1px 0 0 #E5E5EA; 
+    }
+    
+    td.focused-sticky { 
+      z-index: calc(var(--z-sticky) + 1); 
+      background-color: #F8FBFF; 
+      border-bottom: 1px solid #E5E5EA !important; 
+    }
+    
+    th.focused-sticky { 
+      z-index: calc(var(--z-header) + 2); 
+      background-color: #EBF3FF; 
+      color: #007AFF; 
+      font-weight: 700; 
+      box-shadow: 1px 0 0 #E5E5EA, 0 1px 0 #E5E5EA; 
+    }
+
+    @media (hover: hover) {
+      tr:hover td { 
+        background-color: #F2F2F7 !important; 
+      }
+      tr:hover td.focused-sticky { 
+        background-color: #E2EFFF !important; 
+      }
+    }
+
+    .total-no-shadow { 
+      border-right: 1px solid #E5E5EA; 
+    }
+    
+    .rank-circle { 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center; 
+      width: 26px; 
+      height: 26px; 
+      border-radius: 50%; 
+      font-size: 13px; 
+      font-weight: bold; 
+    }
+    
+    .rank-1 { 
+      background-color: #FFD700; 
+      color: #FFFFFF; 
+    }
+    
+    .rank-2 { 
+      background-color: #C0C0C0; 
+      color: #FFFFFF; 
+    }
+    
+    .rank-3 { 
+      background-color: #CD7F32; 
+      color: #FFFFFF; 
+    }
+    
+    .rank-other { 
+      color: #8E8E93; 
+      font-weight: normal; 
+    }
+
+    .win { 
+      color: #34C759; 
+      font-weight: bold; 
+    }
+    
+    .lose { 
+      color: #FF3B30; 
+      font-weight: bold; 
+    }
+    
+    .sort-icon { 
+      font-size: 10px; 
+      margin-left: 2px; 
+    }
+
+    .sk-box { 
+      background: #E5E5EA; 
+      border-radius: 8px; 
+      animation: sk-pulse 1.5s infinite ease-in-out; 
+      margin-bottom: 12px; 
+    }
+    
+    @keyframes sk-pulse { 
+      0%, 100% { 
+        opacity: 0.5; 
+      } 
+      50% { 
+        opacity: 1; 
+      } 
+    }
+    
+    .error-container { 
+      text-align: center; 
+      padding: 40px; 
+      color: #8E8E93; 
+    }
+    
+    .retry-btn { 
+      margin-top: 16px; 
+      padding: 0 20px; 
+      height: 38px; 
+      border-radius: 20px; 
+      background-color: #007AFF; 
+      color: #FFFFFF; 
+      border: none; 
+      font-size: 15px; 
+      font-weight: 600; 
+      cursor: pointer; 
+    }
+    
+    .retry-btn:hover { 
+      background-color: #0056b3; 
+    }
 
     @media (max-width: 600px) {
-      th, td { padding: 8px 4px; font-size: 13px; height: 40px; }
-      th { white-space: nowrap; overflow: hidden; text-overflow: clip; }
-      .rank-circle { width: 22px; height: 22px; font-size: 11px; }
-      td:nth-child(1), th:nth-child(1) { width: 46px !important; min-width: 46px !important; max-width: 46px !important; }
-      td:nth-child(2), th:nth-child(2) { left: 46px !important; width: 75px !important; min-width: 75px !important; max-width: 75px !important; padding-left: 8px !important; }
-      td:nth-child(3), th:nth-child(3) { left: 121px !important; width: 65px !important; min-width: 65px !important; max-width: 65px !important; }
-      td.focused-sticky, th.focused-sticky { left: 186px !important; }
+      th, td { 
+        padding: 8px 4px; 
+        font-size: 13px; 
+        height: 40px; 
+      }
+      
+      th { 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: clip; 
+      } 
+      
+      .rank-circle { 
+        width: 22px; 
+        height: 22px; 
+        font-size: 11px; 
+      }
+      
+      td:nth-child(1), th:nth-child(1) { 
+        width: 46px !important; 
+        min-width: 46px !important; 
+        max-width: 46px !important; 
+      }
+      
+      td:nth-child(2), th:nth-child(2) { 
+        left: 46px !important; 
+        width: 75px !important; 
+        min-width: 75px !important; 
+        max-width: 75px !important; 
+        padding-left: 8px !important; 
+      }
+      
+      td:nth-child(3), th:nth-child(3) { 
+        left: 121px !important; 
+        width: 65px !important; 
+        min-width: 65px !important; 
+        max-width: 65px !important; 
+      }
+      
+      td.focused-sticky, th.focused-sticky { 
+        left: 186px !important; 
+      }
+    }
+
+    .player-name-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+      min-width: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #1C1C1E;
+      font: inherit;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .player-name-btn::after {
+      content: '›';
+      color: #C7C7CC;
+      font-size: 18px;
+      font-weight: 400;
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    @media (hover: hover) {
+      .player-name-btn:hover { color: #007AFF; }
+      .player-name-btn:hover::after { opacity: 1; }
+    }
+    .player-name-btn:active { opacity: 0.55; }
+
+    .profile-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: calc(var(--z-modal) + 10);
+      background: rgba(0,0,0,0.28);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .profile-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .profile-sheet {
+      position: fixed;
+      z-index: calc(var(--z-modal) + 11);
+      left: 50%;
+      bottom: 18px;
+      width: min(720px, calc(100vw - 32px));
+      max-height: min(88vh, 900px);
+      overflow: hidden;
+      transform: translate(-50%, 18px) scale(.985);
+      opacity: 0;
+      pointer-events: none;
+      background: #F2F2F7;
+      border-radius: 24px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.22);
+      transition: opacity .22s ease, transform .22s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .profile-sheet.show {
+      opacity: 1;
+      transform: translate(-50%, 0) scale(1);
+      pointer-events: auto;
+    }
+    .profile-grabber {
+      width: 38px;
+      height: 5px;
+      border-radius: 999px;
+      background: #D1D1D6;
+      margin: 10px auto 0;
+      flex: 0 0 auto;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px 14px;
+      background: #FFFFFF;
+      border-bottom: 1px solid #E5E5EA;
+      flex: 0 0 auto;
+    }
+    .profile-title-wrap { min-width: 0; }
+    .profile-name {
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.2;
+      font-weight: 750;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-subtitle {
+      margin-top: 3px;
+      color: #8E8E93;
+      font-size: 13px;
+    }
+    .profile-close {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: #F2F2F7;
+      color: #636366;
+      font-size: 22px;
+      line-height: 34px;
+      cursor: pointer;
+    }
+    .profile-body {
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+      transition: scrollbar-color 0.3s ease;
+    }
+    .profile-body.scrolling {
+      scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
+    }
+    .profile-body::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .profile-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .profile-body::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+    .profile-body.scrolling::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .profile-body.scrolling::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .profile-section {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .profile-section:last-child { margin-bottom: 0; }
+    .profile-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 8px;
+    }
+    .profile-stat {
+      background: #F2F2F7;
+      border-radius: 12px;
+      padding: 10px 8px;
+      min-width: 0;
+    }
+    .profile-stat-label {
+      color: #8E8E93;
+      font-size: 12px;
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+    .profile-stat-value {
+      font-size: 19px;
+      font-weight: 750;
+      line-height: 1.15;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-stat-value.win { color: #34C759; }
+    .profile-stat-value.lose { color: #FF3B30; }
+
+    .recent-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 7px;
+    }
+    .recent-game {
+      border-radius: 11px;
+      padding: 9px 4px;
+      text-align: center;
+      background: #F2F2F7;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .recent-game.win {
+      background: #EAF8EE;
+      color: #1F8A43;
+    }
+    .recent-game.lose {
+      background: #FFF0EF;
+      color: #D92D20;
+    }
+    .recent-game.zero {
+      color: #8E8E93;
+    }
+    .recent-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 9px;
+      color: #8E8E93;
+      font-size: 12px;
+    }
+
+    .profile-empty {
+      color: #8E8E93;
+      font-size: 13px;
+      padding: 8px 0;
+    }
+
+    .duel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+    .duel-card {
+      border-radius: 13px;
+      padding: 12px;
+      background: #F2F2F7;
+      min-width: 0;
+    }
+    .duel-label {
+      color: #8E8E93;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .duel-opponent {
+      font-weight: 750;
+      font-size: 16px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .duel-rate {
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .duel-note {
+      color: #8E8E93;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .record-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #E5E5EA;
+    }
+    .record-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .record-row:first-child { padding-top: 0; }
+    .record-label { color: #636366; font-size: 13px; }
+    .record-value {
+      font-size: 17px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+    body.profile-open { overflow: hidden; }
+
+    @media (max-width: 600px) {
+      .profile-sheet {
+        left: 0;
+        bottom: 0;
+        width: 100vw;
+        max-height: 92vh;
+        border-radius: 22px 22px 0 0;
+        transform: translateY(28px);
+      }
+      .profile-sheet.show {
+        transform: translateY(0);
+      }
+      .profile-body { padding: 10px; }
+      .profile-section { padding: 13px; border-radius: 14px; }
+      .profile-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .recent-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }
+      .recent-game { padding: 8px 2px; font-size: 13px; }
+      .duel-grid { grid-template-columns: 1fr 1fr; }
+      .profile-name { font-size: 21px; }
     }
   </style>
 </head>
@@ -111,11 +811,29 @@
     </div>
   </div>
 
+  <div id="profileBackdrop" class="profile-backdrop" aria-hidden="true"></div>
+  <section id="profileSheet" class="profile-sheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="profileName">
+    <div class="profile-grabber"></div>
+    <div class="profile-header">
+      <div class="profile-title-wrap">
+        <h2 id="profileName" class="profile-name">玩家</h2>
+        <div id="profileSubtitle" class="profile-subtitle">玩家資料</div>
+      </div>
+      <button id="profileClose" class="profile-close" type="button" aria-label="關閉">×</button>
+    </div>
+    <div id="profileBody" class="profile-body"></div>
+  </section>
+
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxZMShPOB21woyPAtHeQbZNCYZm1lARPX9IVy7qzX3sGpdbqHjPglO7J_wa6wtuWFlK/exec'; 
-    let globalData = {}, allSheetNames = [], activeSheetName = '';
-    let currentSortCol = 'total', sortAscending = false, focusedDateCol = null;
+    let globalData = {};
+    let allSheetNames = [];
+    let activeSheetName = '';
+    let currentSortCol = 'total';
+    let sortAscending = false;
+    let focusedDateCol = null;
     let fetchPromises = {}; 
+    let profileRequestToken = 0;
 
     function renderSkeleton(isFirstLoad = true) {
       if (isFirstLoad) {
@@ -198,7 +916,10 @@
       `;
 
       const menu = document.getElementById('monthSelectorMenu');
-      document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
+      document.getElementById('monthSelectorTrigger').addEventListener('click', e => { 
+        menu.classList.toggle('show'); 
+        e.stopPropagation(); 
+      });
       
       menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
         item.addEventListener('click', async e => {
@@ -302,11 +1023,13 @@
     }
 
     function renderTableLayout() {
-      const data = globalData[activeSheetName], isOverall = activeSheetName === '總排名';
+      const data = globalData[activeSheetName];
+      const isOverall = activeSheetName === '總排名';
       const colIndices = getValidColumnsOrder(data, getColLimit(data, isOverall), focusedDateCol, isOverall);
 
       let headHtml = colIndices.map(j => {
-        const val = data[1][j], isF = j === focusedDateCol;
+        const val = data[1][j];
+        const isF = j === focusedDateCol;
         const text = val !== "" && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data, activeSheetName)) : '-';
         const icon = val !== "" && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
         return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${text} ${icon}</th>`;
@@ -334,7 +1057,8 @@
       const tbody = document.getElementById('tableBody');
       if (!tbody) return;
 
-      const data = globalData[activeSheetName], isOverall = activeSheetName === '總排名';
+      const data = globalData[activeSheetName];
+      const isOverall = activeSheetName === '總排名';
       const colLimit = getColLimit(data, isOverall);
       const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
 
@@ -360,21 +1084,391 @@
       tbody.innerHTML = rows.map(r => {
         const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
         const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
-        
+
         let colsHtml = colIndices.map(j => {
-          const v = r.data[j], hasV = v !== "" && v !== undefined;
+          const v = r.data[j];
+          const hasV = v !== "" && v !== undefined;
           const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
           return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
         }).join('');
-        
-        return `<tr><td>${rHtml}</td><td>${r.data[0]}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+
+        const playerName = String(r.data[0] ?? '').replace(/"/g, '&quot;');
+        const safeName = playerName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const nameHtml = `<button type="button" class="player-name-btn" data-player="${playerName}">${safeName}</button>`;
+
+        return `<tr><td>${rHtml}</td><td>${nameHtml}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
       }).join('');
+
+      tbody.querySelectorAll('.player-name-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          openPlayerProfile(btn.dataset.player);
+        });
+      });
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function scoreNumber(v) {
+      if (v === null || v === undefined) return null;
+      const text = String(v).trim();
+      if (text === '' || text === '-' || text === '—') return null;
+      const n = Number(text);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function inferMonthNumber(sheetName, data) {
+      const text = String(sheetName || '').trim();
+      const numeric = text.match(/(?:^|[^\d])(1[0-2]|[1-9])(?:月|$)/);
+      if (numeric) return Number(numeric[1]);
+
+      const chinese = [
+        ['十二月', 12], ['十一月', 11], ['十月', 10],
+        ['九月', 9], ['八月', 8], ['七月', 7], ['六月', 6],
+        ['五月', 5], ['四月', 4], ['三月', 3], ['二月', 2], ['一月', 1]
+      ];
+      for (const [label, value] of chinese) {
+        if (text.includes(label)) return value;
+      }
+
+      const first = String(data?.[0]?.[5] ?? '').trim();
+      for (const [label, value] of chinese) {
+        if (first.startsWith(label)) return value;
+      }
+      return 0;
+    }
+
+    function getSheetGameColumns(sheetName, data) {
+      if (!Array.isArray(data) || data.length < 2 || sheetName === '總排名') return [];
+      const limit = getColLimit(data, false);
+      const result = [];
+      for (let j = 2; j < limit; j++) {
+        const header = data[1]?.[j];
+        if (header !== '' && header !== undefined && header !== null) result.push(j);
+      }
+      return result;
+    }
+
+    function findPlayerRow(data, playerName) {
+      if (!Array.isArray(data)) return null;
+      return data.slice(2).find(r => String(r?.[0] ?? '') === String(playerName)) || null;
+    }
+
+    function addOutcome(record, score) {
+      record.games++;
+      record.total += score;
+      record.scores.push(score);
+      if (score > 0) record.wins++;
+      else if (score < 0) record.losses++;
+      else record.draws++;
+    }
+
+    function collectPlayerStats(playerName, sheets) {
+      const stats = {
+        name: playerName,
+        month: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [], sheetName: '' },
+        year: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [] },
+        recent: [],
+        opponents: {}
+      };
+
+      const sortedSheets = sheets
+        .filter(s => Array.isArray(s.data))
+        .map(s => ({ ...s, monthNo: inferMonthNumber(s.name, s.data) }))
+        .sort((a, b) => a.monthNo - b.monthNo);
+
+      let profileMonthName = activeSheetName;
+      if (profileMonthName === '總排名') {
+        const latest = sortedSheets[sortedSheets.length - 1];
+        profileMonthName = latest ? latest.name : '';
+      }
+      stats.month.sheetName = profileMonthName;
+
+      sortedSheets.forEach(sheet => {
+        const row = findPlayerRow(sheet.data, playerName);
+        if (!row) return;
+
+        const cols = getSheetGameColumns(sheet.name, sheet.data);
+
+        cols.forEach(j => {
+          const target = scoreNumber(row[j]);
+          if (target === null) return;
+
+          const dateLabel = formatHeaderDate(sheet.data[1]?.[j], sheet.data, sheet.name);
+          const game = { score: target, sheet: sheet.name, monthNo: sheet.monthNo, date: dateLabel, col: j };
+
+          addOutcome(stats.year, target);
+          stats.recent.push(game);
+
+          if (sheet.name === profileMonthName) {
+            addOutcome(stats.month, target);
+          }
+
+          sheet.data.slice(2).forEach(opRow => {
+            const opponent = String(opRow?.[0] ?? '');
+            if (!opponent || opponent === playerName) return;
+            const oppScore = scoreNumber(opRow?.[j]);
+            if (oppScore === null) return;
+
+            if (!stats.opponents[opponent]) {
+              stats.opponents[opponent] = { name: opponent, games: 0, wins: 0, losses: 0, draws: 0 };
+            }
+            const duel = stats.opponents[opponent];
+            duel.games++;
+            if (target > oppScore) duel.wins++;
+            else if (target < oppScore) duel.losses++;
+            else duel.draws++;
+          });
+        });
+      });
+
+      stats.recent = stats.recent.slice(-10).reverse();
+      stats.profileMonthName = profileMonthName;
+      return stats;
+    }
+
+    function pct(wins, games) {
+      return games ? `${((wins / games) * 100).toFixed(1)}%` : '-';
+    }
+
+    function rateClass(wins, games) {
+      if (!games) return '';
+      const rate = wins / games;
+      return rate > 0.5 ? 'win' : (rate < 0.5 ? 'lose' : '');
+    }
+
+    function signedNumber(n) {
+      if (!Number.isFinite(n)) return '-';
+      return n > 0 ? `+${n}` : String(n);
+    }
+
+    function signedClass(n) {
+      if (!Number.isFinite(n) || n === 0) return '';
+      return n > 0 ? 'win' : 'lose';
+    }
+
+    function avgNumber(total, games) {
+      return games ? (total / games).toFixed(1) : '-';
+    }
+
+    function getOverallRank(playerName) {
+      const data = globalData['總排名'];
+      if (!data) return null;
+      const limit = getColLimit(data, true);
+      const rows = data.slice(2).filter(r => r[0]).map(r => {
+        const total = Number(r[1]) || 0;
+        const hasPart = r.slice(2, limit).some(v => v !== "" && v !== undefined && v !== "-" && String(v).trim() !== "");
+        return { name: String(r[0]), total, hasPart };
+      }).sort((a,b) => b.hasPart - a.hasPart || b.total - a.total);
+
+      let rank = 1, displayRank = 1, prev = null;
+      for (const r of rows) {
+        if (!r.hasPart) continue;
+        if (r.total !== prev) { displayRank = rank; prev = r.total; }
+        if (r.name === playerName) return displayRank;
+        rank++;
+      }
+      return null;
+    }
+
+    function renderProfileStats(stats) {
+      const m = stats.month;
+      const y = stats.year;
+
+      const recentHtml = stats.recent.length
+        ? stats.recent.map(g => {
+            const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
+            const sign = g.score > 0 ? '+' : '';
+            return `<div class="recent-game ${cls}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}">${sign}${g.score}</div>`;
+          }).join('')
+        : `<div class="profile-empty">暫無參加紀錄</div>`;
+
+      const opponents = Object.values(stats.opponents)
+        .filter(o => o.games >= 3)
+        .map(o => ({
+          ...o,
+          rate: (o.wins + o.losses) ? o.wins / (o.wins + o.losses) : 0.5
+        }))
+        .sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
+
+      const nemesis = opponents[0] || null;
+      const benefactor = opponents.length ? opponents[opponents.length - 1] : null;
+
+      let best = null, worst = null;
+      if (y.scores.length === 1) {
+        if (y.scores[0] > 0) best = y.scores[0];
+        else if (y.scores[0] < 0) worst = y.scores[0];
+        else { best = 0; worst = 0; }
+      } else if (y.scores.length > 1) {
+        best = Math.max(...y.scores);
+        worst = Math.min(...y.scores);
+      }
+
+      const monthWinRateClass = rateClass(m.wins, m.games);
+      const yearWinRateClass = rateClass(y.wins, y.games);
+      const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null;
+      const yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
+
+      document.getElementById('profileBody').innerHTML = `
+        <section class="profile-section">
+          <div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div>
+          <div class="profile-grid">
+            <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">2026 年度戰績</div>
+          <div class="profile-grid">
+            <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins, y.games)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">近期 10 場</div>
+          <div class="recent-grid">${recentHtml}</div>
+          <div class="recent-meta">
+            <span>最新 → 最舊</span>
+            <span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">仇家 / 天使</div>
+          <div class="duel-grid">
+            <div class="duel-card">
+              <div class="duel-label">😈 仇家</div>
+              ${nemesis 
+                ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div>
+                   <div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.wins + nemesis.losses)}</div>
+                   <div class="duel-note">共 ${nemesis.games} 場</div>` 
+                : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
+            </div>
+            <div class="duel-card">
+              <div class="duel-label">😇 天使</div>
+              ${benefactor 
+                ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div>
+                   <div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.wins + benefactor.losses)}</div>
+                   <div class="duel-note">共 ${benefactor.games} 場</div>` 
+                : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
+            </div>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">最佳 / 最差單局</div>
+          <div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div>
+          <div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div>
+        </section>
+      `;
+    }
+
+    async function openPlayerProfile(playerName) {
+      const token = ++profileRequestToken;
+      document.getElementById('profileName').textContent = playerName;
+      document.getElementById('profileSubtitle').textContent = '正在整理 2026 戰績…';
+      document.getElementById('profileBody').innerHTML = `
+        <section class="profile-section">
+          <div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div>
+          <div class="profile-grid">
+            ${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}
+          </div>
+        </section>
+        <section class="profile-section"><div class="sk-box" style="height:150px;width:100%;"></div></section>
+      `;
+
+      document.body.classList.add('profile-open');
+      document.getElementById('profileBackdrop').classList.add('show');
+      document.getElementById('profileSheet').classList.add('show');
+      document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'false');
+      document.getElementById('profileSheet').setAttribute('aria-hidden', 'false');
+
+      try {
+        await Promise.all(allSheetNames.map(async sheetName => {
+          if (!globalData[sheetName]) {
+            if (!fetchPromises[sheetName]) {
+              fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`).then(res => res.json());
+            }
+            try {
+              globalData[sheetName] = await fetchPromises[sheetName];
+            } catch (err) {
+              delete fetchPromises[sheetName];
+              throw err;
+            }
+          }
+        }));
+
+        if (token !== profileRequestToken) return;
+
+        const statSheets = allSheetNames
+          .filter(name => name !== '總排名' && globalData[name])
+          .map(name => ({ name, data: globalData[name] }));
+
+        const stats = collectPlayerStats(playerName, statSheets);
+        const currentRank = getOverallRank(playerName);
+
+        document.getElementById('profileSubtitle').textContent =
+          `${stats.profileMonthName || '2026 年'} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
+
+        renderProfileStats(stats);
+      } catch (err) {
+        if (token !== profileRequestToken) return;
+        document.getElementById('profileSubtitle').textContent = '載入失敗';
+        document.getElementById('profileBody').innerHTML = `
+          <section class="profile-section">
+            <div class="error-container" style="padding:20px 10px;">
+              玩家資料載入失敗：${escapeHtml(err.message)}
+            </div>
+          </section>`;
+      }
+    }
+
+    function closePlayerProfile() {
+      profileRequestToken++;
+      document.body.classList.remove('profile-open');
+      document.getElementById('profileBackdrop').classList.remove('show');
+      document.getElementById('profileSheet').classList.remove('show');
+      document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'true');
+      document.getElementById('profileSheet').setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
+    document.getElementById('profileBackdrop').addEventListener('click', closePlayerProfile);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closePlayerProfile();
+    });
+
     document.addEventListener('click', e => {
-      const menu = document.getElementById('monthSelectorMenu'), container = document.getElementById('dropdownContainer');
+      const menu = document.getElementById('monthSelectorMenu');
+      const container = document.getElementById('dropdownContainer');
       if (menu && container && !container.contains(e.target)) menu.classList.remove('show');
     });
+
+    let scrollTimers = { table: null, profile: null };
+    document.addEventListener('scroll', (e) => {
+      const cls = e.target.classList;
+      if (cls && (cls.contains('table-container') || cls.contains('profile-body'))) {
+        e.target.classList.add('scrolling');
+        const key = cls.contains('table-container') ? 'table' : 'profile';
+        clearTimeout(scrollTimers[key]);
+        scrollTimers[key] = setTimeout(() => {
+          e.target.classList.remove('scrolling');
+        }, 1000);
+      }
+    }, true);
 
     fetchData();
   </script>
