@@ -1211,23 +1211,36 @@
             addOutcome(stats.month, target);
           }
 
-          sheet.data.slice(2).forEach(opRow => {
-            const opponent = String(opRow?.[0] ?? '');
-            if (!opponent || opponent === playerName) return;
-            const oppScore = scoreNumber(opRow?.[j]);
-            if (oppScore === null) return;
+        sheet.data.slice(2).forEach(opRow => {
+          const opponent = String(opRow?.[0] ?? '');
 
-            if (!stats.opponents[opponent]) {
-              stats.opponents[opponent] = { name: opponent, games: 0, wins: 0, losses: 0, draws: 0 };
-            }
-            const duel = stats.opponents[opponent];
-            duel.games++;
-            if (target > oppScore) duel.wins++;
-            else if (target < oppScore) duel.losses++;
-            else duel.draws++;
-          });
+          if (!opponent || opponent === playerName) return;
+
+          const oppScore = scoreNumber(opRow?.[j]);
+          if (oppScore === null) return;
+
+          if (!stats.opponents[opponent]) {
+            stats.opponents[opponent] = {
+              name: opponent,
+              games: 0,
+              wins: 0,
+              losses: 0,
+              draws: 0
+            };
+          }
+
+          const duel = stats.opponents[opponent];
+          duel.games++;
+          if (target > 0 && oppScore < 0) {
+            duel.wins++;
+          } else if (target < 0 && oppScore > 0) {
+            duel.losses++;
+          } else {
+            duel.draws++;
+          }
         });
       });
+    });
 
       stats.recent = stats.recent.slice(-10).reverse();
       stats.profileMonthName = profileMonthName;
@@ -1252,10 +1265,6 @@
     function signedClass(n) {
       if (!Number.isFinite(n) || n === 0) return '';
       return n > 0 ? 'win' : 'lose';
-    }
-
-    function avgNumber(total, games) {
-      return games ? (total / games).toFixed(1) : '-';
     }
 
     function getOverallRank(playerName) {
@@ -1298,17 +1307,19 @@
         }))
         .sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
 
-      const nemesis = opponents[0] || null;
-      const benefactor = opponents.length ? opponents[opponents.length - 1] : null;
+      const potentialNemesis = opponents[0] || null;
+      const nemesis = (potentialNemesis && potentialNemesis.rate < 0.5) ? potentialNemesis : null;
+
+      const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null;
+      const benefactor = (potentialBenefactor && potentialBenefactor.rate > 0.5) ? potentialBenefactor : null;
 
       let best = null, worst = null;
-      if (y.scores.length === 1) {
-        if (y.scores[0] > 0) best = y.scores[0];
-        else if (y.scores[0] < 0) worst = y.scores[0];
-        else { best = 0; worst = 0; }
-      } else if (y.scores.length > 1) {
-        best = Math.max(...y.scores);
-        worst = Math.min(...y.scores);
+      if (y.scores.length > 0) {
+        const maxScore = Math.max(...y.scores);
+        const minScore = Math.min(...y.scores);
+
+        best = maxScore > 0 ? maxScore : null;
+        worst = minScore < 0 ? minScore : null;
       }
 
       const monthWinRateClass = rateClass(m.wins, m.games);
