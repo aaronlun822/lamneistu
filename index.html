@@ -1303,7 +1303,7 @@
         .filter(o => o.games >= 3)
         .map(o => ({
           ...o,
-          rate: (o.wins + o.losses) ? o.wins / (o.wins + o.losses) : 0.5
+          rate: o.games ? o.wins / o.games : 0
         }))
         .sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
 
@@ -1364,7 +1364,7 @@
               <div class="duel-label">😈 仇家</div>
               ${nemesis 
                 ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div>
-                   <div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.wins + nemesis.losses)}</div>
+                   <div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div>
                    <div class="duel-note">共 ${nemesis.games} 場</div>` 
                 : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
             </div>
@@ -1372,7 +1372,7 @@
               <div class="duel-label">😇 天使</div>
               ${benefactor 
                 ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div>
-                   <div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.wins + benefactor.losses)}</div>
+                   <div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div>
                    <div class="duel-note">共 ${benefactor.games} 場</div>` 
                 : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
             </div>
