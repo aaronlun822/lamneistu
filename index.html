@@ -575,6 +575,7 @@
       flex: 0 0 auto;
     }
     .profile-header {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -770,6 +771,10 @@
     }
     body.profile-open { overflow: hidden; }
 
+    .profile-sheet.dragging {
+      transition: none;
+    }
+
     @media (max-width: 600px) {
       .profile-sheet {
         left: 0;
@@ -781,6 +786,9 @@
       }
       .profile-sheet.show {
         transform: translateY(0);
+      }
+      .profile-header {
+        flex: 0 0 auto;
       }
       .profile-body { padding: 10px; }
       .profile-section { padding: 13px; border-radius: 14px; }
@@ -1468,6 +1476,56 @@
       if (menu && container && !container.contains(e.target)) menu.classList.remove('show');
     });
 
+    let profileDrag = {
+      active: false,
+      startY: 0,
+      currentY: 0,
+      pointerId: null
+    };
+
+    function setupProfileDrag() {
+      const sheet = document.getElementById('profileSheet');
+      const body = document.getElementById('profileBody');
+
+      sheet.addEventListener('touchstart', e => {
+        if (window.innerWidth > 600 || !sheet.classList.contains('show') || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const target = e.target;
+        const fromHeader = !!target.closest('.profile-header') || !!target.closest('.profile-grabber');
+        const bodyAtTop = body.scrollTop <= 0;
+        if (!fromHeader && !bodyAtTop) return;
+        profileDrag.active = true;
+        profileDrag.startY = touch.clientY;
+        profileDrag.currentY = touch.clientY;
+        sheet.classList.add('dragging');
+      }, { passive: true });
+
+      sheet.addEventListener('touchmove', e => {
+        if (!profileDrag.active || window.innerWidth > 600 || e.touches.length !== 1) return;
+        const y = e.touches[0].clientY;
+        const delta = Math.max(0, y - profileDrag.startY);
+        profileDrag.currentY = y;
+        if (delta > 0) {
+          sheet.style.transform = `translateY(${delta}px)`;
+        }
+      }, { passive: true });
+
+      sheet.addEventListener('touchend', () => {
+        if (!profileDrag.active) return;
+        const delta = Math.max(0, profileDrag.currentY - profileDrag.startY);
+        profileDrag.active = false;
+        sheet.classList.remove('dragging');
+        sheet.style.transform = '';
+        if (delta >= 120) closePlayerProfile();
+      }, { passive: true });
+
+      sheet.addEventListener('touchcancel', () => {
+        profileDrag.active = false;
+        sheet.classList.remove('dragging');
+        sheet.style.transform = '';
+      }, { passive: true });
+    }
+
     let scrollTimers = { table: null, profile: null };
     document.addEventListener('scroll', (e) => {
       const cls = e.target.classList;
@@ -1481,6 +1539,7 @@
       }
     }, true);
 
+    setupProfileDrag();
     fetchData();
   </script>
 </body>
