@@ -118,7 +118,11 @@
       background-repeat: no-repeat; 
       background-position: right 12px center; 
       font-family: inherit; 
-      transition: background-color 0.2s ease; 
+      transition: background-color 0.2s ease;
+      max-width: calc(100vw - 150px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     
     .month-dropdown:hover { 
@@ -133,6 +137,7 @@
     .custom-dropdown-container { 
       position: relative; 
       display: inline-block; 
+      min-width: 0;
     }
     
     .custom-dropdown-menu { 
@@ -193,6 +198,32 @@
     .custom-dropdown-item.selected { 
       color: #007AFF; 
       font-weight: 600; 
+    }
+
+    .h2h-pinned-1 td { 
+      position: sticky; 
+      top: 48px;
+      z-index: 15; 
+      box-shadow: 0 1px 0 #E5E5EA; 
+    }
+
+    .h2h-pinned-2 td { 
+      position: sticky; 
+      top: 96px;
+      z-index: 15; 
+      box-shadow: 0 1px 0 #E5E5EA; 
+    }
+
+    .h2h-pinned-1 td:nth-child(1), .h2h-pinned-1 td:nth-child(2), 
+    .h2h-pinned-1 td:nth-child(3), .h2h-pinned-1 td.focused-sticky,
+    .h2h-pinned-2 td:nth-child(1), .h2h-pinned-2 td:nth-child(2), 
+    .h2h-pinned-2 td:nth-child(3), .h2h-pinned-2 td.focused-sticky { 
+      z-index: 16; 
+    }
+
+    @media (max-width: 600px) {
+      .h2h-pinned-1 td { top: 40px; }
+      .h2h-pinned-2 td { top: 80px; }
     }
 
     .overall-btn { 
@@ -497,8 +528,6 @@
       }
     }
 
-
-    /* ===== Player Profile ===== */
     .player-name-btn {
       display: inline-flex;
       align-items: center;
@@ -577,6 +606,7 @@
       flex: 0 0 auto;
     }
     .profile-header {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -731,7 +761,22 @@
       padding: 12px;
       background: #F2F2F7;
       min-width: 0;
+      position: relative;
     }
+    .duel-card.clickable {
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    @media (hover: hover) {
+      .duel-card.clickable:hover {
+        background: #E5E5EA;
+        transform: scale(1.02);
+      }
+    }
+    .duel-card.clickable:active {
+      transform: scale(0.98);
+    }
+    
     .duel-label {
       color: #8E8E93;
       font-size: 12px;
@@ -772,6 +817,10 @@
     }
     body.profile-open { overflow: hidden; }
 
+    .profile-sheet.dragging {
+      transition: none;
+    }
+
     @media (max-width: 600px) {
       .profile-sheet {
         left: 0;
@@ -784,6 +833,9 @@
       .profile-sheet.show {
         transform: translateY(0);
       }
+      .profile-header {
+        flex: 0 0 auto;
+      }
       .profile-body { padding: 10px; }
       .profile-section { padding: 13px; border-radius: 14px; }
       .profile-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -792,7 +844,6 @@
       .duel-grid { grid-template-columns: 1fr 1fr; }
       .profile-name { font-size: 21px; }
     }
-
   </style>
 </head>
 <body>
@@ -837,7 +888,6 @@
     let focusedDateCol = null;
     let fetchPromises = {}; 
     let profileRequestToken = 0;
-
 
     function renderSkeleton(isFirstLoad = true) {
       if (isFirstLoad) {
@@ -913,7 +963,7 @@
 
       document.getElementById('controlsArea').innerHTML = `
         <div class="custom-dropdown-container" id="dropdownContainer">
-          <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
+          <button id="monthSelectorTrigger" class="month-dropdown" title="${escapeHtml(activeSheetName)}">${escapeHtml(activeSheetName)}</button>
           <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
         </div>
         <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
@@ -988,6 +1038,9 @@
     }
 
     function getColLimit(data, isOverall) {
+      if (!allSheetNames.includes(activeSheetName) && activeSheetName !== '總排名') {
+        return data[1] ? data[1].length : 2;
+      }
       if (isOverall && data[1]) {
         const limitIndex = data[1].findIndex((v, i) => i >= 2 && (!v || String(v).includes('Rank')));
         return limitIndex !== -1 ? limitIndex : data[1].length;
@@ -1078,16 +1131,34 @@
         r.rank = displayRank; rank++;
       });
 
+      const isH2H = activeSheetName.includes(' vs ');
+      const h2hPlayers = isH2H ? activeSheetName.split(' vs ') : [];
+
       rows.sort((a, b) => {
+
+        if (isH2H) {
+          const aName = String(a.data[0]);
+          const bName = String(b.data[0]);
+          if (aName === h2hPlayers[0]) return -1;
+          if (bName === h2hPlayers[0]) return 1;
+          if (aName === h2hPlayers[1]) return -1;
+          if (bName === h2hPlayers[1]) return 1;
+        }
+
         if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
         let vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
         let vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
         return sortAscending ? vA - vB : vB - vA;
       });
 
-      tbody.innerHTML = rows.map(r => {
+      tbody.innerHTML = rows.map((r, index) => {
         const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
         const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
+
+        let trClass = '';
+
+        if (isH2H && index === 0) trClass = 'h2h-pinned-1';
+        if (isH2H && index === 1) trClass = 'h2h-pinned-2';
 
         let colsHtml = colIndices.map(j => {
           const v = r.data[j];
@@ -1100,7 +1171,7 @@
         const safeName = playerName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const nameHtml = `<button type="button" class="player-name-btn" data-player="${playerName}">${safeName}</button>`;
 
-        return `<tr><td>${rHtml}</td><td>${nameHtml}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+        return `<tr class="${trClass}"><td>${rHtml}</td><td>${nameHtml}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
       }).join('');
 
       tbody.querySelectorAll('.player-name-btn').forEach(btn => {
@@ -1110,9 +1181,6 @@
         });
       });
     }
-
-    // ===== Player Profile Data / UI =====
-    const profileMonthNames = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -1124,25 +1192,18 @@
     }
 
     function scoreNumber(v) {
-      // Participation rule:
-      // "-" / "—" / empty / whitespace = did NOT participate.
-      // "0" = DID participate and scored 0.
       if (v === null || v === undefined) return null;
       const text = String(v).trim();
       if (text === '' || text === '-' || text === '—') return null;
-
       const n = Number(text);
       return Number.isFinite(n) ? n : null;
     }
 
     function inferMonthNumber(sheetName, data) {
       const text = String(sheetName || '').trim();
-
-      // Prefer explicit numeric month first.
       const numeric = text.match(/(?:^|[^\d])(1[0-2]|[1-9])(?:月|$)/);
       if (numeric) return Number(numeric[1]);
 
-      // Then Chinese month names, longest first so 十一月 / 十二月 are not mistaken for 十月.
       const chinese = [
         ['十二月', 12], ['十一月', 11], ['十月', 10],
         ['九月', 9], ['八月', 8], ['七月', 7], ['六月', 6],
@@ -1152,34 +1213,27 @@
         if (text.includes(label)) return value;
       }
 
-      // Fallback to the first header's month wording.
       const first = String(data?.[0]?.[5] ?? '').trim();
       for (const [label, value] of chinese) {
         if (first.startsWith(label)) return value;
       }
-
       return 0;
     }
 
     function getSheetGameColumns(sheetName, data) {
-      if (!Array.isArray(data) || data.length < 2) return [];
-      if (sheetName === '總排名') return [];
-
+      if (!Array.isArray(data) || data.length < 2 || sheetName === '總排名') return [];
       const limit = getColLimit(data, false);
       const result = [];
       for (let j = 2; j < limit; j++) {
         const header = data[1]?.[j];
-        if (header !== '' && header !== undefined && header !== null) {
-          result.push(j);
-        }
+        if (header !== '' && header !== undefined && header !== null) result.push(j);
       }
       return result;
     }
 
     function findPlayerRow(data, playerName) {
       if (!Array.isArray(data)) return null;
-      const row = data.slice(2).find(r => String(r?.[0] ?? '') === String(playerName));
-      return row || null;
+      return data.slice(2).find(r => String(r?.[0] ?? '') === String(playerName)) || null;
     }
 
     function addOutcome(record, score) {
@@ -1201,13 +1255,12 @@
       };
 
       const sortedSheets = sheets
-        .filter(s => s.name !== '總排名' && Array.isArray(s.data))
+        .filter(s => Array.isArray(s.data))
         .map(s => ({ ...s, monthNo: inferMonthNumber(s.name, s.data) }))
         .sort((a, b) => a.monthNo - b.monthNo);
 
-      // The currently viewed month is "本月"; from 總排名, use the latest available month.
       let profileMonthName = activeSheetName;
-      if (profileMonthName === '總排名') {
+      if (profileMonthName === '總排名' || (!allSheetNames.includes(profileMonthName))) {
         const latest = sortedSheets[sortedSheets.length - 1];
         profileMonthName = latest ? latest.name : '';
       }
@@ -1221,20 +1274,11 @@
 
         cols.forEach(j => {
           const target = scoreNumber(row[j]);
-
-          // No score = did not participate in this game.
           if (target === null) return;
 
           const dateLabel = formatHeaderDate(sheet.data[1]?.[j], sheet.data, sheet.name);
-          const game = {
-            score: target,
-            sheet: sheet.name,
-            monthNo: sheet.monthNo,
-            date: dateLabel,
-            col: j
-          };
+          const game = { score: target, sheet: sheet.name, monthNo: sheet.monthNo, date: dateLabel, col: j };
 
-          // Every player's actual participation counts as one game.
           addOutcome(stats.year, target);
           stats.recent.push(game);
 
@@ -1242,56 +1286,54 @@
             addOutcome(stats.month, target);
           }
 
-          // Head-to-head: only count games where BOTH players participated.
-          sheet.data.slice(2).forEach(opRow => {
-            const opponent = String(opRow?.[0] ?? '');
-            if (!opponent || opponent === playerName) return;
+        sheet.data.slice(2).forEach(opRow => {
+          const opponent = String(opRow?.[0] ?? '');
 
-            const oppScore = scoreNumber(opRow?.[j]);
-            if (oppScore === null) return;
+          if (!opponent || opponent === playerName) return;
 
-            if (!stats.opponents[opponent]) {
-              stats.opponents[opponent] = {
-                name: opponent,
-                games: 0,
-                wins: 0,
-                losses: 0,
-                draws: 0
-              };
-            }
+          const oppScore = scoreNumber(opRow?.[j]);
+          if (oppScore === null) return;
 
-            const duel = stats.opponents[opponent];
-            duel.games++;
+          if (!stats.opponents[opponent]) {
+            stats.opponents[opponent] = {
+              name: opponent,
+              games: 0,
+              wins: 0,
+              losses: 0,
+              draws: 0
+            };
+          }
 
-            if (target > oppScore) duel.wins++;
-            else if (target < oppScore) duel.losses++;
-            else duel.draws++;
-          });
+          const duel = stats.opponents[opponent];
+          duel.games++;
+          if (target > 0 && oppScore < 0) {
+            duel.wins++;
+          } else if (target < 0 && oppScore > 0) {
+            duel.losses++;
+          } else {
+            duel.draws++;
+          }
         });
       });
+    });
 
-      // Latest 10 PARTICIPATED games in true chronological order: latest first.
-      // Non-participation ("-", "—", empty) has already been excluded by scoreNumber().
       stats.recent = stats.recent.slice(-10).reverse();
-
       stats.profileMonthName = profileMonthName;
       return stats;
     }
 
     function pct(wins, games) {
-      return games ? `${((wins / games) * 100).toFixed(1)}%` : '—';
+      return games ? `${((wins / games) * 100).toFixed(1)}%` : '-';
     }
 
     function rateClass(wins, games) {
       if (!games) return '';
       const rate = wins / games;
-      if (rate > 0.5) return 'win';
-      if (rate < 0.5) return 'lose';
-      return '';
+      return rate > 0.5 ? 'win' : (rate < 0.5 ? 'lose' : '');
     }
 
     function signedNumber(n) {
-      if (!Number.isFinite(n)) return '—';
+      if (!Number.isFinite(n)) return '-';
       return n > 0 ? `+${n}` : String(n);
     }
 
@@ -1300,8 +1342,24 @@
       return n > 0 ? 'win' : 'lose';
     }
 
-    function avgNumber(total, games) {
-      return games ? (total / games).toFixed(1) : '—';
+    function getOverallRank(playerName) {
+      const data = globalData['總排名'];
+      if (!data) return null;
+      const limit = getColLimit(data, true);
+      const rows = data.slice(2).filter(r => r[0]).map(r => {
+        const total = Number(r[1]) || 0;
+        const hasPart = r.slice(2, limit).some(v => v !== "" && v !== undefined && v !== "-" && String(v).trim() !== "");
+        return { name: String(r[0]), total, hasPart };
+      }).sort((a,b) => b.hasPart - a.hasPart || b.total - a.total);
+
+      let rank = 1, displayRank = 1, prev = null;
+      for (const r of rows) {
+        if (!r.hasPart) continue;
+        if (r.total !== prev) { displayRank = rank; prev = r.total; }
+        if (r.name === playerName) return displayRank;
+        rank++;
+      }
+      return null;
     }
 
     function renderProfileStats(stats) {
@@ -1316,33 +1374,41 @@
           }).join('')
         : `<div class="profile-empty">暫無參加紀錄</div>`;
 
-      // Compare only games where both players participated.
       const opponents = Object.values(stats.opponents)
+        .filter(o => o.games >= 3)
         .map(o => ({
           ...o,
-          rate: (o.wins + o.losses) ? o.wins / (o.wins + o.losses) : 0.5
+          rate: o.games ? o.wins / o.games : 0
         }))
         .sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
 
-      const nemesis = opponents[0] || null;
-      const benefactor = opponents.length ? opponents[opponents.length - 1] : null;
+      const potentialNemesis = opponents[0] || null;
+      const nemesis = (potentialNemesis && potentialNemesis.rate < 0.5) ? potentialNemesis : null;
 
-      const best = y.scores.length ? Math.max(...y.scores) : null;
-      const worst = y.scores.length ? Math.min(...y.scores) : null;
+      const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null;
+      const benefactor = (potentialBenefactor && potentialBenefactor.rate > 0.5) ? potentialBenefactor : null;
+
+      let best = null, worst = null;
+      if (y.scores.length > 0) {
+        const maxScore = Math.max(...y.scores);
+        const minScore = Math.min(...y.scores);
+
+        best = maxScore > 0 ? maxScore : null;
+        worst = minScore < 0 ? minScore : null;
+      }
 
       const monthWinRateClass = rateClass(m.wins, m.games);
       const yearWinRateClass = rateClass(y.wins, y.games);
-
       const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null;
       const yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
 
       document.getElementById('profileBody').innerHTML = `
         <section class="profile-section">
-          <div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '—')}</div>
+          <div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div>
           <div class="profile-grid">
             <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
             <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '—' : signedNumber(monthAvg)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
             <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
           </div>
         </section>
@@ -1352,7 +1418,7 @@
           <div class="profile-grid">
             <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
             <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins, y.games)}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '—' : signedNumber(yearAvg)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
             <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
           </div>
         </section>
@@ -1367,27 +1433,31 @@
         </section>
 
         <section class="profile-section">
-          <div class="profile-section-title">剋星 / 貴人</div>
+          <div class="profile-section-title">魔鬼 / 天使</div>
           <div class="duel-grid">
-            <div class="duel-card">
-              <div class="duel-label">😈 剋星</div>
-              <div class="duel-opponent">${nemesis ? escapeHtml(nemesis.name) : '資料不足'}</div>
-              <div class="duel-rate">${nemesis ? `對戰勝率 ${pct(nemesis.wins, nemesis.wins + nemesis.losses)}` : '暫無共同參與紀錄'}</div>
-              <div class="duel-note">${nemesis ? `共同參與 ${nemesis.games} 場` : ''}</div>
+            <div class="duel-card ${nemesis ? 'clickable' : ''}" ${nemesis ? `data-opponent="${escapeHtml(nemesis.name)}"` : ''}>
+              <div class="duel-label">😈 魔鬼</div>
+              ${nemesis 
+                ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div>
+                   <div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div>
+                   <div class="duel-note">共 ${nemesis.games} 場</div>` 
+                : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
             </div>
-            <div class="duel-card">
-              <div class="duel-label">👑 貴人</div>
-              <div class="duel-opponent">${benefactor ? escapeHtml(benefactor.name) : '資料不足'}</div>
-              <div class="duel-rate">${benefactor ? `對戰勝率 ${pct(benefactor.wins, benefactor.wins + benefactor.losses)}` : '暫無共同參與紀錄'}</div>
-              <div class="duel-note">${benefactor ? `共同參與 ${benefactor.games} 場` : ''}</div>
+            <div class="duel-card ${benefactor ? 'clickable' : ''}" ${benefactor ? `data-opponent="${escapeHtml(benefactor.name)}"` : ''}>
+              <div class="duel-label">😇 天使</div>
+              ${benefactor 
+                ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div>
+                   <div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div>
+                   <div class="duel-note">共 ${benefactor.games} 場</div>` 
+                : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
             </div>
           </div>
         </section>
 
         <section class="profile-section">
           <div class="profile-section-title">最佳 / 最差單局</div>
-          <div class="record-row"><div class="record-label">🏆 最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '—' : signedNumber(best)}</div></div>
-          <div class="record-row"><div class="record-label">📉 最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '—' : signedNumber(worst)}</div></div>
+          <div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div>
+          <div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div>
         </section>
       `;
     }
@@ -1413,25 +1483,39 @@
       document.getElementById('profileSheet').setAttribute('aria-hidden', 'false');
 
       try {
-        // Ensure all currently known year sheets are available before calculating the profile.
-        const neededSheets = allSheetNames.filter(n => n !== '總排名');
-        await Promise.all(neededSheets.map(async sheetName => {
-          if (!globalData[sheetName]) await fetchSingleSheetData(sheetName);
+        await Promise.all(allSheetNames.map(async sheetName => {
+          if (!globalData[sheetName]) {
+            if (!fetchPromises[sheetName]) {
+              fetchPromises[sheetName] = fetch(`${API_URL}?sheet=${encodeURIComponent(sheetName)}`).then(res => res.json());
+            }
+            try {
+              globalData[sheetName] = await fetchPromises[sheetName];
+            } catch (err) {
+              delete fetchPromises[sheetName];
+              throw err;
+            }
+          }
         }));
 
         if (token !== profileRequestToken) return;
 
-        const sheets = neededSheets
-          .filter(name => globalData[name])
+        const statSheets = allSheetNames
+          .filter(name => name !== '總排名' && globalData[name])
           .map(name => ({ name, data: globalData[name] }));
 
-        const stats = collectPlayerStats(playerName, sheets);
-        const currentRank = getPlayerRank(playerName);
+        const stats = collectPlayerStats(playerName, statSheets);
+        const currentRank = getOverallRank(playerName);
 
         document.getElementById('profileSubtitle').textContent =
-          `${stats.profileMonthName || '2026 年'} · ${currentRank ? `目前排名 ${currentRank}` : '玩家資料'}`;
+          `${stats.profileMonthName || '2026 年'} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
 
         renderProfileStats(stats);
+
+        document.querySelectorAll('.duel-card.clickable').forEach(card => {
+          card.addEventListener('click', () => {
+            openH2HView(stats.name, card.dataset.opponent);
+          });
+        });
       } catch (err) {
         if (token !== profileRequestToken) return;
         document.getElementById('profileSubtitle').textContent = '載入失敗';
@@ -1444,31 +1528,6 @@
       }
     }
 
-    function getPlayerRank(playerName) {
-      const data = globalData[activeSheetName];
-      if (!data) return null;
-      const isOverall = activeSheetName === '總排名';
-      const colLimit = getColLimit(data, isOverall);
-
-      const rows = data.slice(2)
-        .filter(r => r[0])
-        .map(r => {
-          const total = Number(r[1]) || 0;
-          const hasPart = r.slice(2, colLimit).some(v => v !== "" && v !== undefined && v !== "-" && String(v).trim() !== "");
-          return { name: String(r[0]), total, hasPart };
-        })
-        .sort((a,b) => b.hasPart - a.hasPart || b.total - a.total);
-
-      let rank = 1, displayRank = 1, prev = null;
-      for (const r of rows) {
-        if (!r.hasPart) continue;
-        if (r.total !== prev) { displayRank = rank; prev = r.total; }
-        if (r.name === playerName) return displayRank;
-        rank++;
-      }
-      return null;
-    }
-
     function closePlayerProfile() {
       profileRequestToken++;
       document.body.classList.remove('profile-open');
@@ -1476,6 +1535,96 @@
       document.getElementById('profileSheet').classList.remove('show');
       document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'true');
       document.getElementById('profileSheet').setAttribute('aria-hidden', 'true');
+    }
+
+    function generateH2HData(playerA, playerB) {
+      const h2hCols = [];
+      const allPlayers = new Set();
+      
+      const sortedSheets = allSheetNames
+        .filter(s => s !== '總排名' && globalData[s])
+        .map(s => ({ name: s, data: globalData[s], monthNo: inferMonthNumber(s, globalData[s]) }))
+        .sort((a, b) => a.monthNo - b.monthNo);
+
+      sortedSheets.forEach(sheet => {
+        const sheetData = sheet.data;
+        const rowA = findPlayerRow(sheetData, playerA);
+        const rowB = findPlayerRow(sheetData, playerB);
+        if (!rowA || !rowB) return;
+
+        const cols = getSheetGameColumns(sheet.name, sheetData);
+        cols.forEach(j => {
+          const scoreA = scoreNumber(rowA[j]);
+          const scoreB = scoreNumber(rowB[j]);
+          if (scoreA !== null && scoreB !== null) {
+            const originalHeader = sheetData[1]?.[j];
+            const dateLabel = formatHeaderDate(originalHeader, sheetData, sheet.name);
+            
+            const matchScores = {};
+            sheetData.slice(2).forEach(row => {
+              const pName = String(row[0] || '').trim();
+              if (!pName) return;
+              const pScore = scoreNumber(row[j]);
+              if (pScore !== null) {
+                matchScores[pName] = pScore;
+                allPlayers.add(pName);
+              }
+            });
+            h2hCols.push({ label: dateLabel, scores: matchScores });
+          }
+        });
+      });
+
+      h2hCols.reverse();
+
+      const newData = [];
+      const header0 = ['',''];
+      const header1 = ['','']; 
+      for (let i = 0; i < h2hCols.length; i++) {
+        header0.push('');
+        header1.push(h2hCols[i].label);
+      }
+      newData.push(header0);
+      newData.push(header1);
+
+      Array.from(allPlayers).forEach(pName => {
+        let total = 0;
+        const row = [pName, 0]; 
+        h2hCols.forEach(col => {
+          const sc = col.scores[pName];
+          if (sc !== undefined && sc !== null) {
+            row.push(sc);
+            total += sc;
+          } else {
+            row.push('');
+          }
+        });
+        row[1] = total; 
+        newData.push(row);
+      });
+
+      return newData;
+    }
+
+    async function openH2HView(playerA, playerB) {
+      closePlayerProfile();
+      
+      const h2hTitle = `${playerA} vs ${playerB}`;
+      const h2hData = generateH2HData(playerA, playerB);
+      
+      if (h2hData.length <= 2 || h2hData[1].length <= 2) {
+        alert('找不到足夠的戰績資料');
+        return;
+      }
+      
+      globalData[h2hTitle] = h2hData;
+      activeSheetName = h2hTitle;
+      currentSortCol = 'total';
+      sortAscending = false;
+      focusedDateCol = null;
+      
+      renderControls();
+      renderTableLayout();
     }
 
     document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
@@ -1490,29 +1639,70 @@
       if (menu && container && !container.contains(e.target)) menu.classList.remove('show');
     });
 
-    let scrollTimer = null;
-    let profileScrollTimer = null;
+    let profileDrag = {
+      active: false,
+      startY: 0,
+      currentY: 0,
+      pointerId: null
+    };
 
+    function setupProfileDrag() {
+      const sheet = document.getElementById('profileSheet');
+      const body = document.getElementById('profileBody');
+
+      sheet.addEventListener('touchstart', e => {
+        if (window.innerWidth > 600 || !sheet.classList.contains('show') || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const target = e.target;
+        const fromHeader = !!target.closest('.profile-header') || !!target.closest('.profile-grabber');
+        const bodyAtTop = body.scrollTop <= 0;
+        if (!fromHeader && !bodyAtTop) return;
+        profileDrag.active = true;
+        profileDrag.startY = touch.clientY;
+        profileDrag.currentY = touch.clientY;
+        sheet.classList.add('dragging');
+      }, { passive: true });
+
+      sheet.addEventListener('touchmove', e => {
+        if (!profileDrag.active || window.innerWidth > 600 || e.touches.length !== 1) return;
+        const y = e.touches[0].clientY;
+        const delta = Math.max(0, y - profileDrag.startY);
+        profileDrag.currentY = y;
+        if (delta > 0) {
+          sheet.style.transform = `translateY(${delta}px)`;
+        }
+      }, { passive: true });
+
+      sheet.addEventListener('touchend', () => {
+        if (!profileDrag.active) return;
+        const delta = Math.max(0, profileDrag.currentY - profileDrag.startY);
+        profileDrag.active = false;
+        sheet.classList.remove('dragging');
+        sheet.style.transform = '';
+        if (delta >= 120) closePlayerProfile();
+      }, { passive: true });
+
+      sheet.addEventListener('touchcancel', () => {
+        profileDrag.active = false;
+        sheet.classList.remove('dragging');
+        sheet.style.transform = '';
+      }, { passive: true });
+    }
+
+    let scrollTimers = { table: null, profile: null };
     document.addEventListener('scroll', (e) => {
-      if (e.target.classList && e.target.classList.contains('table-container')) {
-        const container = e.target;
-        container.classList.add('scrolling');
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(() => {
-          container.classList.remove('scrolling');
-        }, 1000);
-      }
-
-      if (e.target.classList && e.target.classList.contains('profile-body')) {
-        const container = e.target;
-        container.classList.add('scrolling');
-        clearTimeout(profileScrollTimer);
-        profileScrollTimer = setTimeout(() => {
-          container.classList.remove('scrolling');
+      const cls = e.target.classList;
+      if (cls && (cls.contains('table-container') || cls.contains('profile-body'))) {
+        e.target.classList.add('scrolling');
+        const key = cls.contains('table-container') ? 'table' : 'profile';
+        clearTimeout(scrollTimers[key]);
+        scrollTimers[key] = setTimeout(() => {
+          e.target.classList.remove('scrolling');
         }, 1000);
       }
     }, true);
 
+    setupProfileDrag();
     fetchData();
   </script>
 </body>
