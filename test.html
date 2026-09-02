@@ -118,11 +118,7 @@
       background-repeat: no-repeat; 
       background-position: right 12px center; 
       font-family: inherit; 
-      transition: background-color 0.2s ease;
-      max-width: calc(100vw - 150px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      transition: background-color 0.2s ease; 
     }
     
     .month-dropdown:hover { 
@@ -137,7 +133,6 @@
     .custom-dropdown-container { 
       position: relative; 
       display: inline-block; 
-      min-width: 0;
     }
     
     .custom-dropdown-menu { 
@@ -200,32 +195,6 @@
       font-weight: 600; 
     }
 
-    .h2h-pinned-1 td { 
-      position: sticky; 
-      top: 48px;
-      z-index: 15; 
-      box-shadow: 0 1px 0 #E5E5EA; 
-    }
-
-    .h2h-pinned-2 td { 
-      position: sticky; 
-      top: 96px;
-      z-index: 15; 
-      box-shadow: 0 1px 0 #E5E5EA; 
-    }
-
-    .h2h-pinned-1 td:nth-child(1), .h2h-pinned-1 td:nth-child(2), 
-    .h2h-pinned-1 td:nth-child(3), .h2h-pinned-1 td.focused-sticky,
-    .h2h-pinned-2 td:nth-child(1), .h2h-pinned-2 td:nth-child(2), 
-    .h2h-pinned-2 td:nth-child(3), .h2h-pinned-2 td.focused-sticky { 
-      z-index: 16; 
-    }
-
-    @media (max-width: 600px) {
-      .h2h-pinned-1 td { top: 40px; }
-      .h2h-pinned-2 td { top: 80px; }
-    }
-
     .overall-btn { 
       padding: 0 16px; 
       height: 36px; 
@@ -244,6 +213,10 @@
       background-color: #007AFF; 
       color: #FFFFFF; 
       box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); 
+    }
+
+    .mobile-view-toggle { 
+      display: none; 
     }
     
     .table-container { 
@@ -526,6 +499,25 @@
       td.focused-sticky, th.focused-sticky { 
         left: 186px !important; 
       }
+
+      .mobile-view-toggle { 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+        height: 36px;
+        border-radius: 18px;
+        background-color: #007AFF;
+        color: #FFFFFF;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .mobile-view-toggle:active {
+        opacity: 0.8;
+      }
     }
 
     .player-name-btn {
@@ -761,22 +753,7 @@
       padding: 12px;
       background: #F2F2F7;
       min-width: 0;
-      position: relative;
     }
-    .duel-card.clickable {
-      cursor: pointer;
-      transition: transform 0.15s ease, background-color 0.15s ease;
-    }
-    @media (hover: hover) {
-      .duel-card.clickable:hover {
-        background: #E5E5EA;
-        transform: scale(1.02);
-      }
-    }
-    .duel-card.clickable:active {
-      transform: scale(0.98);
-    }
-    
     .duel-label {
       color: #8E8E93;
       font-size: 12px;
@@ -844,6 +821,275 @@
       .duel-grid { grid-template-columns: 1fr 1fr; }
       .profile-name { font-size: 21px; }
     }
+
+
+    /* ===== Mobile Activity Feed ===== */
+    .activity-feed {
+      padding: 0 14px 4px;
+    }
+
+    .activity-feed-empty {
+      padding: 42px 20px 48px;
+      text-align: center;
+      color: #8E8E93;
+      font-size: 15px;
+    }
+
+    .activity-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(60, 60, 67, 0.08);
+      border-radius: 18px;
+      margin: 0 0 12px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,.035);
+    }
+
+    .activity-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 16px 12px;
+      background: linear-gradient(to bottom, #FFFFFF, #FBFBFD);
+      border-bottom: 1px solid #F0F0F3;
+    }
+
+    .activity-date-block { min-width: 0; }
+
+    .activity-date {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.15;
+      font-weight: 750;
+      letter-spacing: -.02em;
+      color: #1C1C1E;
+    }
+
+    .activity-player-list { padding: 2px 16px 5px; }
+
+    .activity-player-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 50px;
+      border-bottom: 1px solid #F1F1F4;
+    }
+
+    .activity-player-row:last-child { border-bottom: none; }
+
+    .activity-player-main {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 10px;
+    }
+
+    .activity-player-btn {
+      min-width: 0;
+      max-width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #1C1C1E;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .activity-player-btn:active { opacity: .55; }
+
+    .activity-score {
+      flex: 0 0 auto;
+      min-width: 56px;
+      padding: 7px 10px;
+      border-radius: 11px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .activity-score.win {
+      color: #1B8A42;
+      background: #EAF8EE;
+    }
+
+    .activity-score.lose {
+      color: #D92D20;
+      background: #FFF0EF;
+    }
+
+    .mobile-view-toggle { 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px; /* 圖示與文字的間距 */
+  padding: 0 16px;
+  height: 36px;
+  border-radius: 18px;
+  background-color: #FFFFFF; /* 白色背景 */
+  color: #636366; /* 深灰文字 */
+  border: 1px solid #E5E5EA; /* 淺灰邊框，貼近 iOS 風格 */
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.mobile-view-toggle:active {
+  background-color: #F2F2F7; /* 點擊時的灰色反饋 */
+}
+
+    .activity-ranking {
+      margin: -144px 0 2px;
+      background: #FFFFFF;
+      border: 1px solid rgba(60, 60, 67, 0.08);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,.035);
+    }
+
+    .activity-ranking-head {
+      padding: 15px 16px 12px;
+      border-bottom: 1px solid #F0F0F3;
+    }
+
+    .activity-ranking-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+
+    .activity-ranking-list { padding: 2px 16px 4px; }
+
+    .activity-rank-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0,1fr) auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+      border-bottom: 1px solid #F1F1F4;
+    }
+
+    .activity-rank-row:last-child { border-bottom: none; }
+
+    .activity-rank-badge {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #F2F2F7;
+      color: #636366;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .activity-rank-badge.rank-1 { background: #FFD84D; color: #FFFFFF; }
+    .activity-rank-badge.rank-2 { background: #C9C9CE; color: #FFFFFF; }
+    .activity-rank-badge.rank-3 { background: #D08A52; color: #FFFFFF; }
+
+    .activity-rank-player-btn {
+      min-width: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #1C1C1E;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .activity-rank-total {
+      font-size: 15px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .activity-rank-total.win { color: #34C759; }
+    .activity-rank-total.lose { color: #FF3B30; }
+
+    .activity-feed-note {
+      padding: 12px 2px 2px;
+      color: #8E8E93;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 14px 10px 24px; }
+      .header-wrapper { margin-bottom: 14px; }
+      h1 { font-size: 24px; }
+      .card { margin-bottom: 14px; border-radius: 18px; padding-bottom: 12px; }
+      .table-controls { padding: 12px 14px 10px; }
+      .overall-btn { display: none; }
+      .month-dropdown { font-size: 20px; }
+      .activity-feed { padding: 0 10px 2px; }
+      .activity-player-row { min-height: 52px; }
+      .activity-score { min-width: 58px; }
+    }
+
+
+    /* ===== Mobile Activity Carousel ===== */
+    .activity-carousel-wrap {
+      position: relative;
+      overflow: hidden;
+      margin: 0 -10px;
+    }
+
+    .activity-carousel {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      overscroll-behavior-x: contain;
+      touch-action: pan-x;
+      padding: 0 10px 4px;
+    }
+
+    .activity-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .activity-slide {
+      flex: 0 0 100%;
+      min-width: 100%;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+      box-sizing: border-box;
+      padding: 0;
+    }
+
+    .activity-slide .activity-card {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 600px) {
+      .activity-carousel-wrap {
+        margin: 0 -10px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -888,6 +1134,7 @@
     let focusedDateCol = null;
     let fetchPromises = {}; 
     let profileRequestToken = 0;
+    let forceMobileTable = false;
 
     function renderSkeleton(isFirstLoad = true) {
       if (isFirstLoad) {
@@ -931,8 +1178,8 @@
         globalData[activeSheetName] = res.firstSheetData; 
         
         renderControls();
+        await preloadRemainingSheets();
         renderTableLayout();
-        preloadRemainingSheets();
       } catch (err) {
         document.getElementById('controlsArea').innerHTML = '';
         document.getElementById('contentArea').innerHTML = `
@@ -961,13 +1208,20 @@
           <span>${m}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
         </div>`).join('');
 
-      document.getElementById('controlsArea').innerHTML = `
-        <div class="custom-dropdown-container" id="dropdownContainer">
-          <button id="monthSelectorTrigger" class="month-dropdown" title="${escapeHtml(activeSheetName)}">${escapeHtml(activeSheetName)}</button>
-          <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
-        </div>
-        <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
-      `;
+// 1. 先定義帶有 SVG 的按鈕內容
+const toggleContent = forceMobileTable 
+  ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`
+  : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="9" x2="9" y2="21"></line><line x1="15" y1="9" x2="15" y2="21"></line></svg>`;
+
+// 2. 更新 DOM 渲染
+document.getElementById('controlsArea').innerHTML = `
+  <div class="custom-dropdown-container" id="dropdownContainer">
+    <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
+    <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
+  </div>
+  <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
+  <button id="viewToggleBtn" class="mobile-view-toggle">${toggleContent}</button>
+`;
 
       const menu = document.getElementById('monthSelectorMenu');
       document.getElementById('monthSelectorTrigger').addEventListener('click', e => { 
@@ -985,6 +1239,12 @@
 
       document.getElementById('overallBtn').addEventListener('click', async () => {
         if (activeSheetName !== '總排名') await switchSheet('總排名');
+      });
+
+      document.getElementById('viewToggleBtn')?.addEventListener('click', () => {
+        forceMobileTable = !forceMobileTable;
+        renderControls();
+        renderTableLayout();
       });
     }
 
@@ -1038,9 +1298,6 @@
     }
 
     function getColLimit(data, isOverall) {
-      if (!allSheetNames.includes(activeSheetName) && activeSheetName !== '總排名') {
-        return data[1] ? data[1].length : 2;
-      }
       if (isOverall && data[1]) {
         const limitIndex = data[1].findIndex((v, i) => i >= 2 && (!v || String(v).includes('Rank')));
         return limitIndex !== -1 ? limitIndex : data[1].length;
@@ -1065,21 +1322,309 @@
 
     function formatHeaderDate(dayVal, data, sheetName) {
       if (isNaN(Number(dayVal))) return dayVal;
-      const chMap = { '一':'1','二':'2','三':'3','四':'4','五':'5','六':'6','七':'7','八':'8','九':'9','十':'10','十一':'11','十二':'12' };
-      let monthStr = '';
-      try {
-        const f1 = String(data[0][5] || "");
-        monthStr = chMap[f1.substring(0, 2)] || chMap[f1.charAt(0)] || '';
-      } catch(e) {}
-      
-      if (!monthStr) {
-        const match = sheetName.match(/\d+/g);
-        monthStr = match ? String(Number(match[match.length - 1])) : String(new Date().getMonth() + 1);
+  
+      let monthStr = String(data[0]?.[0] ?? '').trim();
+  
+      if (!monthStr || isNaN(Number(monthStr))) {
+        monthStr = String(new Date().getMonth() + 1);
       }
+  
       return `${dayVal}/${monthStr}`;
     }
 
+    function isMobileView() {
+      return window.matchMedia('(max-width: 600px)').matches;
+    }
+
+    function getActivityGames(data) {
+      if (!Array.isArray(data) || data.length < 2) return [];
+
+      return getSheetGameColumns(activeSheetName, data)
+        .map(j => {
+          const header = data[1]?.[j];
+          const day = Number(header);
+          return {
+            col: j,
+            rawHeader: header,
+            day: Number.isFinite(day) ? day : null,
+            dateLabel: formatHeaderDate(header, data, activeSheetName)
+          };
+        })
+        .sort((a, b) => {
+          if (a.day !== null && b.day !== null) return a.day - b.day;
+          if (a.day !== null) return -1;
+          if (b.day !== null) return 1;
+          return a.col - b.col;
+        });
+    }
+
+    function getMonthlyRanking(data) {
+      if (!Array.isArray(data) || data.length < 3) return [];
+      const colLimit = getColLimit(data, false);
+
+      const rows = data.slice(2)
+        .filter(row => row && row[0] !== '' && row[0] !== undefined && row[0] !== null)
+        .map(row => {
+          const total = Number(row[1]) || 0;
+          const hasPart = row.slice(2, colLimit).some(v => scoreNumber(v) !== null);
+          return {
+            name: String(row[0]),
+            total,
+            hasPart
+          };
+        })
+        .filter(r => r.hasPart)
+        .sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
+
+      let rank = 1;
+      let displayRank = 1;
+      let prevTotal = null;
+
+      rows.forEach(r => {
+        if (prevTotal === null || r.total !== prevTotal) {
+          displayRank = rank;
+          prevTotal = r.total;
+        }
+        r.rank = displayRank;
+        rank++;
+      });
+
+      return rows;
+    }
+
+    function getAllActivityGames() {
+      const games = [];
+      const monthSheets = allSheetNames
+        .filter(name => name !== '總排名' && globalData[name])
+        .map(name => ({ name, data: globalData[name], monthNo: inferMonthNumber(name, globalData[name]) }))
+        .filter(s => Array.isArray(s.data));
+
+      monthSheets.forEach(sheet => {
+        getSheetGameColumns(sheet.name, sheet.data).forEach(j => {
+          const header = sheet.data[1]?.[j];
+          const day = Number(header);
+          if (!Number.isFinite(day)) return;
+
+          const players = sheet.data.slice(2)
+            .map(row => ({
+              name: String(row?.[0] ?? ''),
+              score: scoreNumber(row?.[j])
+            }))
+            .filter(p => p.name && p.score !== null && p.score !== 0)
+            .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+
+          if (!players.length) return;
+
+          games.push({
+            sheetName: sheet.name,
+            monthNo: sheet.monthNo,
+            day,
+            col: j,
+            dateLabel: formatHeaderDate(header, sheet.data, sheet.name),
+            players
+          });
+        });
+      });
+
+      return games.sort((a, b) => {
+        if (a.monthNo !== b.monthNo) return b.monthNo - a.monthNo;
+        if (a.day !== b.day) return b.day - a.day;
+        return b.col - a.col;
+      });
+    }
+
+    function getSelectedActivityIndex(games) {
+      if (!games.length) return 0;
+
+      const selectedMonth = inferMonthNumber(activeSheetName, globalData[activeSheetName]);
+
+      const idx = games.findIndex(g => g.sheetName === activeSheetName);
+      if (idx !== -1) return idx;
+
+      const monthIdx = games.findIndex(g => g.monthNo === selectedMonth);
+      return monthIdx !== -1 ? monthIdx : 0;
+    }
+
+    function renderActivitySlide(game, index, total) {
+      const playersHtml = game.players.map(p => {
+        const cls = p.score > 0 ? 'win' : 'lose';
+        const sign = p.score > 0 ? '+' : '';
+        return `
+          <div class="activity-player-row">
+            <div class="activity-player-main">
+              <button type="button" class="activity-player-btn" data-player="${escapeHtml(p.name)}">${escapeHtml(p.name)}</button>
+            </div>
+            <div class="activity-score ${cls}">${sign}${p.score}</div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="activity-slide" data-index="${index}" data-sheet="${escapeHtml(game.sheetName)}">
+          <article class="activity-card">
+            <div class="activity-card-head">
+              <div class="activity-date-block">
+                <div class="activity-date">${escapeHtml(game.dateLabel)}</div>
+              </div>
+            </div>
+            <div class="activity-player-list">${playersHtml}</div>
+          </article>
+        </div>`;
+    }
+
+    function renderActivityRanking(data) {
+      const monthRanking = getMonthlyRanking(data);
+      return monthRanking.length
+        ? monthRanking.map(r => {
+            const rankClass = r.rank <= 3 ? `rank-${r.rank}` : '';
+            const totalClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
+            return `
+              <div class="activity-rank-row">
+                <span class="activity-rank-badge ${rankClass}">${r.rank}</span>
+                <button type="button" class="activity-rank-player-btn" data-player="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>
+                <span class="activity-rank-total ${totalClass}">${signedNumber(r.total)}</span>
+              </div>`;
+          }).join('')
+        : '<div class="activity-feed-empty">本月尚無排名資料</div>';
+    }
+
+    function bindActivityPlayerButtons(root) {
+      root.querySelectorAll('[data-player]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          openPlayerProfile(btn.dataset.player);
+        });
+      });
+    }
+
+    function syncActivityMonthToSlide(game, shouldRenderRanking = true) {
+      if (!game || activeSheetName === game.sheetName) return;
+
+      activeSheetName = game.sheetName;
+      currentSortCol = 'total';
+      sortAscending = false;
+      focusedDateCol = null;
+
+      if (shouldRenderRanking) {
+        const rankingEl = document.getElementById('activityRankingList');
+        const rankingTitle = document.getElementById('activityRankingTitle');
+        const data = globalData[game.sheetName];
+
+        if (rankingEl && data) rankingEl.innerHTML = renderActivityRanking(data);
+        if (rankingTitle) rankingTitle.textContent = `${game.sheetName} 排名`;
+
+        renderControls();
+      }
+    }
+
+    function setupActivityCarousel(carousel, games, initialIndex) {
+      if (!carousel || !games.length) return;
+
+      let scrollTimer = null;
+      let lastIndex = initialIndex;
+      let isSyncing = false;
+
+      const scrollToIndex = (index, behavior = 'auto') => {
+        const clamped = Math.max(0, Math.min(games.length - 1, index));
+        const slide = carousel.children[clamped];
+        if (!slide) return;
+        carousel.scrollTo({
+          left: slide.offsetLeft - carousel.offsetLeft,
+          behavior
+        });
+      };
+
+      const applyCurrentIndex = index => {
+        if (index < 0 || index >= games.length) return;
+        lastIndex = index;
+        const game = games[index];
+        syncActivityMonthToSlide(game, true);
+      };
+
+      const getNearestIndex = () => {
+        const left = carousel.scrollLeft;
+        let bestIndex = 0;
+        let bestDistance = Infinity;
+
+        Array.from(carousel.children).forEach((slide, i) => {
+          const distance = Math.abs((slide.offsetLeft - carousel.offsetLeft) - left);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestIndex = i;
+          }
+        });
+        return bestIndex;
+      };
+
+      carousel.addEventListener('scroll', () => {
+        if (isSyncing) return;
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          const index = getNearestIndex();
+          if (index !== lastIndex) applyCurrentIndex(index);
+        }, 90);
+      }, { passive: true });
+
+      requestAnimationFrame(() => {
+        scrollToIndex(initialIndex, 'auto');
+        applyCurrentIndex(initialIndex);
+      });
+    }
+
+    function renderActivityFeed() {
+      const contentArea = document.getElementById('contentArea');
+
+      if (activeSheetName === '總排名') {
+        contentArea.innerHTML = '<div class="activity-feed-empty">請選擇月份查看牌局動態流</div>';
+        return;
+      }
+
+      const games = getAllActivityGames();
+
+      if (!games.length) {
+        contentArea.innerHTML = `
+          <div class="activity-feed">
+            <div class="activity-feed-empty">目前沒有產生分數變動的牌局</div>
+          </div>`;
+        return;
+      }
+
+      const initialIndex = getSelectedActivityIndex(games);
+      const slidesHtml = games.map((game, index) => renderActivitySlide(game, index, games.length)).join('');
+      const rankingData = globalData[activeSheetName];
+
+      contentArea.innerHTML = `
+        <div class="activity-feed">
+          <div class="activity-carousel-wrap">
+            <div
+              id="activityCarousel"
+              class="activity-carousel"
+              aria-label="牌局動態流">
+              ${slidesHtml}
+            </div>
+          </div>
+
+          <section class="activity-ranking">
+            <div class="activity-ranking-head">
+              <div id="activityRankingTitle" class="activity-ranking-title">${escapeHtml(activeSheetName)} 排名</div>
+            </div>
+            <div id="activityRankingList" class="activity-ranking-list">
+              ${renderActivityRanking(rankingData)}
+            </div>
+          </section>
+        </div>`;
+
+      bindActivityPlayerButtons(contentArea);
+
+      const carousel = document.getElementById('activityCarousel');
+      setupActivityCarousel(carousel, games, initialIndex);
+    }
+
     function renderTableLayout() {
+      if (isMobileView() && !forceMobileTable) {
+        renderActivityFeed();
+        return;
+      }
+
       const data = globalData[activeSheetName];
       const isOverall = activeSheetName === '總排名';
       const colIndices = getValidColumnsOrder(data, getColLimit(data, isOverall), focusedDateCol, isOverall);
@@ -1096,14 +1641,13 @@
         <div class="table-container">
           <table>
             <thead id="tableHead"><tr>
-              <th>Rank</th><th>Name</th>
-              <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
+              <th>Rank</th><th>Name</th><th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
               ${headHtml}
             </tr></thead>
             <tbody id="tableBody"></tbody>
           </table>
         </div>`;
-      
+
       renderTableBody();
       document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
         th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col, 10)));
@@ -1131,34 +1675,16 @@
         r.rank = displayRank; rank++;
       });
 
-      const isH2H = activeSheetName.includes(' vs ');
-      const h2hPlayers = isH2H ? activeSheetName.split(' vs ') : [];
-
       rows.sort((a, b) => {
-
-        if (isH2H) {
-          const aName = String(a.data[0]);
-          const bName = String(b.data[0]);
-          if (aName === h2hPlayers[0]) return -1;
-          if (bName === h2hPlayers[0]) return 1;
-          if (aName === h2hPlayers[1]) return -1;
-          if (bName === h2hPlayers[1]) return 1;
-        }
-
         if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
         let vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
         let vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
         return sortAscending ? vA - vB : vB - vA;
       });
 
-      tbody.innerHTML = rows.map((r, index) => {
+      tbody.innerHTML = rows.map(r => {
         const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
         const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
-
-        let trClass = '';
-
-        if (isH2H && index === 0) trClass = 'h2h-pinned-1';
-        if (isH2H && index === 1) trClass = 'h2h-pinned-2';
 
         let colsHtml = colIndices.map(j => {
           const v = r.data[j];
@@ -1171,7 +1697,7 @@
         const safeName = playerName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const nameHtml = `<button type="button" class="player-name-btn" data-player="${playerName}">${safeName}</button>`;
 
-        return `<tr class="${trClass}"><td>${rHtml}</td><td>${nameHtml}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+        return `<tr><td>${rHtml}</td><td>${nameHtml}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
       }).join('');
 
       tbody.querySelectorAll('.player-name-btn').forEach(btn => {
@@ -1200,23 +1726,15 @@
     }
 
     function inferMonthNumber(sheetName, data) {
-      const text = String(sheetName || '').trim();
-      const numeric = text.match(/(?:^|[^\d])(1[0-2]|[1-9])(?:月|$)/);
-      if (numeric) return Number(numeric[1]);
-
-      const chinese = [
-        ['十二月', 12], ['十一月', 11], ['十月', 10],
-        ['九月', 9], ['八月', 8], ['七月', 7], ['六月', 6],
-        ['五月', 5], ['四月', 4], ['三月', 3], ['二月', 2], ['一月', 1]
-      ];
-      for (const [label, value] of chinese) {
-        if (text.includes(label)) return value;
+      if (sheetName === '總排名' || !Array.isArray(data) || !data[0]) return 0;
+  
+      const monthStr = String(data[0][0] ?? '').trim();
+      const monthNum = Number(monthStr);
+  
+      if (Number.isFinite(monthNum) && monthNum >= 1 && monthNum <= 12) {
+        return monthNum;
       }
-
-      const first = String(data?.[0]?.[5] ?? '').trim();
-      for (const [label, value] of chinese) {
-        if (first.startsWith(label)) return value;
-      }
+  
       return 0;
     }
 
@@ -1260,7 +1778,7 @@
         .sort((a, b) => a.monthNo - b.monthNo);
 
       let profileMonthName = activeSheetName;
-      if (profileMonthName === '總排名' || (!allSheetNames.includes(profileMonthName))) {
+      if (profileMonthName === '總排名') {
         const latest = sortedSheets[sortedSheets.length - 1];
         profileMonthName = latest ? latest.name : '';
       }
@@ -1435,7 +1953,7 @@
         <section class="profile-section">
           <div class="profile-section-title">魔鬼 / 天使</div>
           <div class="duel-grid">
-            <div class="duel-card ${nemesis ? 'clickable' : ''}" ${nemesis ? `data-opponent="${escapeHtml(nemesis.name)}"` : ''}>
+            <div class="duel-card">
               <div class="duel-label">😈 魔鬼</div>
               ${nemesis 
                 ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div>
@@ -1443,7 +1961,7 @@
                    <div class="duel-note">共 ${nemesis.games} 場</div>` 
                 : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
             </div>
-            <div class="duel-card ${benefactor ? 'clickable' : ''}" ${benefactor ? `data-opponent="${escapeHtml(benefactor.name)}"` : ''}>
+            <div class="duel-card">
               <div class="duel-label">😇 天使</div>
               ${benefactor 
                 ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div>
@@ -1510,12 +2028,6 @@
           `${stats.profileMonthName || '2026 年'} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
 
         renderProfileStats(stats);
-
-        document.querySelectorAll('.duel-card.clickable').forEach(card => {
-          card.addEventListener('click', () => {
-            openH2HView(stats.name, card.dataset.opponent);
-          });
-        });
       } catch (err) {
         if (token !== profileRequestToken) return;
         document.getElementById('profileSubtitle').textContent = '載入失敗';
@@ -1535,96 +2047,6 @@
       document.getElementById('profileSheet').classList.remove('show');
       document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'true');
       document.getElementById('profileSheet').setAttribute('aria-hidden', 'true');
-    }
-
-    function generateH2HData(playerA, playerB) {
-      const h2hCols = [];
-      const allPlayers = new Set();
-      
-      const sortedSheets = allSheetNames
-        .filter(s => s !== '總排名' && globalData[s])
-        .map(s => ({ name: s, data: globalData[s], monthNo: inferMonthNumber(s, globalData[s]) }))
-        .sort((a, b) => a.monthNo - b.monthNo);
-
-      sortedSheets.forEach(sheet => {
-        const sheetData = sheet.data;
-        const rowA = findPlayerRow(sheetData, playerA);
-        const rowB = findPlayerRow(sheetData, playerB);
-        if (!rowA || !rowB) return;
-
-        const cols = getSheetGameColumns(sheet.name, sheetData);
-        cols.forEach(j => {
-          const scoreA = scoreNumber(rowA[j]);
-          const scoreB = scoreNumber(rowB[j]);
-          if (scoreA !== null && scoreB !== null) {
-            const originalHeader = sheetData[1]?.[j];
-            const dateLabel = formatHeaderDate(originalHeader, sheetData, sheet.name);
-            
-            const matchScores = {};
-            sheetData.slice(2).forEach(row => {
-              const pName = String(row[0] || '').trim();
-              if (!pName) return;
-              const pScore = scoreNumber(row[j]);
-              if (pScore !== null) {
-                matchScores[pName] = pScore;
-                allPlayers.add(pName);
-              }
-            });
-            h2hCols.push({ label: dateLabel, scores: matchScores });
-          }
-        });
-      });
-
-      h2hCols.reverse();
-
-      const newData = [];
-      const header0 = ['',''];
-      const header1 = ['','']; 
-      for (let i = 0; i < h2hCols.length; i++) {
-        header0.push('');
-        header1.push(h2hCols[i].label);
-      }
-      newData.push(header0);
-      newData.push(header1);
-
-      Array.from(allPlayers).forEach(pName => {
-        let total = 0;
-        const row = [pName, 0]; 
-        h2hCols.forEach(col => {
-          const sc = col.scores[pName];
-          if (sc !== undefined && sc !== null) {
-            row.push(sc);
-            total += sc;
-          } else {
-            row.push('');
-          }
-        });
-        row[1] = total; 
-        newData.push(row);
-      });
-
-      return newData;
-    }
-
-    async function openH2HView(playerA, playerB) {
-      closePlayerProfile();
-      
-      const h2hTitle = `${playerA} vs ${playerB}`;
-      const h2hData = generateH2HData(playerA, playerB);
-      
-      if (h2hData.length <= 2 || h2hData[1].length <= 2) {
-        alert('找不到足夠的戰績資料');
-        return;
-      }
-      
-      globalData[h2hTitle] = h2hData;
-      activeSheetName = h2hTitle;
-      currentSortCol = 'total';
-      sortAscending = false;
-      focusedDateCol = null;
-      
-      renderControls();
-      renderTableLayout();
     }
 
     document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
@@ -1701,6 +2123,16 @@
         }, 1000);
       }
     }, true);
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (!globalData[activeSheetName]) return;
+        renderControls();
+        renderTableLayout();
+      }, 120);
+    });
 
     setupProfileDrag();
     fetchData();
