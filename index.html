@@ -1016,17 +1016,13 @@
 
     function formatHeaderDate(dayVal, data, sheetName) {
       if (isNaN(Number(dayVal))) return dayVal;
-      const chMap = { '一':'1','二':'2','三':'3','四':'4','五':'5','六':'6','七':'7','八':'8','九':'9','十':'10','十一':'11','十二':'12' };
-      let monthStr = '';
-      try {
-        const f1 = String(data[0][5] || "");
-        monthStr = chMap[f1.substring(0, 2)] || chMap[f1.charAt(0)] || '';
-      } catch(e) {}
-      
-      if (!monthStr) {
-        const match = sheetName.match(/\d+/g);
-        monthStr = match ? String(Number(match[match.length - 1])) : String(new Date().getMonth() + 1);
+  
+      let monthStr = String(data[0]?.[0] ?? '').trim();
+  
+      if (!monthStr || isNaN(Number(monthStr))) {
+        monthStr = String(new Date().getMonth() + 1);
       }
+  
       return `${dayVal}/${monthStr}`;
     }
 
@@ -1133,23 +1129,15 @@
     }
 
     function inferMonthNumber(sheetName, data) {
-      const text = String(sheetName || '').trim();
-      const numeric = text.match(/(?:^|[^\d])(1[0-2]|[1-9])(?:月|$)/);
-      if (numeric) return Number(numeric[1]);
-
-      const chinese = [
-        ['十二月', 12], ['十一月', 11], ['十月', 10],
-        ['九月', 9], ['八月', 8], ['七月', 7], ['六月', 6],
-        ['五月', 5], ['四月', 4], ['三月', 3], ['二月', 2], ['一月', 1]
-      ];
-      for (const [label, value] of chinese) {
-        if (text.includes(label)) return value;
+      if (sheetName === '總排名' || !Array.isArray(data) || !data[0]) return 0;
+  
+      const monthStr = String(data[0][0] ?? '').trim();
+      const monthNum = Number(monthStr);
+  
+      if (Number.isFinite(monthNum) && monthNum >= 1 && monthNum <= 12) {
+        return monthNum;
       }
-
-      const first = String(data?.[0]?.[5] ?? '').trim();
-      for (const [label, value] of chinese) {
-        if (first.startsWith(label)) return value;
-      }
+  
       return 0;
     }
 
@@ -1366,10 +1354,10 @@
         </section>
 
         <section class="profile-section">
-          <div class="profile-section-title">仇家 / 天使</div>
+          <div class="profile-section-title">魔鬼 / 天使</div>
           <div class="duel-grid">
             <div class="duel-card">
-              <div class="duel-label">😈 仇家</div>
+              <div class="duel-label">😈 魔鬼</div>
               ${nemesis 
                 ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div>
                    <div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div>
