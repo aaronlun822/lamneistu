@@ -924,6 +924,7 @@
 
     .activity-ranking {
       margin: 12px 0 2px;
+      touch-action: pan-y;
       background: #FFFFFF;
       border: 1px solid rgba(60, 60, 67, 0.08);
       border-radius: 18px;
@@ -1031,20 +1032,20 @@
       position: relative;
       overflow: hidden;
       margin: 0 -10px;
-      transition: height 0.22s ease;
     }
 
     .activity-carousel {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
+      height: 100%;
       overflow-x: auto;
       overflow-y: hidden;
       scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch;
+      scroll-behavior: auto;
       scrollbar-width: none;
-      overscroll-behavior-x: contain;
+      overscroll-behavior: none;
+      overflow-anchor: none;
       touch-action: pan-x;
       padding: 0 10px 4px;
     }
@@ -1498,38 +1499,52 @@ document.getElementById('controlsArea').innerHTML = `
       }
     }
 
+    let activityCarouselGuards = null;
+
     function setupActivityCarousel(carousel, games, initialIndex) {
       if (!carousel || !games.length) return;
+
+      activityCarouselGuards?.abort();
+      activityCarouselGuards = new AbortController();
+      const { signal } = activityCarouselGuards;
 
       const wrap = carousel.closest('.activity-carousel-wrap');
       let scrollTimer = null;
       let lastIndex = initialIndex;
-      let isSyncing = false;
+      let interacting = false;
+      let restoring = false;
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      const slideScrollLeft = index => {
+        const slide = carousel.children[index];
+        if (!slide) return 0;
+        return slide.offsetLeft - carousel.offsetLeft;
+      };
 
       const fitWrapToIndex = index => {
         const slide = carousel.children[index];
         if (!wrap || !slide) return;
         const styles = getComputedStyle(carousel);
         const padY = (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
-        wrap.style.height = `${slide.offsetHeight + padY}px`;
+        const nextHeight = `${slide.offsetHeight + padY}px`;
+        if (wrap.style.height !== nextHeight) wrap.style.height = nextHeight;
       };
 
-      const scrollToIndex = (index, behavior = 'auto') => {
-        const clamped = Math.max(0, Math.min(games.length - 1, index));
-        const slide = carousel.children[clamped];
-        if (!slide) return;
-        carousel.scrollTo({
-          left: slide.offsetLeft - carousel.offsetLeft,
-          behavior
-        });
+      const restoreCurrentSlide = () => {
+        const target = slideScrollLeft(lastIndex);
+        if (Math.abs(carousel.scrollLeft - target) < 1) return;
+        restoring = true;
+        carousel.scrollLeft = target;
+        requestAnimationFrame(() => { restoring = false; });
       };
 
       const applyCurrentIndex = index => {
         if (index < 0 || index >= games.length) return;
+        const changed = index !== lastIndex;
         lastIndex = index;
         fitWrapToIndex(index);
-        const game = games[index];
-        syncActivityMonthToSlide(game, true);
+        if (changed) syncActivityMonthToSlide(games[index], true);
       };
 
       const getNearestIndex = () => {
@@ -1538,7 +1553,7 @@ document.getElementById('controlsArea').innerHTML = `
         let bestDistance = Infinity;
 
         Array.from(carousel.children).forEach((slide, i) => {
-          const distance = Math.abs((slide.offsetLeft - carousel.offsetLeft) - left);
+          const distance = Math.abs(slideScrollLeft(i) - left);
           if (distance < bestDistance) {
             bestDistance = distance;
             bestIndex = i;
@@ -1547,20 +1562,53 @@ document.getElementById('controlsArea').innerHTML = `
         return bestIndex;
       };
 
+      carousel.addEventListener('touchstart', e => {
+        if (e.touches.length !== 1) return;
+        interacting = true;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true, signal });
+
+      carousel.addEventListener('touchmove', e => {
+        if (!interacting || e.touches.length !== 1) return;
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dy > dx && dy > 8) interacting = false;
+      }, { passive: true, signal });
+
+      const endInteract = () => {
+        if (!interacting) {
+          restoreCurrentSlide();
+          return;
+        }
+        interacting = false;
+        applyCurrentIndex(getNearestIndex());
+        restoreCurrentSlide();
+      };
+
+      carousel.addEventListener('touchend', endInteract, { passive: true, signal });
+      carousel.addEventListener('touchcancel', endInteract, { passive: true, signal });
+
       carousel.addEventListener('scroll', () => {
-        if (isSyncing) return;
-        const nearest = getNearestIndex();
-        fitWrapToIndex(nearest);
+        if (restoring) return;
+        if (!interacting) {
+          restoreCurrentSlide();
+          return;
+        }
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => {
-          const index = getNearestIndex();
-          if (index !== lastIndex) applyCurrentIndex(index);
-        }, 90);
-      }, { passive: true });
+          if (!interacting) return;
+          applyCurrentIndex(getNearestIndex());
+        }, 80);
+      }, { passive: true, signal });
+
+      window.addEventListener('scroll', () => {
+        if (!interacting) restoreCurrentSlide();
+      }, { passive: true, signal });
 
       requestAnimationFrame(() => {
-        scrollToIndex(initialIndex, 'auto');
         applyCurrentIndex(initialIndex);
+        restoreCurrentSlide();
       });
     }
 
