@@ -215,10 +215,6 @@
       box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); 
     }
 
-    .mobile-view-toggle { 
-      display: none; 
-    }
-    
     .table-container { 
       width: 100%; 
       max-height: 70vh; 
@@ -498,27 +494,6 @@
       
       td.focused-sticky, th.focused-sticky { 
         left: 186px !important; 
-      }
-
-      .mobile-view-toggle { 
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 0 16px;
-        height: 36px;
-        border-radius: 18px;
-        background-color: #FFFFFF;
-        color: #636366;
-        border: 1px solid #E5E5EA;
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-      }
-      .mobile-view-toggle:active {
-        background-color: #F2F2F7;
       }
     }
 
@@ -929,8 +904,26 @@
       background: #FFF0EF;
     }
 
+    .mobile-view-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 16px;
+      height: 36px;
+      border-radius: 18px;
+      background-color: #FFFFFF;
+      color: #636366;
+      border: 1px solid #E5E5EA;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
     .activity-ranking {
-      margin: -144px 0 2px;
+      margin: 12px 0 2px;
       background: #FFFFFF;
       border: 1px solid rgba(60, 60, 67, 0.08);
       border-radius: 18px;
@@ -1024,6 +1017,12 @@
       .activity-feed { padding: 0 10px 2px; }
       .activity-player-row { min-height: 52px; }
       .activity-score { min-width: 58px; }
+      .mobile-view-toggle {
+        display: inline-flex;
+      }
+      .mobile-view-toggle:active {
+        background-color: #F2F2F7;
+      }
     }
 
 
@@ -1031,12 +1030,14 @@
     .activity-carousel-wrap {
       position: relative;
       overflow: hidden;
-      margin: 0;
+      margin: 0 -10px;
+      transition: height 0.22s ease;
     }
 
     .activity-carousel {
       display: flex;
       flex-direction: row;
+      align-items: flex-start;
       overflow-x: auto;
       overflow-y: hidden;
       scroll-snap-type: x mandatory;
@@ -1044,13 +1045,8 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       overscroll-behavior-x: contain;
-      /*
-       * 重要：禁止 carousel 自己接管橫向 touch。
-       * 左右滑動只會由 .activity-card 的 pointer gesture 處理，
-       * 因此卡片以外的空白位置不再觸發換卡。
-       */
-      touch-action: pan-y;
-      padding: 0 0 4px;
+      touch-action: pan-x;
+      padding: 0 10px 4px;
     }
 
     .activity-carousel::-webkit-scrollbar {
@@ -1060,7 +1056,7 @@
     .activity-slide {
       flex: 0 0 100%;
       min-width: 100%;
-      scroll-snap-align: start;
+      scroll-snap-align: center;
       scroll-snap-stop: always;
       box-sizing: border-box;
       padding: 0;
@@ -1072,7 +1068,7 @@
 
     @media (max-width: 600px) {
       .activity-carousel-wrap {
-        margin: 0;
+        margin: 0 -10px;
       }
     }
 
@@ -1194,23 +1190,20 @@
           <span>${m}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
         </div>`).join('');
 
-      // 1. 先定義帶有 SVG 的按鈕內容
-      const toggleContent = forceMobileTable 
-        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`
-        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="9" x2="9" y2="21"></line><line x1="15" y1="9" x2="15" y2="21"></line></svg>`;
+// 1. 先定義帶有 SVG 的按鈕內容
+const toggleContent = forceMobileTable 
+  ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`
+  : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="9" x2="9" y2="21"></line><line x1="15" y1="9" x2="15" y2="21"></line></svg>`;
 
-      // 隱藏總排名的切換按鈕
-      const toggleStyle = isOverall ? 'style="display: none !important;"' : '';
-
-      // 2. 更新 DOM 渲染
-      document.getElementById('controlsArea').innerHTML = `
-        <div class="custom-dropdown-container" id="dropdownContainer">
-          <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
-          <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
-        </div>
-        <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
-        <button id="viewToggleBtn" class="mobile-view-toggle" ${toggleStyle}>${toggleContent}</button>
-      `;
+// 2. 更新 DOM 渲染
+document.getElementById('controlsArea').innerHTML = `
+  <div class="custom-dropdown-container" id="dropdownContainer">
+    <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
+    <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
+  </div>
+  <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
+  ${isOverall ? '' : `<button id="viewToggleBtn" class="mobile-view-toggle">${toggleContent}</button>`}
+`;
 
       const menu = document.getElementById('monthSelectorMenu');
       document.getElementById('monthSelectorTrigger').addEventListener('click', e => { 
@@ -1508,15 +1501,18 @@
     function setupActivityCarousel(carousel, games, initialIndex) {
       if (!carousel || !games.length) return;
 
+      const wrap = carousel.closest('.activity-carousel-wrap');
       let scrollTimer = null;
       let lastIndex = initialIndex;
       let isSyncing = false;
 
-      /*
-       * 只接受「從實際卡片 .activity-card 開始」的左右 swipe。
-       * carousel 保留 scroll-snap / scrollLeft，故原有跨月份及索引邏輯不變。
-       */
-      let gesture = null;
+      const fitWrapToIndex = index => {
+        const slide = carousel.children[index];
+        if (!wrap || !slide) return;
+        const styles = getComputedStyle(carousel);
+        const padY = (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
+        wrap.style.height = `${slide.offsetHeight + padY}px`;
+      };
 
       const scrollToIndex = (index, behavior = 'auto') => {
         const clamped = Math.max(0, Math.min(games.length - 1, index));
@@ -1531,6 +1527,7 @@
       const applyCurrentIndex = index => {
         if (index < 0 || index >= games.length) return;
         lastIndex = index;
+        fitWrapToIndex(index);
         const game = games[index];
         syncActivityMonthToSlide(game, true);
       };
@@ -1552,81 +1549,14 @@
 
       carousel.addEventListener('scroll', () => {
         if (isSyncing) return;
+        const nearest = getNearestIndex();
+        fitWrapToIndex(nearest);
         clearTimeout(scrollTimer);
         scrollTimer = setTimeout(() => {
           const index = getNearestIndex();
           if (index !== lastIndex) applyCurrentIndex(index);
         }, 90);
       }, { passive: true });
-
-      const cards = carousel.querySelectorAll('.activity-card');
-
-      cards.forEach(card => {
-        card.addEventListener('pointerdown', e => {
-          if (e.pointerType === 'mouse' && e.button !== 0) return;
-
-          gesture = {
-            pointerId: e.pointerId,
-            startX: e.clientX,
-            startY: e.clientY,
-            startScrollLeft: carousel.scrollLeft,
-            active: true,
-            horizontal: false,
-            moved: false
-          };
-
-          card.setPointerCapture?.(e.pointerId);
-        });
-
-        card.addEventListener('pointermove', e => {
-          if (!gesture || !gesture.active || gesture.pointerId !== e.pointerId) return;
-
-          const dx = e.clientX - gesture.startX;
-          const dy = e.clientY - gesture.startY;
-
-          if (!gesture.horizontal) {
-            if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-
-            if (Math.abs(dx) <= Math.abs(dy)) {
-              gesture.active = false;
-              return;
-            }
-
-            gesture.horizontal = true;
-            gesture.moved = true;
-          }
-
-          if (gesture.horizontal) {
-            e.preventDefault();
-            carousel.scrollLeft = gesture.startScrollLeft - dx;
-          }
-        });
-
-        const finishGesture = e => {
-          if (!gesture || gesture.pointerId !== e.pointerId) return;
-
-          const current = gesture;
-          gesture = null;
-
-          if (!current.active || !current.horizontal) return;
-
-          const dx = e.clientX - current.startX;
-          const threshold = Math.max(36, Math.min(90, card.clientWidth * 0.14));
-          const currentIndex = getNearestIndex();
-          let targetIndex = currentIndex;
-
-          if (Math.abs(dx) >= threshold) {
-            targetIndex = dx < 0
-              ? Math.min(games.length - 1, currentIndex + 1)
-              : Math.max(0, currentIndex - 1);
-          }
-
-          scrollToIndex(targetIndex, 'smooth');
-        };
-
-        card.addEventListener('pointerup', finishGesture);
-        card.addEventListener('pointercancel', finishGesture);
-      });
 
       requestAnimationFrame(() => {
         scrollToIndex(initialIndex, 'auto');
@@ -1684,16 +1614,14 @@
     }
 
     function renderTableLayout() {
-      const isOverall = activeSheetName === '總排名';
-
-      if (isMobileView() && !forceMobileTable && !isOverall) {
+      if (isMobileView() && !forceMobileTable && activeSheetName !== '總排名') {
         renderActivityFeed();
         return;
       }
 
       const data = globalData[activeSheetName];
-      const colLimit = getColLimit(data, isOverall);
-      const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
+      const isOverall = activeSheetName === '總排名';
+      const colIndices = getValidColumnsOrder(data, getColLimit(data, isOverall), focusedDateCol, isOverall);
 
       let headHtml = colIndices.map(j => {
         const val = data[1][j];
