@@ -942,17 +942,59 @@
       border-color: #007AFF;
       box-shadow: 0 0 0 3px rgba(0,122,255,.12);
     }
-    .game-date-input {
-      display: block;
+    .game-date-shell {
+      position: relative;
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      margin: 0;
-      -webkit-appearance: none;
-      appearance: none;
+      height: 44px;
+      box-sizing: border-box;
+      border: 1px solid #D1D1D6;
+      border-radius: 12px;
+      background: #FFFFFF;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: #1C1C1E;
     }
-    .game-date-input::-webkit-date-and-time-value { text-align: left; }
-    .game-date-input::-webkit-calendar-picker-indicator { opacity: .55; margin-left: auto; }
+    .game-date-shell:focus-within {
+      border-color: #007AFF;
+      box-shadow: 0 0 0 3px rgba(0,122,255,.12);
+    }
+    .game-date-display {
+      min-width: 0;
+      flex: 1;
+      font-size: 16px;
+      line-height: 44px;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .game-date-display.placeholder { color: #C7C7CC; }
+    .game-date-icon {
+      flex: 0 0 auto;
+      margin-left: 10px;
+      color: #8E8E93;
+      display: flex;
+      align-items: center;
+      pointer-events: none;
+    }
+    .game-date-native {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      font-size: 16px;
+    }
 
     .players-form-title-row {
       display: flex;
@@ -1021,33 +1063,36 @@
       box-shadow: 0 0 0 3px rgba(0,122,255,.12);
     }
     .score-sign-switcher {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2px;
-      align-items: center;
-      padding: 3px;
+      width: 54px;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
       background: #F2F2F7;
       border-right: 1px solid #E5E5EA;
+      flex: 0 0 54px;
     }
     .score-sign-btn {
+      width: 100%;
+      height: 100%;
       border: none;
       background: transparent;
-      border-radius: 8px;
-      min-width: 0;
-      height: 36px;
       padding: 0;
-      font-size: 17px;
+      font-size: 19px;
       font-weight: 750;
       line-height: 1;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       transition: background .15s ease, color .15s ease, transform .12s ease;
     }
-    .score-sign-btn.plus { color: #34C759; }
-    .score-sign-btn.minus { color: #FF3B30; }
-    .score-sign-btn.plus.selected { background: #E9F8EE; }
-    .score-sign-btn.minus.selected { background: #FFF0EF; }
-    .score-sign-btn:active { transform: scale(.94); }
+    .score-sign-btn.plus {
+      color: #34C759;
+      background: #EAF8EF;
+    }
+    .score-sign-btn.minus {
+      color: #FF3B30;
+      background: #FFF0EF;
+    }
+    .score-sign-btn:active { transform: scale(.96); }
     .score-input {
       width: 100%;
       min-width: 0;
@@ -1153,7 +1198,8 @@
       .add-game-body { padding: 12px; }
       .add-game-footer { padding-left: 12px; padding-right: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
       .game-player-row { grid-template-columns: minmax(0,1fr) 148px 36px; gap: 7px; }
-      .score-control { grid-template-columns: 58px minmax(0,1fr); }
+      .score-control { grid-template-columns: 54px minmax(0,1fr); }
+      .score-sign-switcher { width: 54px; flex-basis: 54px; }
       .score-input { padding-left: 8px; padding-right: 9px; }
       .game-player-select { font-size: 14px; }
     }
@@ -1194,7 +1240,15 @@
 
     <div id="addGameBody" class="add-game-body">
       <label class="form-label" for="gameDateInput">牌局日期</label>
-      <input id="gameDateInput" class="form-input game-date-input" type="date">
+      <div class="game-date-shell">
+        <div id="gameDateDisplay" class="game-date-display">選擇日期</div>
+        <span class="game-date-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 3V6M17 3V6M4 9H20M6 5H18C19.1046 5 20 5.89543 20 7V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V7C4 5.89543 4.89543 5 6 5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <input id="gameDateInput" class="game-date-native" type="date" aria-label="牌局日期">
+      </div>
 
       <div class="players-form-title-row">
         <div class="form-label" style="margin:0;">玩家</div>
@@ -1916,9 +1970,8 @@
             ${playerOptionsHtml(row.playerId)}
           </select>
           <div class="score-control" data-index="${index}">
-            <div class="score-sign-switcher" aria-label="分數正負">
-              <button class="score-sign-btn plus ${row.sign === 1 ? 'selected' : ''}" type="button" data-sign="1" aria-pressed="${row.sign === 1 ? 'true' : 'false'}">+</button>
-              <button class="score-sign-btn minus ${row.sign === -1 ? 'selected' : ''}" type="button" data-sign="-1" aria-pressed="${row.sign === -1 ? 'true' : 'false'}">−</button>
+            <div class="score-sign-switcher" aria-label="切換分數正負">
+              <button class="score-sign-btn ${row.sign === -1 ? 'minus' : 'plus'}" type="button" data-index="${index}" aria-label="目前 ${row.sign === -1 ? '負數' : '正數'}，按一下切換">${row.sign === -1 ? '−' : '+'}</button>
             </div>
             <input class="score-input" type="number" inputmode="numeric" pattern="[0-9]*" min="0" step="1" placeholder="分數" data-index="${index}" value="${escapeHtml(row.score)}" aria-label="分數">
           </div>
@@ -1941,17 +1994,16 @@
 
       list.querySelectorAll('.score-sign-btn').forEach(btn => {
         btn.addEventListener('click', e => {
-          const control = e.currentTarget.closest('.score-control');
-          const index = Number(control.dataset.index);
-          addGameRows[index].sign = Number(e.currentTarget.dataset.sign) === -1 ? -1 : 1;
-          control.querySelector('.score-sign-btn.plus').classList.toggle('selected', addGameRows[index].sign === 1);
-          control.querySelector('.score-sign-btn.minus').classList.toggle('selected', addGameRows[index].sign === -1);
-          control.querySelector('.score-sign-btn.plus').setAttribute('aria-pressed', addGameRows[index].sign === 1 ? 'true' : 'false');
-          control.querySelector('.score-sign-btn.minus').setAttribute('aria-pressed', addGameRows[index].sign === -1 ? 'true' : 'false');
+          const index = Number(e.currentTarget.dataset.index);
+          addGameRows[index].sign = addGameRows[index].sign === -1 ? 1 : -1;
+          const sign = addGameRows[index].sign;
+          e.currentTarget.classList.toggle('plus', sign === 1);
+          e.currentTarget.classList.toggle('minus', sign === -1);
+          e.currentTarget.textContent = sign === -1 ? '−' : '+';
+          e.currentTarget.setAttribute('aria-label', `目前 ${sign === -1 ? '負數' : '正數'}，按一下切換`);
           setAddGameError('');
         });
       });
-
       list.querySelectorAll('.score-input').forEach(input => {
         input.addEventListener('input', e => {
           const index = Number(e.target.dataset.index);
@@ -2026,10 +2078,25 @@
       }
     }
 
+    function updateGameDateDisplay() {
+      const input = document.getElementById('gameDateInput');
+      const display = document.getElementById('gameDateDisplay');
+      if (!input || !display) return;
+      if (!input.value) {
+        display.textContent = '選擇日期';
+        display.classList.add('placeholder');
+        return;
+      }
+      const [year, month, day] = input.value.split('-');
+      display.textContent = `${year}/${month}/${day}`;
+      display.classList.remove('placeholder');
+    }
+
     function openAddGameSheet() {
       addGameSaving = false;
       document.getElementById('gameDateInput').value = todayIsoDate();
-      addGameRows = Array.from({ length: 4 }, () => ({ playerId: '', score: '', sign: 1 }));
+      updateGameDateDisplay();
+      addGameRows = Array.from({ length: 4 }, (_, index) => ({ playerId: '', score: '', sign: index < 2 ? 1 : -1 }));
       document.getElementById('addGameSubmit').disabled = false;
       document.getElementById('addGameSubmit').textContent = '加入牌局';
       setAddGameError('');
@@ -2121,6 +2188,7 @@
       }
     }
 
+    document.getElementById('gameDateInput').addEventListener('change', updateGameDateDisplay);
     document.getElementById('addGameBtn').addEventListener('click', openAddGameSheet);
     document.getElementById('addGameClose').addEventListener('click', () => closeAddGameSheet());
     document.getElementById('addGameCancel').addEventListener('click', () => closeAddGameSheet());
