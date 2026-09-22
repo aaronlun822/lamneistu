@@ -798,35 +798,35 @@
       .duel-grid { grid-template-columns: 1fr 1fr; }
       .profile-name { font-size: 21px; }
     }
-  .add-game-header-btn {
+  
+
+    /* ===== 新增牌局 ===== */
+    .add-game-header-btn {
       border: none;
       background: transparent;
       padding: 0;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-    }
-    .add-game-header-btn span {
-      width: 36px;
-      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      color: #007AFF;
-      font-size: 32px;
-      font-weight: 300;
-      line-height: 1;
-      transition: transform 0.18s ease, background-color 0.18s ease;
+    }
+    .add-game-plus-icon {
+      width: 22px;
+      height: 22px;
+      display: block;
+      color: #8E8E93;
+      transition: transform .18s ease, opacity .18s ease;
     }
     @media (hover: hover) {
-      .add-game-header-btn:hover span {
-        background-color: #F2F2F7;
+      .add-game-header-btn:hover .add-game-plus-icon {
         transform: scale(1.06);
+        opacity: .78;
       }
     }
-    .add-game-header-btn:active span {
-      background-color: #E5E5EA;
-      transform: scale(.94);
+    .add-game-header-btn:active .add-game-plus-icon {
+      transform: scale(.92);
+      opacity: .55;
     }
 
     .add-game-backdrop {
@@ -848,24 +848,27 @@
       position: fixed;
       z-index: calc(var(--z-modal) + 21);
       left: 50%;
-      top: 50%;
-      width: min(560px, calc(100vw - 32px));
-      max-height: min(88vh, 820px);
-      transform: translate(-50%, -48%) scale(.985);
+      bottom: 18px;
+      width: min(720px, calc(100vw - 32px));
+      max-height: min(88vh, 900px);
+      overflow: hidden;
+      transform: translate(-50%, 18px) scale(.985);
       opacity: 0;
       pointer-events: none;
-      display: flex;
-      flex-direction: column;
       background: #F2F2F7;
       border-radius: 24px;
-      box-shadow: 0 24px 70px rgba(0,0,0,.24);
-      overflow: hidden;
+      box-shadow: 0 24px 70px rgba(0,0,0,.22);
       transition: opacity .22s ease, transform .22s ease;
+      display: flex;
+      flex-direction: column;
     }
     .add-game-sheet.show {
       opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translate(-50%, 0) scale(1);
       pointer-events: auto;
+    }
+    .add-game-sheet.dragging {
+      transition: none;
     }
     .add-game-grabber {
       width: 38px;
@@ -875,32 +878,43 @@
       margin: 10px auto 0;
       flex: 0 0 auto;
     }
+    .add-game-drag-handle {
+      height: 2px;
+      width: 100%;
+      flex: 0 0 auto;
+    }
     .add-game-header {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 12px 18px 14px;
+      padding: 10px 18px 14px;
       background: #FFFFFF;
       border-bottom: 1px solid #E5E5EA;
       flex: 0 0 auto;
     }
     .add-game-header h2 {
       margin: 0;
-      font-size: 22px;
+      font-size: 23px;
       line-height: 1.2;
       font-weight: 750;
     }
     .add-game-subtitle {
-      margin-top: 4px;
+      margin-top: 3px;
       color: #8E8E93;
       font-size: 13px;
     }
     .add-game-body {
       overflow: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 16px;
+      padding: 14px;
+      scrollbar-width: thin;
+      min-width: 0;
     }
+    .add-game-body::-webkit-scrollbar { width: 6px; height: 6px; }
+    .add-game-body::-webkit-scrollbar-track { background: transparent; }
+    .add-game-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 10px; }
     .form-label {
       color: #636366;
       font-size: 13px;
@@ -909,6 +923,8 @@
     }
     .form-input {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       box-sizing: border-box;
       border: 1px solid #D1D1D6;
       background: #FFFFFF;
@@ -919,21 +935,25 @@
       font: inherit;
       font-size: 16px;
       outline: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
     .form-input:focus {
       border-color: #007AFF;
       box-shadow: 0 0 0 3px rgba(0,122,255,.12);
     }
-    input[type="number"] {
-      -moz-appearance: textfield;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
+    .game-date-input {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
       margin: 0;
+      -webkit-appearance: none;
+      appearance: none;
     }
+    .game-date-input::-webkit-date-and-time-value { text-align: left; }
+    .game-date-input::-webkit-calendar-picker-indicator { opacity: .55; margin-left: auto; }
+
     .players-form-title-row {
       display: flex;
       align-items: center;
@@ -957,12 +977,14 @@
     }
     .game-player-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 120px 38px;
+      grid-template-columns: minmax(0, 1fr) 166px 36px;
       gap: 8px;
       align-items: center;
+      min-width: 0;
     }
     .game-player-select {
       width: 100%;
+      min-width: 0;
       min-height: 44px;
       box-sizing: border-box;
       border: 1px solid #D1D1D6;
@@ -973,20 +995,90 @@
       font-size: 15px;
       color: #1C1C1E;
       outline: none;
+      -webkit-appearance: none;
+      appearance: auto;
     }
     .game-player-select:focus {
       border-color: #007AFF;
       box-shadow: 0 0 0 3px rgba(0,122,255,.12);
     }
+
+    /* 正/負分切換與分數欄視覺上是一個 input */
+    .score-control {
+      min-width: 0;
+      height: 44px;
+      display: grid;
+      grid-template-columns: 64px minmax(0,1fr);
+      align-items: stretch;
+      box-sizing: border-box;
+      border: 1px solid #D1D1D6;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+    .score-control:focus-within {
+      border-color: #007AFF;
+      box-shadow: 0 0 0 3px rgba(0,122,255,.12);
+    }
+    .score-sign-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      align-items: center;
+      padding: 3px;
+      background: #F2F2F7;
+      border-right: 1px solid #E5E5EA;
+    }
+    .score-sign-btn {
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      min-width: 0;
+      height: 36px;
+      padding: 0;
+      font-size: 17px;
+      font-weight: 750;
+      line-height: 1;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s ease, color .15s ease, transform .12s ease;
+    }
+    .score-sign-btn.plus { color: #34C759; }
+    .score-sign-btn.minus { color: #FF3B30; }
+    .score-sign-btn.plus.selected { background: #E9F8EE; }
+    .score-sign-btn.minus.selected { background: #FFF0EF; }
+    .score-sign-btn:active { transform: scale(.94); }
+    .score-input {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      box-sizing: border-box;
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 0 11px;
+      font: inherit;
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      color: #1C1C1E;
+    }
+    .score-input::placeholder { color: #C7C7CC; }
+
     .remove-player-row-btn {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border: none;
       border-radius: 50%;
       background: #F2F2F7;
       color: #8E8E93;
       font-size: 18px;
       cursor: pointer;
+      padding: 0;
+    }
+    .remove-player-row-btn.hidden {
+      visibility: hidden;
+      pointer-events: none;
     }
     .add-new-player-panel {
       margin-top: 10px;
@@ -1027,7 +1119,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      padding: 12px 16px 16px;
+      padding: 12px 14px 14px;
       background: #FFFFFF;
       border-top: 1px solid #E5E5EA;
       flex: 0 0 auto;
@@ -1042,66 +1134,28 @@
       font-weight: 650;
       cursor: pointer;
     }
-    .form-secondary-btn {
-      background: #E5E5EA;
-      color: #1C1C1E;
-    }
-    .form-primary-btn {
-      background: #007AFF;
-      color: #FFFFFF;
-    }
-    .form-primary-btn:disabled {
-      opacity: .55;
-      cursor: default;
-    }
+    .form-secondary-btn { background: #E5E5EA; color: #1C1C1E; }
+    .form-primary-btn { background: #007AFF; color: #FFFFFF; }
+    .form-primary-btn:disabled { opacity: .55; cursor: default; }
 
     @media (max-width: 600px) {
       .add-game-sheet {
         left: 0;
-        top: auto;
         bottom: 0;
         width: 100vw;
+        max-width: 100vw;
         max-height: 92vh;
         border-radius: 22px 22px 0 0;
         transform: translateY(28px);
       }
-      .add-game-sheet.show {
-        transform: translateY(0);
-      }
-      .add-game-body {
-        padding: 14px 12px;
-      }
-      .game-player-row {
-        grid-template-columns: minmax(0, 1fr) 95px 36px;
-        gap: 7px;
-      }
-      .game-player-select,
-      .game-score-input {
-        min-height: 42px;
-        font-size: 15px;
-      }
-      .remove-player-row-btn {
-        width: 36px;
-        height: 36px;
-      }
-      .add-game-footer {
-        padding-bottom: calc(14px + env(safe-area-inset-bottom));
-      }
-    }
-
-  .db-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      color: #34C759;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .db-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #34C759;
+      .add-game-sheet.show { transform: translateY(0); }
+      .add-game-header { padding-left: 14px; padding-right: 14px; }
+      .add-game-body { padding: 12px; }
+      .add-game-footer { padding-left: 12px; padding-right: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+      .game-player-row { grid-template-columns: minmax(0,1fr) 148px 36px; gap: 7px; }
+      .score-control { grid-template-columns: 58px minmax(0,1fr); }
+      .score-input { padding-left: 8px; padding-right: 9px; }
+      .game-player-select { font-size: 14px; }
     }
   </style>
 </head>
@@ -1114,7 +1168,9 @@
       </a>
       <h1>Lam Nei Studio</h1>
       <button id="addGameBtn" class="sheet-link-icon add-game-header-btn" type="button" title="新增牌局" aria-label="新增牌局">
-        <span>＋</span>
+        <svg class="add-game-plus-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5.5V18.5M5.5 12H18.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
       </button>
     </div>
 
@@ -1127,6 +1183,7 @@
   <div id="addGameBackdrop" class="add-game-backdrop" aria-hidden="true"></div>
   <section id="addGameSheet" class="add-game-sheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="addGameTitle">
     <div class="add-game-grabber"></div>
+    <div id="addGameDragHandle" class="add-game-drag-handle" aria-hidden="true"></div>
     <div class="add-game-header">
       <div>
         <h2 id="addGameTitle">新增牌局</h2>
@@ -1137,7 +1194,7 @@
 
     <div id="addGameBody" class="add-game-body">
       <label class="form-label" for="gameDateInput">牌局日期</label>
-      <input id="gameDateInput" class="form-input" type="date">
+      <input id="gameDateInput" class="form-input game-date-input" type="date">
 
       <div class="players-form-title-row">
         <div class="form-label" style="margin:0;">玩家</div>
@@ -1145,6 +1202,7 @@
       </div>
 
       <div id="gamePlayersList" class="game-players-list"></div>
+
       <div id="addNewPlayerPanel" class="add-new-player-panel" hidden>
         <div class="add-new-player-row">
           <input id="newPlayerNameInput" class="form-input" type="text" maxlength="40" placeholder="輸入新玩家名稱">
@@ -1177,15 +1235,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ===== Supabase 設定 =====
-    // 請到 Supabase Dashboard → Connect 複製 Project URL 及 Publishable key。
+    // ===== Supabase =====
     const SUPABASE_URL = 'https://zpmoqpysipsexsgrlknr.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ihlscYsOOZJ2_GM4QdrQRA_MtMk1xNf';
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY,
-      { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      }
     );
 
     let globalData = {};
@@ -1195,10 +1258,36 @@
     let sortAscending = false;
     let focusedDateCol = null;
     let profileRequestToken = 0;
+
     let rawPlayers = [];
     let rawGames = [];
     let rawResults = [];
     let activeYear = new Date().getFullYear();
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeSupabaseError(error) {
+      if (!error) return '未知錯誤';
+      return error.message || error.details || error.hint || String(error);
+    }
+
+    function todayIsoDate() {
+      const d = new Date();
+      const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 10);
+    }
+
+    function monthName(monthNo) {
+      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${names[monthNo - 1]} ${activeYear}`;
+    }
 
     function renderSkeleton(isFirstLoad = true) {
       if (isFirstLoad) {
@@ -1231,41 +1320,46 @@
         </div>`;
     }
 
-    function monthName(monthNo) {
-      const names = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ];
-      return `${names[monthNo - 1]} ${activeYear}`;
-    }
-
-    function escapeSupabaseError(error) {
-      if (!error) return '未知錯誤';
-      return error.message || error.details || error.hint || String(error);
+    async function selectAllRows(table, columns, orderColumn) {
+      const pageSize = 1000;
+      const rows = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabaseClient
+          .from(table)
+          .select(columns)
+          .order(orderColumn, { ascending: true })
+          .range(from, from + pageSize - 1);
+        if (error) throw error;
+        rows.push(...(data || []));
+        if (!data || data.length < pageSize) break;
+        from += pageSize;
+      }
+      return rows;
     }
 
     function aggregateDatabaseData() {
       const playerById = new Map(rawPlayers.map(p => [Number(p.id), p]));
-      const gamesById = new Map();
-
-      rawGames.forEach(game => {
-        const date = String(game.played_on);
-        const d = new Date(`${date}T00:00:00`);
-        const monthNo = d.getMonth() + 1;
-        const day = d.getDate();
-        if (!gamesById.has(Number(game.id))) {
-          gamesById.set(Number(game.id), {
-            id: Number(game.id),
-            played_on: date,
+      const games = rawGames
+        .map(g => {
+          const playedOn = String(g.played_on);
+          const date = new Date(`${playedOn}T00:00:00`);
+          const monthNo = date.getMonth() + 1;
+          const year = date.getFullYear();
+          return {
+            id: Number(g.id),
+            played_on: playedOn,
+            year,
             monthNo,
-            day,
+            day: date.getDate(),
             results: []
-          });
-        }
-      });
+          };
+        })
+        .filter(g => Number.isFinite(g.year));
 
+      const gameById = new Map(games.map(g => [g.id, g]));
       rawResults.forEach(r => {
-        const game = gamesById.get(Number(r.game_id));
+        const game = gameById.get(Number(r.game_id));
         const player = playerById.get(Number(r.player_id));
         if (!game || !player) return;
         game.results.push({
@@ -1275,94 +1369,531 @@
         });
       });
 
-      const sortedGames = Array.from(gamesById.values()).sort((a, b) =>
-        a.played_on.localeCompare(b.played_on) || a.id - b.id
-      );
-      rawGames = sortedGames;
-      activeYear = sortedGames.length
-        ? new Date(`${sortedGames[sortedGames.length - 1].played_on}T00:00:00`).getFullYear()
-        : new Date().getFullYear();
+      games.sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+      activeYear = games.length ? games[games.length - 1].year : new Date().getFullYear();
 
-      const monthNos = [...new Set(sortedGames.map(g => g.monthNo))].sort((a, b) => a - b);
+      const yearGames = games.filter(g => g.year === activeYear);
+      rawGames = yearGames;
+
+      const monthNos = [...new Set(yearGames.map(g => g.monthNo))].sort((a,b) => a-b);
       allSheetNames = monthNos.map(monthName);
       allSheetNames.push('總排名');
-
       globalData = {};
-      monthNos.forEach(monthNo => {
-        const monthGames = sortedGames.filter(g => g.monthNo === monthNo);
-        const days = [...new Set(monthGames.map(g => g.day))].sort((a, b) => a - b);
-        const playerNames = rawPlayers.map(p => p.name);
 
-        const header = [null, 'Total', ...days];
-        const rows = playerNames.map(name => {
-          const dayTotals = days.map(day => {
+      monthNos.forEach(monthNo => {
+        const monthGames = yearGames.filter(g => g.monthNo === monthNo);
+        const days = [...new Set(monthGames.map(g => g.day))].sort((a,b) => a-b);
+        const header = [String(monthNo), 'Total', ...days];
+        const rows = rawPlayers.map(player => {
+          const daily = days.map(day => {
             const total = monthGames
               .filter(g => g.day === day)
               .flatMap(g => g.results)
-              .filter(r => r.playerName === name)
+              .filter(r => r.playerId === Number(player.id))
               .reduce((sum, r) => sum + r.score, 0);
             return total === 0 ? '' : total;
           });
-          const total = dayTotals.reduce((sum, v) => sum + (Number(v) || 0), 0);
-          return [name, total, ...dayTotals];
+          return [player.name, daily.reduce((sum, v) => sum + (Number(v) || 0), 0), ...daily];
         });
-
         globalData[monthName(monthNo)] = [[String(monthNo)], header, ...rows];
       });
 
-      const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
-      const overallRows = rawPlayers.map(p => {
-        const monthlyTotals = monthNos.map(monthNo =>
-          sortedGames
+      const overallHeader = [String(activeYear), 'Total', ...monthNos.map(m => String(m))];
+      const overallRows = rawPlayers.map(player => {
+        const monthly = monthNos.map(monthNo =>
+          yearGames
             .filter(g => g.monthNo === monthNo)
             .flatMap(g => g.results)
-            .filter(r => r.playerId === Number(p.id))
+            .filter(r => r.playerId === Number(player.id))
             .reduce((sum, r) => sum + r.score, 0)
         );
-        const total = monthlyTotals.reduce((sum, v) => sum + v, 0);
-        return [p.name, total, ...monthlyTotals.map(v => v === 0 ? '' : v)];
+        return [player.name, monthly.reduce((sum,v) => sum + v, 0), ...monthly.map(v => v === 0 ? '' : v)];
       });
       globalData['總排名'] = [[String(activeYear)], overallHeader, ...overallRows];
 
+      const monthlyNames = allSheetNames.filter(n => n !== '總排名');
       if (!activeSheetName || !allSheetNames.includes(activeSheetName)) {
-        const availableMonths = allSheetNames.filter(n => n !== '總排名');
-        activeSheetName = availableMonths.length
-          ? availableMonths[availableMonths.length - 1]
-          : '總排名';
+        activeSheetName = monthlyNames.length ? monthlyNames[monthlyNames.length - 1] : '總排名';
       }
     }
 
-    async function selectAllRows(table, columns, orderColumn) {
-      const pageSize = 1000;
-      const rows = [];
-      let from = 0;
-      while (true) {
-        const to = from + pageSize - 1;
-        let query = supabaseClient.from(table).select(columns).order(orderColumn, { ascending: true }).range(from, to);
-        const { data, error } = await query;
-        if (error) throw error;
-        rows.push(...(data || []));
-        if (!data || data.length < pageSize) break;
-        from += pageSize;
+    async function fetchData() {
+      renderSkeleton(true);
+      if (!SUPABASE_URL || SUPABASE_URL === 'YOUR_SUPABASE_URL' ||
+          !SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
+        document.getElementById('controlsArea').innerHTML = '';
+        document.getElementById('contentArea').innerHTML = `
+          <div class="error-container">
+            <div>請先在 HTML 內填入 SUPABASE_URL 及 SUPABASE_PUBLISHABLE_KEY。</div>
+          </div>`;
+        return;
       }
-      return rows;
+
+      try {
+        const [players, games, results] = await Promise.all([
+          selectAllRows('players', 'id,name,is_active', 'id'),
+          selectAllRows('games', 'id,played_on', 'played_on'),
+          selectAllRows('game_result', 'id,game_id,player_id,score', 'id')
+        ]);
+
+        rawPlayers = (players || [])
+          .filter(p => p && p.name)
+          .map(p => ({ ...p, id: Number(p.id) }));
+        rawGames = games || [];
+        rawResults = results || [];
+
+        if (!rawPlayers.length) throw new Error('players 表沒有資料。');
+
+        aggregateDatabaseData();
+        renderControls();
+        renderTableLayout();
+      } catch (err) {
+        document.getElementById('controlsArea').innerHTML = '';
+        document.getElementById('contentArea').innerHTML = `
+          <div class="error-container">
+            <div>Supabase 載入失敗：${escapeHtml(escapeSupabaseError(err))}</div>
+            <button class="retry-btn" onclick="fetchData()">重新載入</button>
+          </div>`;
+      }
     }
 
+    function renderControls() {
+      const isOverall = activeSheetName === '總排名';
+      const menuHtml = allSheetNames.filter(n => n !== '總排名').map(m => `
+        <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${escapeHtml(m)}">
+          <span>${escapeHtml(m)}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
+        </div>`).join('');
+
+      document.getElementById('controlsArea').innerHTML = `
+        <div class="custom-dropdown-container" id="dropdownContainer">
+          <button id="monthSelectorTrigger" class="month-dropdown">${escapeHtml(activeSheetName)}</button>
+          <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
+        </div>
+        <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
+      `;
+
+      const menu = document.getElementById('monthSelectorMenu');
+      document.getElementById('monthSelectorTrigger').addEventListener('click', e => {
+        menu.classList.toggle('show');
+        e.stopPropagation();
+      });
+
+      menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
+        item.addEventListener('click', e => {
+          menu.classList.remove('show');
+          const val = e.currentTarget.getAttribute('data-value');
+          if (activeSheetName !== val) switchSheet(val);
+        });
+      });
+
+      document.getElementById('overallBtn').addEventListener('click', () => {
+        if (activeSheetName !== '總排名') switchSheet('總排名');
+      });
+    }
+
+    function switchSheet(sheetName) {
+      activeSheetName = sheetName;
+      currentSortCol = 'total';
+      sortAscending = false;
+      focusedDateCol = null;
+      renderControls();
+      renderTableLayout();
+    }
+
+    window.handleSort = function(colIndex) {
+      if (colIndex === undefined || colIndex === null || colIndex === '') return;
+      const prevFocused = focusedDateCol;
+      sortAscending = currentSortCol === colIndex ? !sortAscending : false;
+      currentSortCol = colIndex;
+      focusedDateCol = colIndex === 'total' ? null : colIndex;
+      (prevFocused !== focusedDateCol || focusedDateCol !== null)
+        ? renderTableLayout()
+        : (updateHeaderIcons(), renderTableBody());
+    };
+
+    const getSortIcon = col => currentSortCol === col
+      ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>')
+      : '';
+
+    function updateHeaderIcons() {
+      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+        const col = th.dataset.col;
+        const icon = th.querySelector('.sort-icon-container');
+        if (icon) icon.innerHTML = getSortIcon(col === 'total' ? 'total' : Number(col));
+      });
+    }
+
+    function getOverallColIndices(data) {
+      const end = Array.isArray(data?.[1]) ? data[1].length : 2;
+      return Array.from({ length: Math.max(0, end - 2) }, (_, i) => i + 2);
+    }
+
+    // 月表至少保留 9 個日期欄；不足的日期欄用「-」作為空白佔位。
+    function getMonthlyDisplayColumns(data) {
+      const actual = [];
+      if (Array.isArray(data?.[1])) {
+        for (let j = 2; j < data[1].length; j++) {
+          const value = data[1][j];
+          if (value !== '' && value !== undefined && value !== null && Number.isFinite(Number(value))) {
+            actual.push(j);
+          }
+        }
+      }
+
+      let ordered = [...actual];
+      ordered.sort((a, b) => {
+        if (a === focusedDateCol) return -1;
+        if (b === focusedDateCol) return 1;
+        return Number(data[1][b]) - Number(data[1][a]);
+      });
+
+      const placeholderCount = Math.max(0, 9 - ordered.length);
+      const placeholders = Array.from({ length: placeholderCount }, (_, i) => ({
+        index: data[1].length + i,
+        placeholder: true
+      }));
+      return [
+        ...ordered.map(index => ({ index, placeholder: false })),
+        ...placeholders
+      ];
+    }
+
+    function formatHeaderDate(dayVal, data) {
+      if (dayVal === undefined || dayVal === null || dayVal === '' || isNaN(Number(dayVal))) return '-';
+      const monthStr = String(data?.[0]?.[0] ?? '').trim() || String(new Date().getMonth() + 1);
+      return `${dayVal}/${monthStr}`;
+    }
+
+    function renderTableLayout() {
+      const data = globalData[activeSheetName];
+      if (!data) return;
+      const isOverall = activeSheetName === '總排名';
+      const displayCols = isOverall
+        ? getOverallColIndices(data).map(index => ({ index, placeholder: false }))
+        : getMonthlyDisplayColumns(data);
+
+      const headHtml = displayCols.map(col => {
+        if (col.placeholder) return '<th>-</th>';
+        const j = col.index;
+        const val = data[1]?.[j];
+        const isF = j === focusedDateCol;
+        const text = isOverall ? val : formatHeaderDate(val, data);
+        const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
+        return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
+      }).join('');
+
+      document.getElementById('contentArea').innerHTML = `
+        <div class="table-container">
+          <table>
+            <thead id="tableHead"><tr>
+              <th>Rank</th><th>Name</th>
+              <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
+              ${headHtml}
+            </tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>`;
+
+      renderTableBody();
+      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+        th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : Number(th.dataset.col)));
+      });
+    }
+
+    function renderTableBody() {
+      const tbody = document.getElementById('tableBody');
+      if (!tbody) return;
+      const data = globalData[activeSheetName];
+      const isOverall = activeSheetName === '總排名';
+      const displayCols = isOverall
+        ? getOverallColIndices(data).map(index => ({ index, placeholder: false }))
+        : getMonthlyDisplayColumns(data);
+      const actualColLimit = Array.isArray(data?.[1]) ? data[1].length : 2;
+
+      let rows = data.slice(2).filter(r => r[0]).map(row => {
+        const hasPart = isOverall
+          ? row.slice(2, actualColLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '')
+          : row.slice(2, actualColLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
+        return { data: row, total: Number(row[1]) || 0, hasPart };
+      }).sort((a,b) => b.hasPart - a.hasPart || b.total - a.total);
+
+      let rank = 1, displayRank = 1, prev = null;
+      rows.forEach(r => {
+        if (!r.hasPart) { r.rank = '-'; return; }
+        if (r.total !== prev) { displayRank = rank; prev = r.total; }
+        r.rank = displayRank;
+        rank++;
+      });
+
+      rows.sort((a,b) => {
+        if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
+        const vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
+        const vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
+        return sortAscending ? vA - vB : vB - vA;
+      });
+
+      tbody.innerHTML = rows.map(r => {
+        const rHtml = !r.hasPart
+          ? `<span class="rank-other">-</span>`
+          : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
+        const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
+
+        const colsHtml = displayCols.map(col => {
+          if (col.placeholder) return '<td>-</td>';
+          const j = col.index;
+          const v = r.data[j];
+          const hasV = v !== '' && v !== undefined && v !== null;
+          const cClass = hasV && Number(v) > 0 ? 'win' : (hasV && Number(v) < 0 ? 'lose' : '');
+          return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
+        }).join('');
+
+        const playerName = String(r.data[0] ?? '');
+        return `<tr><td>${rHtml}</td><td><button type="button" class="player-name-btn" data-player="${escapeHtml(playerName)}">${escapeHtml(playerName)}</button></td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('.player-name-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          openPlayerProfile(btn.dataset.player);
+        });
+      });
+    }
+
+    function scoreNumber(v) {
+      if (v === null || v === undefined) return null;
+      const text = String(v).trim();
+      if (text === '' || text === '-' || text === '—') return null;
+      const n = Number(text);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function addOutcome(record, score) {
+      record.games++;
+      record.total += score;
+      record.scores.push(score);
+      if (score > 0) record.wins++;
+      else if (score < 0) record.losses++;
+      else record.draws++;
+    }
+
+    function collectPlayerStats(playerName) {
+      const stats = {
+        name: playerName,
+        month: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [], sheetName: '' },
+        year: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [] },
+        recent: [],
+        opponents: {}
+      };
+
+      const profileMonthName = activeSheetName === '總排名'
+        ? (allSheetNames.filter(n => n !== '總排名').slice(-1)[0] || '')
+        : activeSheetName;
+      stats.month.sheetName = profileMonthName;
+
+      const targetMonthNo = profileMonthName && profileMonthName !== '總排名'
+        ? Number(globalData[profileMonthName]?.[0]?.[0] || 0)
+        : 0;
+
+      [...rawGames]
+        .sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id)
+        .forEach(game => {
+          const mine = game.results.find(r => r.playerName === playerName);
+          if (!mine) return;
+
+          addOutcome(stats.year, mine.score);
+          if (game.monthNo === targetMonthNo) addOutcome(stats.month, mine.score);
+
+          stats.recent.push({
+            score: mine.score,
+            sheet: monthName(game.monthNo),
+            date: `${game.day}/${game.monthNo}`,
+            gameId: game.id
+          });
+
+          game.results.forEach(op => {
+            if (op.playerName === playerName) return;
+            if (!stats.opponents[op.playerName]) {
+              stats.opponents[op.playerName] = { name: op.playerName, games: 0, wins: 0, losses: 0, draws: 0 };
+            }
+            const duel = stats.opponents[op.playerName];
+            duel.games++;
+            if (mine.score > 0 && op.score < 0) duel.wins++;
+            else if (mine.score < 0 && op.score > 0) duel.losses++;
+            else duel.draws++;
+          });
+        });
+
+      stats.recent = stats.recent.slice(-10).reverse();
+      stats.profileMonthName = profileMonthName;
+      return stats;
+    }
+
+    function pct(wins, games) { return games ? `${((wins / games) * 100).toFixed(1)}%` : '-'; }
+    function rateClass(wins, games) {
+      if (!games) return '';
+      const rate = wins / games;
+      return rate > 0.5 ? 'win' : (rate < 0.5 ? 'lose' : '');
+    }
+    function signedNumber(n) {
+      if (!Number.isFinite(n)) return '-';
+      return n > 0 ? `+${n}` : String(n);
+    }
+    function signedClass(n) {
+      if (!Number.isFinite(n) || n === 0) return '';
+      return n > 0 ? 'win' : 'lose';
+    }
+
+    function getOverallRank(playerName) {
+      const totals = rawPlayers.map(p => {
+        const total = rawGames.flatMap(g => g.results)
+          .filter(r => r.playerId === Number(p.id))
+          .reduce((sum,r) => sum + r.score, 0);
+        const hasPart = rawGames.some(g => g.results.some(r => r.playerId === Number(p.id)));
+        return { name: p.name, total, hasPart };
+      }).sort((a,b) => b.hasPart - a.hasPart || b.total - a.total);
+
+      let rank = 1, displayRank = 1, prev = null;
+      for (const r of totals) {
+        if (!r.hasPart) continue;
+        if (r.total !== prev) { displayRank = rank; prev = r.total; }
+        if (r.name === playerName) return displayRank;
+        rank++;
+      }
+      return null;
+    }
+
+    function renderProfileStats(stats) {
+      const m = stats.month;
+      const y = stats.year;
+
+      const recentHtml = stats.recent.length
+        ? stats.recent.map(g => {
+            const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
+            const sign = g.score > 0 ? '+' : '';
+            return `<div class="recent-game ${cls}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}">${sign}${g.score}</div>`;
+          }).join('')
+        : `<div class="profile-empty">暫無參加紀錄</div>`;
+
+      const opponents = Object.values(stats.opponents)
+        .filter(o => o.games >= 3)
+        .map(o => ({ ...o, rate: o.games ? o.wins / o.games : 0 }))
+        .sort((a,b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
+
+      const potentialNemesis = opponents[0] || null;
+      const nemesis = potentialNemesis && potentialNemesis.rate < 0.5 ? potentialNemesis : null;
+      const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null;
+      const benefactor = potentialBenefactor && potentialBenefactor.rate > 0.5 ? potentialBenefactor : null;
+
+      let best = null, worst = null;
+      if (y.scores.length) {
+        const maxScore = Math.max(...y.scores);
+        const minScore = Math.min(...y.scores);
+        best = maxScore > 0 ? maxScore : null;
+        worst = minScore < 0 ? minScore : null;
+      }
+
+      const monthWinRateClass = rateClass(m.wins, m.games);
+      const yearWinRateClass = rateClass(y.wins, y.games);
+      const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null;
+      const yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
+
+      document.getElementById('profileBody').innerHTML = `
+        <section class="profile-section">
+          <div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div>
+          <div class="profile-grid">
+            <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins,m.games)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">${activeYear} 年度戰績</div>
+          <div class="profile-grid">
+            <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins,y.games)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
+            <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">近期 10 場</div>
+          <div class="recent-grid">${recentHtml}</div>
+          <div class="recent-meta">
+            <span>最新 → 最舊</span>
+            <span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">魔鬼 / 天使</div>
+          <div class="duel-grid">
+            <div class="duel-card">
+              <div class="duel-label">😈 魔鬼</div>
+              ${nemesis ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins,nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:#8E8E93;font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}
+            </div>
+            <div class="duel-card">
+              <div class="duel-label">😇 天使</div>
+              ${benefactor ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins,benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:#8E8E93;font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}
+            </div>
+          </div>
+        </section>
+
+        <section class="profile-section">
+          <div class="profile-section-title">最佳 / 最差單局</div>
+          <div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div>
+          <div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div>
+        </section>`;
+    }
+
+    function openPlayerProfile(playerName) {
+      const token = ++profileRequestToken;
+      document.getElementById('profileName').textContent = playerName;
+      document.getElementById('profileSubtitle').textContent = `正在整理 ${activeYear} 戰績…`;
+      document.getElementById('profileBody').innerHTML = `
+        <section class="profile-section">
+          <div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div>
+          <div class="profile-grid">
+            ${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}
+          </div>
+        </section>
+        <section class="profile-section"><div class="sk-box" style="height:150px;width:100%;"></div></section>`;
+
+      document.body.classList.add('profile-open');
+      document.getElementById('profileBackdrop').classList.add('show');
+      document.getElementById('profileSheet').classList.add('show');
+      document.getElementById('profileBackdrop').setAttribute('aria-hidden','false');
+      document.getElementById('profileSheet').setAttribute('aria-hidden','false');
+
+      if (token !== profileRequestToken) return;
+      const stats = collectPlayerStats(playerName);
+      const currentRank = getOverallRank(playerName);
+      document.getElementById('profileSubtitle').textContent =
+        `${stats.profileMonthName || `${activeYear} 年`} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
+      renderProfileStats(stats);
+    }
+
+    function closePlayerProfile() {
+      profileRequestToken++;
+      document.body.classList.remove('profile-open');
+      document.getElementById('profileBackdrop').classList.remove('show');
+      document.getElementById('profileSheet').classList.remove('show');
+      document.getElementById('profileBackdrop').setAttribute('aria-hidden','true');
+      document.getElementById('profileSheet').setAttribute('aria-hidden','true');
+    }
+
+    // ===== 新增牌局 =====
     let addGameRows = [];
     let addGameSaving = false;
 
-    function todayIsoDate() {
-      const d = new Date();
-      const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-      return local.toISOString().slice(0, 10);
-    }
-
     function getPlayersForForm() {
-      return [...rawPlayers].sort((a, b) => a.name.localeCompare(b.name, 'zh-Hant'));
+      return [...rawPlayers].sort((a,b) => a.name.localeCompare(b.name, 'zh-Hant'));
     }
 
     function playerOptionsHtml(selectedId = '') {
-      const selected = String(selectedId ?? '');
+      const selected = String(selectedId || '');
       const options = ['<option value="">選擇玩家…</option>'];
       getPlayersForForm().forEach(p => {
         const id = String(p.id);
@@ -1378,15 +1909,21 @@
 
     function renderAddGameRows() {
       const list = document.getElementById('gamePlayersList');
-      list.innerHTML = addGameRows.map((row, index) => `
+      const canRemove = addGameRows.length > 4;
+      list.innerHTML = addGameRows.map((row,index) => `
         <div class="game-player-row" data-row-index="${index}">
-          <select class="game-player-select" data-field="playerId" data-index="${index}">
+          <select class="game-player-select" data-index="${index}">
             ${playerOptionsHtml(row.playerId)}
           </select>
-          <input class="form-input game-score-input" data-field="score" data-index="${index}" type="number" inputmode="numeric" step="1" placeholder="分數" value="${row.score === '' ? '' : escapeHtml(row.score)}">
-          <button class="remove-player-row-btn" type="button" data-remove-index="${index}" aria-label="移除玩家">×</button>
-        </div>
-      `).join('');
+          <div class="score-control" data-index="${index}">
+            <div class="score-sign-switcher" aria-label="分數正負">
+              <button class="score-sign-btn plus ${row.sign === 1 ? 'selected' : ''}" type="button" data-sign="1" aria-pressed="${row.sign === 1 ? 'true' : 'false'}">+</button>
+              <button class="score-sign-btn minus ${row.sign === -1 ? 'selected' : ''}" type="button" data-sign="-1" aria-pressed="${row.sign === -1 ? 'true' : 'false'}">−</button>
+            </div>
+            <input class="score-input" type="number" inputmode="numeric" pattern="[0-9]*" min="0" step="1" placeholder="分數" data-index="${index}" value="${escapeHtml(row.score)}" aria-label="分數">
+          </div>
+          <button class="remove-player-row-btn ${canRemove ? '' : 'hidden'}" type="button" data-remove-index="${index}" aria-label="移除玩家">×</button>
+        </div>`).join('');
 
       list.querySelectorAll('.game-player-select').forEach(select => {
         select.addEventListener('change', e => {
@@ -1402,21 +1939,33 @@
         });
       });
 
-      list.querySelectorAll('.game-score-input').forEach(input => {
+      list.querySelectorAll('.score-sign-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const control = e.currentTarget.closest('.score-control');
+          const index = Number(control.dataset.index);
+          addGameRows[index].sign = Number(e.currentTarget.dataset.sign) === -1 ? -1 : 1;
+          control.querySelector('.score-sign-btn.plus').classList.toggle('selected', addGameRows[index].sign === 1);
+          control.querySelector('.score-sign-btn.minus').classList.toggle('selected', addGameRows[index].sign === -1);
+          control.querySelector('.score-sign-btn.plus').setAttribute('aria-pressed', addGameRows[index].sign === 1 ? 'true' : 'false');
+          control.querySelector('.score-sign-btn.minus').setAttribute('aria-pressed', addGameRows[index].sign === -1 ? 'true' : 'false');
+          setAddGameError('');
+        });
+      });
+
+      list.querySelectorAll('.score-input').forEach(input => {
         input.addEventListener('input', e => {
           const index = Number(e.target.dataset.index);
-          addGameRows[index].score = e.target.value;
+          const cleaned = String(e.target.value).replace(/[^0-9]/g, '');
+          if (e.target.value !== cleaned) e.target.value = cleaned;
+          addGameRows[index].score = cleaned;
           setAddGameError('');
         });
       });
 
       list.querySelectorAll('.remove-player-row-btn').forEach(btn => {
         btn.addEventListener('click', e => {
+          if (addGameRows.length <= 4) return;
           const index = Number(e.currentTarget.dataset.removeIndex);
-          if (addGameRows.length <= 2) {
-            setAddGameError('至少需要 2 位玩家。');
-            return;
-          }
           addGameRows.splice(index, 1);
           renderAddGameRows();
           setAddGameError('');
@@ -1448,9 +1997,7 @@
         input.focus();
         return;
       }
-
-      const exists = rawPlayers.some(p => p.name.trim().toLowerCase() === name.toLowerCase());
-      if (exists) {
+      if (rawPlayers.some(p => p.name.trim().toLowerCase() === name.toLowerCase())) {
         setAddGameError('這個玩家名稱已經存在。');
         input.focus();
         return;
@@ -1462,17 +2009,14 @@
           .insert({ name })
           .select('id,name,is_active')
           .single();
-
         if (error) throw error;
-        rawPlayers.push({ ...data, id: Number(data.id) });
 
+        const newPlayer = { ...data, id: Number(data.id) };
+        rawPlayers.push(newPlayer);
         const panel = document.getElementById('addNewPlayerPanel');
         const target = panel.dataset.targetRowIndex === '' ? null : Number(panel.dataset.targetRowIndex);
-        if (target !== null && addGameRows[target]) {
-          addGameRows[target].playerId = String(data.id);
-        } else {
-          addGameRows.push({ playerId: String(data.id), score: '' });
-        }
+        if (target !== null && addGameRows[target]) addGameRows[target].playerId = String(newPlayer.id);
+        else addGameRows.push({ playerId: String(newPlayer.id), score: '', sign: 1 });
 
         hideAddNewPlayerPanel();
         renderAddGameRows();
@@ -1485,24 +2029,25 @@
     function openAddGameSheet() {
       addGameSaving = false;
       document.getElementById('gameDateInput').value = todayIsoDate();
-      addGameRows = Array.from({ length: 4 }, () => ({ playerId: '', score: '' }));
+      addGameRows = Array.from({ length: 4 }, () => ({ playerId: '', score: '', sign: 1 }));
       document.getElementById('addGameSubmit').disabled = false;
+      document.getElementById('addGameSubmit').textContent = '加入牌局';
       setAddGameError('');
       hideAddNewPlayerPanel();
       renderAddGameRows();
       document.getElementById('addGameBackdrop').classList.add('show');
       document.getElementById('addGameSheet').classList.add('show');
-      document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'false');
-      document.getElementById('addGameSheet').setAttribute('aria-hidden', 'false');
+      document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
+      document.getElementById('addGameSheet').setAttribute('aria-hidden','false');
       document.body.classList.add('profile-open');
     }
 
-    function closeAddGameSheet() {
-      if (addGameSaving) return;
+    function closeAddGameSheet(force = false) {
+      if (addGameSaving && !force) return;
       document.getElementById('addGameBackdrop').classList.remove('show');
       document.getElementById('addGameSheet').classList.remove('show');
-      document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'true');
-      document.getElementById('addGameSheet').setAttribute('aria-hidden', 'true');
+      document.getElementById('addGameBackdrop').setAttribute('aria-hidden','true');
+      document.getElementById('addGameSheet').setAttribute('aria-hidden','true');
       document.body.classList.remove('profile-open');
       hideAddNewPlayerPanel();
       setAddGameError('');
@@ -1513,15 +2058,14 @@
       if (!playedOn) return '請選擇牌局日期。';
 
       const filled = addGameRows.filter(r => r.playerId !== '');
-      if (filled.length < 2) return '至少需要 2 位玩家。';
+      if (filled.length < 4) return '至少需要 4 位玩家。';
 
       const ids = filled.map(r => String(r.playerId));
       if (new Set(ids).size !== ids.length) return '同一玩家不能在同一場重複加入。';
 
       for (const row of filled) {
-        if (row.score === '' || !Number.isFinite(Number(row.score))) return '每位已選玩家都需要輸入分數。';
+        if (row.score === '' || !/^\d+$/.test(String(row.score))) return '每位已選玩家都需要輸入有效分數。';
       }
-
       return '';
     }
 
@@ -1544,18 +2088,21 @@
       try {
         const resultsPayload = filledRows.map(row => ({
           player_id: Number(row.playerId),
-          score: Math.trunc(Number(row.score))
+          score: (row.sign === -1 ? -1 : 1) * Math.trunc(Number(row.score))
         }));
 
-        const { data: createdGameId, error: gameError } = await supabaseClient
-          .rpc('create_game_with_results', {
-            p_played_on: playedOn,
-            p_results: resultsPayload
-          });
-        if (gameError) throw gameError;
+        const { error } = await supabaseClient.rpc('create_game_with_results', {
+          p_played_on: playedOn,
+          p_results: resultsPayload
+        });
+        if (error) throw error;
 
-        const createdMonthNo = new Date(`${playedOn}T00:00:00`).getMonth() + 1;
+        // 成功寫入後立即關閉抽屜。
+        closeAddGameSheet(true);
+
+        // 背景重新整理畫面上的資料。
         await fetchData();
+        const createdMonthNo = new Date(`${playedOn}T00:00:00`).getMonth() + 1;
         const targetMonth = monthName(createdMonthNo);
         if (allSheetNames.includes(targetMonth)) {
           activeSheetName = targetMonth;
@@ -1565,8 +2112,6 @@
           renderControls();
           renderTableLayout();
         }
-
-        closeAddGameSheet();
       } catch (err) {
         setAddGameError(`新增牌局失敗：${escapeHtml(escapeSupabaseError(err))}`);
       } finally {
@@ -1576,545 +2121,12 @@
       }
     }
 
-    async function fetchData() {
-      renderSkeleton(true);
-
-      if (!SUPABASE_URL || SUPABASE_URL === 'YOUR_SUPABASE_URL' ||
-          !SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
-        document.getElementById('controlsArea').innerHTML = '';
-        document.getElementById('contentArea').innerHTML = `
-          <div class="error-container">
-            <div>請先在 HTML 內填入 SUPABASE_URL 及 SUPABASE_PUBLISHABLE_KEY。</div>
-          </div>`;
-        return;
-      }
-
-      try {
-        const [playersRows, gamesRows, resultRows] = await Promise.all([
-          selectAllRows('players', 'id,name,is_active', 'id'),
-          selectAllRows('games', 'id,played_on', 'played_on'),
-          selectAllRows('game_result', 'id,game_id,player_id,score', 'id')
-        ]);
-
-        rawPlayers = (playersRows || [])
-          .filter(p => p && p.name)
-          .map(p => ({ ...p, id: Number(p.id) }));
-        rawGames = gamesRows || [];
-        rawResults = resultRows || [];
-
-        if (!rawPlayers.length) throw new Error('players 表沒有資料。');
-
-        aggregateDatabaseData();
-        renderControls();
-        renderTableLayout();
-      } catch (err) {
-        document.getElementById('controlsArea').innerHTML = '';
-        document.getElementById('contentArea').innerHTML = `
-          <div class="error-container">
-            <div>Supabase 載入失敗：${escapeHtml(escapeSupabaseError(err))}</div>
-            <button class="retry-btn" onclick="fetchData()">重新載入</button>
-          </div>`;
-      }
-    }
-
-    function renderControls() {
-      const isOverall = activeSheetName === '總排名';
-      const menuHtml = allSheetNames.filter(n => n !== '總排名').map(m => `
-        <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${m}">
-          <span>${m}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
-        </div>`).join('');
-
-      document.getElementById('controlsArea').innerHTML = `
-        <div class="custom-dropdown-container" id="dropdownContainer">
-          <button id="monthSelectorTrigger" class="month-dropdown">${activeSheetName}</button>
-          <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
-        </div>
-        <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
-      `;
-
-      const menu = document.getElementById('monthSelectorMenu');
-      document.getElementById('monthSelectorTrigger').addEventListener('click', e => { 
-        menu.classList.toggle('show'); 
-        e.stopPropagation(); 
-      });
-      
-      menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
-        item.addEventListener('click', async e => {
-          menu.classList.remove('show'); 
-          const val = e.currentTarget.getAttribute('data-value');
-          if (activeSheetName !== val) await switchSheet(val);
-        });
-      });
-
-      document.getElementById('overallBtn').addEventListener('click', async () => {
-        if (activeSheetName !== '總排名') await switchSheet('總排名');
-      });
-    }
-
-    async function switchSheet(sheetName) {
-      activeSheetName = sheetName;
-      currentSortCol = 'total';
-      sortAscending = false;
-      focusedDateCol = null;
-      renderControls();
-      renderTableLayout();
-    }
-
-    window.handleSort = function(colIndex) {
-      const prevFocused = focusedDateCol;
-      sortAscending = currentSortCol === colIndex ? !sortAscending : false;
-      currentSortCol = colIndex;
-      focusedDateCol = colIndex === 'total' ? null : colIndex;
-      (prevFocused !== focusedDateCol || focusedDateCol !== null) ? renderTableLayout() : (updateHeaderIcons(), renderTableBody());
-    };
-
-    const getSortIcon = (col) => currentSortCol === col ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>') : '';
-
-    function updateHeaderIcons() {
-      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
-        const col = th.dataset.col;
-        const icon = th.querySelector('.sort-icon-container');
-        if (icon) icon.innerHTML = getSortIcon(col === 'total' ? 'total' : parseInt(col, 10));
-      });
-    }
-
-    function getColLimit(data, isOverall) {
-      return Array.isArray(data?.[1]) ? data[1].length : 2;
-    }
-
-    function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
-      let cols = Array.from({ length: colLimit - 2 }, (_, i) => i + 2).filter(c => c !== focusedCol);
-      if (!isOverall) {
-        cols.sort((a, b) => {
-          const vA = data[1][a], vB = data[1][b];
-          const hasA = vA !== "" && vA !== undefined, hasB = vB !== "" && vB !== undefined;
-          if (hasA && !hasB) return -1;
-          if (!hasA && hasB) return 1;
-          if (hasA && hasB && !isNaN(Number(vA)) && !isNaN(Number(vB))) return Number(vB) - Number(vA);
-          return 0;
-        });
-      }
-      return focusedCol !== null ? [focusedCol, ...cols] : cols;
-    }
-
-    function formatHeaderDate(dayVal, data, sheetName) {
-      if (isNaN(Number(dayVal))) return dayVal;
-  
-      let monthStr = String(data[0]?.[0] ?? '').trim();
-  
-      if (!monthStr || isNaN(Number(monthStr))) {
-        monthStr = String(new Date().getMonth() + 1);
-      }
-  
-      return `${dayVal}/${monthStr}`;
-    }
-
-    function renderTableLayout() {
-      const data = globalData[activeSheetName];
-      const isOverall = activeSheetName === '總排名';
-      const colIndices = getValidColumnsOrder(data, getColLimit(data, isOverall), focusedDateCol, isOverall);
-
-      let headHtml = colIndices.map(j => {
-        const val = data[1][j];
-        const isF = j === focusedDateCol;
-        const text = val !== "" && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data, activeSheetName)) : '-';
-        const icon = val !== "" && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
-        return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${text} ${icon}</th>`;
-      }).join('');
-
-      document.getElementById('contentArea').innerHTML = `
-        <div class="table-container">
-          <table>
-            <thead id="tableHead"><tr>
-              <th>Rank</th><th>Name</th>
-              <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
-              ${headHtml}
-            </tr></thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>`;
-      
-      renderTableBody();
-      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
-        th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col, 10)));
-      });
-    }
-
-    function renderTableBody() {
-      const tbody = document.getElementById('tableBody');
-      if (!tbody) return;
-
-      const data = globalData[activeSheetName];
-      const isOverall = activeSheetName === '總排名';
-      const colLimit = getColLimit(data, isOverall);
-      const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
-
-      let rows = data.slice(2).filter(r => r[0]).map(row => {
-        const hasPart = row.slice(2, colLimit).some(v => v !== "" && v !== undefined && v !== "-" && String(v).trim() !== "");
-        return { data: row, total: Number(row[1]) || 0, hasPart };
-      }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total);
-
-      let rank = 1, displayRank = 1, prev = null;
-      rows.forEach(r => {
-        if (!r.hasPart) { r.rank = '-'; return; }
-        if (r.total !== prev) { displayRank = rank; prev = r.total; }
-        r.rank = displayRank; rank++;
-      });
-
-      rows.sort((a, b) => {
-        if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
-        let vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
-        let vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
-        return sortAscending ? vA - vB : vB - vA;
-      });
-
-      tbody.innerHTML = rows.map(r => {
-        const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
-        const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
-
-        let colsHtml = colIndices.map(j => {
-          const v = r.data[j];
-          const hasV = v !== "" && v !== undefined;
-          const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
-          return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
-        }).join('');
-
-        const playerName = String(r.data[0] ?? '').replace(/"/g, '&quot;');
-        const safeName = playerName.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const nameHtml = `<button type="button" class="player-name-btn" data-player="${playerName}">${safeName}</button>`;
-
-        return `<tr><td>${rHtml}</td><td>${nameHtml}</td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
-      }).join('');
-
-      tbody.querySelectorAll('.player-name-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
-          e.stopPropagation();
-          openPlayerProfile(btn.dataset.player);
-        });
-      });
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function scoreNumber(v) {
-      if (v === null || v === undefined) return null;
-      const text = String(v).trim();
-      if (text === '' || text === '-' || text === '—') return null;
-      const n = Number(text);
-      return Number.isFinite(n) ? n : null;
-    }
-
-    function inferMonthNumber(sheetName, data) {
-      if (sheetName === '總排名' || !Array.isArray(data) || !data[0]) return 0;
-  
-      const monthStr = String(data[0][0] ?? '').trim();
-      const monthNum = Number(monthStr);
-  
-      if (Number.isFinite(monthNum) && monthNum >= 1 && monthNum <= 12) {
-        return monthNum;
-      }
-  
-      return 0;
-    }
-
-    function getSheetGameColumns(sheetName, data) {
-      if (!Array.isArray(data) || data.length < 2 || sheetName === '總排名') return [];
-      const limit = getColLimit(data, false);
-      const result = [];
-      for (let j = 2; j < limit; j++) {
-        const header = data[1]?.[j];
-        if (header !== '' && header !== undefined && header !== null) result.push(j);
-      }
-      return result;
-    }
-
-    function findPlayerRow(data, playerName) {
-      if (!Array.isArray(data)) return null;
-      return data.slice(2).find(r => String(r?.[0] ?? '') === String(playerName)) || null;
-    }
-
-    function addOutcome(record, score) {
-      record.games++;
-      record.total += score;
-      record.scores.push(score);
-      if (score > 0) record.wins++;
-      else if (score < 0) record.losses++;
-      else record.draws++;
-    }
-
-    function collectPlayerStats(playerName, sheets) {
-      const stats = {
-        name: playerName,
-        month: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [], sheetName: '' },
-        year: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [] },
-        recent: [],
-        opponents: {}
-      };
-
-      const profileMonthName = activeSheetName === '總排名'
-        ? (allSheetNames.filter(n => n !== '總排名').slice(-1)[0] || '')
-        : activeSheetName;
-      stats.month.sheetName = profileMonthName;
-
-      const targetMonthNo = profileMonthName && profileMonthName !== '總排名'
-        ? Number(String(globalData[profileMonthName]?.[0]?.[0] ?? 0)) || 0
-        : 0;
-
-      const sortedGames = [...rawGames].sort((a, b) =>
-        a.played_on.localeCompare(b.played_on) || a.id - b.id
-      );
-
-      sortedGames.forEach(game => {
-        const mine = game.results.find(r => r.playerName === playerName);
-        if (!mine) return;
-
-        addOutcome(stats.year, mine.score);
-        stats.year.scores.push(mine.score);
-
-        if (game.monthNo === targetMonthNo) {
-          addOutcome(stats.month, mine.score);
-          stats.month.scores.push(mine.score);
-        }
-
-        stats.recent.push({
-          score: mine.score,
-          sheet: monthName(game.monthNo),
-          monthNo: game.monthNo,
-          date: `${game.day}/${game.monthNo}`,
-          gameId: game.id
-        });
-
-        game.results.forEach(op => {
-          if (op.playerName === playerName) return;
-          if (!stats.opponents[op.playerName]) {
-            stats.opponents[op.playerName] = {
-              name: op.playerName,
-              games: 0,
-              wins: 0,
-              losses: 0,
-              draws: 0
-            };
-          }
-          const duel = stats.opponents[op.playerName];
-          duel.games++;
-          if (mine.score > 0 && op.score < 0) duel.wins++;
-          else if (mine.score < 0 && op.score > 0) duel.losses++;
-          else duel.draws++;
-        });
-      });
-
-      stats.recent = stats.recent.slice(-10).reverse();
-      stats.profileMonthName = profileMonthName;
-      return stats;
-    }
-
-    function pct(wins, games) {
-      return games ? `${((wins / games) * 100).toFixed(1)}%` : '-';
-    }
-
-    function rateClass(wins, games) {
-      if (!games) return '';
-      const rate = wins / games;
-      return rate > 0.5 ? 'win' : (rate < 0.5 ? 'lose' : '');
-    }
-
-    function signedNumber(n) {
-      if (!Number.isFinite(n)) return '-';
-      return n > 0 ? `+${n}` : String(n);
-    }
-
-    function signedClass(n) {
-      if (!Number.isFinite(n) || n === 0) return '';
-      return n > 0 ? 'win' : 'lose';
-    }
-
-    function getOverallRank(playerName) {
-      const totals = rawPlayers.map(p => ({
-        name: p.name,
-        total: rawGames
-          .flatMap(g => g.results)
-          .filter(r => r.playerId === Number(p.id))
-          .reduce((sum, r) => sum + r.score, 0),
-        hasPart: rawGames.some(g => g.results.some(r => r.playerId === Number(p.id)))
-      }))
-        .sort((a, b) => b.hasPart - a.hasPart || b.total - a.total || a.name.localeCompare(b.name));
-
-      let rank = 1;
-      let displayRank = 1;
-      let prev = null;
-      for (const r of totals) {
-        if (!r.hasPart) continue;
-        if (r.total !== prev) { displayRank = rank; prev = r.total; }
-        if (r.name === playerName) return displayRank;
-        rank++;
-      }
-      return null;
-    }
-
-    function renderProfileStats(stats) {
-      const m = stats.month;
-      const y = stats.year;
-
-      const recentHtml = stats.recent.length
-        ? stats.recent.map(g => {
-            const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
-            const sign = g.score > 0 ? '+' : '';
-            return `<div class="recent-game ${cls}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}">${sign}${g.score}</div>`;
-          }).join('')
-        : `<div class="profile-empty">暫無參加紀錄</div>`;
-
-      const opponents = Object.values(stats.opponents)
-        .filter(o => o.games >= 3)
-        .map(o => ({
-          ...o,
-          rate: o.games ? o.wins / o.games : 0
-        }))
-        .sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
-
-      const potentialNemesis = opponents[0] || null;
-      const nemesis = (potentialNemesis && potentialNemesis.rate < 0.5) ? potentialNemesis : null;
-
-      const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null;
-      const benefactor = (potentialBenefactor && potentialBenefactor.rate > 0.5) ? potentialBenefactor : null;
-
-      let best = null, worst = null;
-      if (y.scores.length > 0) {
-        const maxScore = Math.max(...y.scores);
-        const minScore = Math.min(...y.scores);
-
-        best = maxScore > 0 ? maxScore : null;
-        worst = minScore < 0 ? minScore : null;
-      }
-
-      const monthWinRateClass = rateClass(m.wins, m.games);
-      const yearWinRateClass = rateClass(y.wins, y.games);
-      const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null;
-      const yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
-
-      document.getElementById('profileBody').innerHTML = `
-        <section class="profile-section">
-          <div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div>
-          <div class="profile-grid">
-            <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
-          </div>
-        </section>
-
-        <section class="profile-section">
-          <div class="profile-section-title">${activeYear} 年度戰績</div>
-          <div class="profile-grid">
-            <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins, y.games)}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
-            <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
-          </div>
-        </section>
-
-        <section class="profile-section">
-          <div class="profile-section-title">近期 10 場</div>
-          <div class="recent-grid">${recentHtml}</div>
-          <div class="recent-meta">
-            <span>最新 → 最舊</span>
-            <span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span>
-          </div>
-        </section>
-
-        <section class="profile-section">
-          <div class="profile-section-title">魔鬼 / 天使</div>
-          <div class="duel-grid">
-            <div class="duel-card">
-              <div class="duel-label">😈 魔鬼</div>
-              ${nemesis 
-                ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div>
-                   <div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div>
-                   <div class="duel-note">共 ${nemesis.games} 場</div>` 
-                : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
-            </div>
-            <div class="duel-card">
-              <div class="duel-label">😇 天使</div>
-              ${benefactor 
-                ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div>
-                   <div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div>
-                   <div class="duel-note">共 ${benefactor.games} 場</div>` 
-                : `<div class="duel-opponent" style="text-align: center; margin-top: 12px; color: #8E8E93; font-weight: normal; font-size: 24px; line-height: 1.5;">-</div>`}
-            </div>
-          </div>
-        </section>
-
-        <section class="profile-section">
-          <div class="profile-section-title">最佳 / 最差單局</div>
-          <div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div>
-          <div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div>
-        </section>
-      `;
-    }
-
-    async function openPlayerProfile(playerName) {
-      const token = ++profileRequestToken;
-      document.getElementById('profileName').textContent = playerName;
-      document.getElementById('profileSubtitle').textContent = `正在整理 ${activeYear} 戰績…`;
-      document.getElementById('profileBody').innerHTML = `
-        <section class="profile-section">
-          <div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div>
-          <div class="profile-grid">
-            ${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}
-          </div>
-        </section>
-        <section class="profile-section"><div class="sk-box" style="height:150px;width:100%;"></div></section>
-      `;
-
-      document.body.classList.add('profile-open');
-      document.getElementById('profileBackdrop').classList.add('show');
-      document.getElementById('profileSheet').classList.add('show');
-      document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'false');
-      document.getElementById('profileSheet').setAttribute('aria-hidden', 'false');
-
-      try {
-        if (token !== profileRequestToken) return;
-
-        const stats = collectPlayerStats(playerName, []);
-        const currentRank = getOverallRank(playerName);
-
-        document.getElementById('profileSubtitle').textContent =
-          `${stats.profileMonthName || `${activeYear} 年`} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
-
-        renderProfileStats(stats);
-      } catch (err) {
-        if (token !== profileRequestToken) return;
-        document.getElementById('profileSubtitle').textContent = '載入失敗';
-        document.getElementById('profileBody').innerHTML = `
-          <section class="profile-section">
-            <div class="error-container" style="padding:20px 10px;">
-              玩家資料載入失敗：${escapeHtml(err.message)}
-            </div>
-          </section>`;
-      }
-    }
-
-    function closePlayerProfile() {
-      profileRequestToken++;
-      document.body.classList.remove('profile-open');
-      document.getElementById('profileBackdrop').classList.remove('show');
-      document.getElementById('profileSheet').classList.remove('show');
-      document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'true');
-      document.getElementById('profileSheet').setAttribute('aria-hidden', 'true');
-    }
-
     document.getElementById('addGameBtn').addEventListener('click', openAddGameSheet);
-    document.getElementById('addGameClose').addEventListener('click', closeAddGameSheet);
-    document.getElementById('addGameCancel').addEventListener('click', closeAddGameSheet);
-    document.getElementById('addGameBackdrop').addEventListener('click', closeAddGameSheet);
+    document.getElementById('addGameClose').addEventListener('click', () => closeAddGameSheet());
+    document.getElementById('addGameCancel').addEventListener('click', () => closeAddGameSheet());
+    document.getElementById('addGameBackdrop').addEventListener('click', () => closeAddGameSheet());
     document.getElementById('addPlayerRowBtn').addEventListener('click', () => {
-      addGameRows.push({ playerId: '', score: '' });
+      addGameRows.push({ playerId: '', score: '', sign: 1 });
       renderAddGameRows();
       setAddGameError('');
     });
@@ -2126,10 +2138,10 @@
 
     document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
     document.getElementById('profileBackdrop').addEventListener('click', closePlayerProfile);
+
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
-      const addSheet = document.getElementById('addGameSheet');
-      if (addSheet && addSheet.classList.contains('show')) {
+      if (document.getElementById('addGameSheet').classList.contains('show')) {
         closeAddGameSheet();
         return;
       }
@@ -2142,70 +2154,63 @@
       if (menu && container && !container.contains(e.target)) menu.classList.remove('show');
     });
 
-    let profileDrag = {
-      active: false,
-      startY: 0,
-      currentY: 0,
-      pointerId: null
-    };
+    let profileDrag = { active:false, startY:0, currentY:0 };
+    function setupSheetDrag(sheetId, bodyId, closeFn) {
+      const sheet = document.getElementById(sheetId);
+      const body = document.getElementById(bodyId);
+      if (!sheet || !body) return;
 
-    function setupProfileDrag() {
-      const sheet = document.getElementById('profileSheet');
-      const body = document.getElementById('profileBody');
-
+      const state = { active:false, startY:0, currentY:0 };
       sheet.addEventListener('touchstart', e => {
         if (window.innerWidth > 600 || !sheet.classList.contains('show') || e.touches.length !== 1) return;
         const touch = e.touches[0];
-        const target = e.target;
-        const fromHeader = !!target.closest('.profile-header') || !!target.closest('.profile-grabber');
+        const fromHeader = !!e.target.closest(`#${sheetId} .${sheetId === 'profileSheet' ? 'profile-header' : 'add-game-header'}`) || !!e.target.closest(`#${sheetId} .${sheetId === 'profileSheet' ? 'profile-grabber' : 'add-game-grabber'}`);
         const bodyAtTop = body.scrollTop <= 0;
         if (!fromHeader && !bodyAtTop) return;
-        profileDrag.active = true;
-        profileDrag.startY = touch.clientY;
-        profileDrag.currentY = touch.clientY;
+        state.active = true;
+        state.startY = touch.clientY;
+        state.currentY = touch.clientY;
         sheet.classList.add('dragging');
-      }, { passive: true });
+      }, { passive:true });
 
       sheet.addEventListener('touchmove', e => {
-        if (!profileDrag.active || window.innerWidth > 600 || e.touches.length !== 1) return;
+        if (!state.active || window.innerWidth > 600 || e.touches.length !== 1) return;
         const y = e.touches[0].clientY;
-        const delta = Math.max(0, y - profileDrag.startY);
-        profileDrag.currentY = y;
-        if (delta > 0) {
-          sheet.style.transform = `translateY(${delta}px)`;
-        }
-      }, { passive: true });
+        const delta = Math.max(0, y - state.startY);
+        state.currentY = y;
+        if (delta > 0) sheet.style.transform = `translateY(${delta}px)`;
+      }, { passive:true });
 
-      sheet.addEventListener('touchend', () => {
-        if (!profileDrag.active) return;
-        const delta = Math.max(0, profileDrag.currentY - profileDrag.startY);
-        profileDrag.active = false;
+      const finish = () => {
+        if (!state.active) return;
+        const delta = Math.max(0, state.currentY - state.startY);
+        state.active = false;
         sheet.classList.remove('dragging');
         sheet.style.transform = '';
-        if (delta >= 120) closePlayerProfile();
-      }, { passive: true });
-
+        if (delta >= 120) closeFn();
+      };
+      sheet.addEventListener('touchend', finish, { passive:true });
       sheet.addEventListener('touchcancel', () => {
-        profileDrag.active = false;
+        state.active = false;
         sheet.classList.remove('dragging');
         sheet.style.transform = '';
-      }, { passive: true });
+      }, { passive:true });
     }
 
-    let scrollTimers = { table: null, profile: null };
-    document.addEventListener('scroll', (e) => {
+    let scrollTimers = { table:null, profile:null, addGame:null };
+    document.addEventListener('scroll', e => {
       const cls = e.target.classList;
-      if (cls && (cls.contains('table-container') || cls.contains('profile-body'))) {
+      if (!cls) return;
+      if (cls.contains('table-container') || cls.contains('profile-body') || cls.contains('add-game-body')) {
         e.target.classList.add('scrolling');
-        const key = cls.contains('table-container') ? 'table' : 'profile';
+        const key = cls.contains('table-container') ? 'table' : (cls.contains('profile-body') ? 'profile' : 'addGame');
         clearTimeout(scrollTimers[key]);
-        scrollTimers[key] = setTimeout(() => {
-          e.target.classList.remove('scrolling');
-        }, 1000);
+        scrollTimers[key] = setTimeout(() => e.target.classList.remove('scrolling'), 1000);
       }
     }, true);
 
-    setupProfileDrag();
+    setupSheetDrag('profileSheet', 'profileBody', closePlayerProfile);
+    setupSheetDrag('addGameSheet', 'addGameBody', closeAddGameSheet);
     fetchData();
   </script>
 </body>
