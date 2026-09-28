@@ -372,10 +372,8 @@
               <div class="table-wrapper">
                 <table>
                   <tbody>
-                    <tr><td>花</td><td>1</td></tr>
-                    <tr><td>無字</td><td>1</td></tr>
-                    <tr><td>風牌</td><td>1</td></tr>
-                    <tr><td>三元牌</td><td>2</td></tr>
+                    <tr><td>花</td><td>2</td></tr>
+                    <tr><td>字</td><td>2</td></tr>
                     <tr><td>無字花</td><td>8</td></tr>
                     <tr><td>平糊</td><td>5</td></tr>
                     <tr><td>無字花大平</td><td>15</td></tr>
@@ -453,23 +451,23 @@
           <div class="page-sidebar"></div>
           <div class="page-content">
             <div class="category">
-              <div class="category-header">姊妹</div>
+              <div class="category-header">姊妹 ( 一色連刻 )</div>
               <table>
                 <tbody>
                   <tr><td>兩姊妹</td><td>5</td></tr>
-                  <tr><td>三姊妹</td><td>10 / 15</td></tr>
-                  <tr><td>四姊妹</td><td>25 / 40</td></tr>
-                  <tr><td>五姊妹</td><td>60 / 80</td></tr>
-                  <tr><td>六姊妹</td><td>220</td></tr>
+                  <tr><td>三姊妹</td><td>15 / 25</td></tr>
+                  <tr><td>四姊妹</td><td>35 / 50</td></tr>
+                  <tr><td>五姊妹</td><td>70 / 140</td></tr>
+                  <tr><td>六姊妹</td><td>280</td></tr>
                 </tbody>
               </table>
             </div>
             <div class="category">
-              <div class="category-header">兄弟</div>
+              <div class="category-header">兄弟 ( 三色同刻 )</div>
               <table>
                 <tbody>
                   <tr><td>兩兄弟</td><td>5</td></tr>
-                  <tr><td>三兄弟</td><td>10 / 15</td></tr>
+                  <tr><td>三兄弟</td><td>15 / 25</td></tr>
                 </tbody>
               </table>
             </div>
@@ -499,7 +497,7 @@
                 <tbody>
                   <tr><td>混一色</td><td>40</td></tr>
                   <tr><td>清一色</td><td>100</td></tr>
-                  <tr><td>字一色</td><td>120</td></tr>
+                  <tr><td>字一色</td><td>140</td></tr>
                 </tbody>
               </table>
             </div>
@@ -508,8 +506,8 @@
               <table>
                 <tbody>
                   <tr><td>老少</td><td>5</td></tr>
-                  <tr><td>混全帶么</td><td>30</td></tr>
-                  <tr><td>全帶么</td><td>70</td></tr>
+                  <tr><td>混全帶么</td><td>40</td></tr>
+                  <tr><td>全帶么</td><td>80</td></tr>
                   <tr><td>混么九</td><td>40</td></tr>
                   <tr><td>清么九</td><td>120</td></tr>
                 </tbody>
@@ -632,7 +630,7 @@
               <table>
                 <tbody>
                   <tr><td>混帶X</td><td>20 / 40 / 60</td></tr>
-                  <tr><td>全帶X</td><td>70</td></tr>
+                  <tr><td>全帶X</td><td>80</td></tr>
                 </tbody>
               </table>
             </div>
@@ -641,8 +639,8 @@
               <table>
                 <tbody>
                   <tr><td>大 / 小三元</td><td>80 / 40</td></tr>
-                  <tr><td>大 / 小三風</td><td>30 / 15</td></tr>
-                  <tr><td>大 / 小四喜</td><td>120 / 60</td></tr>
+                  <tr><td>大 / 小三風</td><td>40 / 20</td></tr>
+                  <tr><td>大 / 小四喜</td><td>160 / 80</td></tr>
                 </tbody>
               </table>
             </div>
@@ -732,19 +730,11 @@ const noteData = {
     ex: "1t 2t 3t  1m 2m 3m  4s 5s 6s  7m 8m 9m  2s 3s 4s  5t 5t-h"
   },
   "花": {
-    "def": "有花或無花，正花再加一番，可覆計",
+    "def": "每隻花+2番或無花",
     "ex": ""
   },
-  "無字": {
-    "def": "沒有番子",
-    "ex": ""
-  },
-  "風牌": {
-    "def": "風牌（東、南、西及北）的刻或槓，正風再加一番，可覆計",
-    "ex": ""
-  },
-  "三元牌": {
-    "def": "三元牌（中、發及白）的刻或槓，可覆計",
+  "字": {
+    "def": "每隻番子+2番或無字",
     "ex": ""
   },
   "無字花": {
@@ -922,22 +912,22 @@ const noteData = {
     "ex": "1t 1t 1t  2t 2t 2t"
   },
   "三姊妹": {
-    "def": "三組同色且連續的刻或槓，若其中一組為眼，則當小三姊妹計算，10番",
+    "def": "三組同色且連續的刻或槓，若其中一組為眼，則當小三姊妹計算，15番",
     "sp": "",
     "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t"
   },
   "四姊妹": {
-    "def": "四組同色且連續的刻或槓，若其中一組為眼，則當小四姊妹計算，25番",
+    "def": "四組同色且連續的刻或槓，若其中一組為眼，則當小四姊妹計算，35番",
     "sp": "",
     "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t  4t 4t 4t"
   },
   "五姊妹": {
-    "def": "五組同色且連續的刻或槓，若其中一組為眼，則當小五姊妹計算，60番",
+    "def": "五組同色且連續的刻或槓，大五姊妹不再計對對糊，若其中一組為眼，則當小五姊妹計算，70番",
     "sp": "",
     "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t  4t 4t 4t  5t 5t 5t"
   },
   "六姊妹": {
-    "def": "六組同色且連續的眼及刻或槓，不再計清一色",
+    "def": "六組同色且連續的眼及刻或槓，不再計清一色及對對糊",
     "sp": "",
     "ex": "1t 1t 1t  2t 2t 2t  3t 3t 3t  4t 4t 4t  5t 5t 5t  6t 6t"
   },
@@ -1139,7 +1129,7 @@ const noteData = {
   "七門齊": {
     "def": "五門齊再加各兩款花組成，梅蘭菊竹為一門，春夏秋冬為一門",
     "sp": "",
-    "ex": "f1 f2 f3 f4  h1 h2 h3 h4"
+    "ex": "f1 h1  2m 2m 2m  5t 6t 7t  4s 5s 6s  south south south  white white white  7m 7m"
   },
   "缺一門": {
     "def": "沒有番子，只有筒索萬其中兩門",
