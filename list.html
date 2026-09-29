@@ -151,6 +151,269 @@
 
     .clickable-item { cursor: pointer; text-decoration: underline dotted #C7C7CC; text-underline-offset: 4px; }
     
+    /* ===== 規則說明視窗 ===== */
+    .rules-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      box-sizing: border-box;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+
+    .rules-modal.open {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .rules-modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(28, 28, 30, .24);
+      -webkit-backdrop-filter: blur(10px) saturate(110%);
+      backdrop-filter: blur(10px) saturate(110%);
+    }
+
+    .rules-modal-content {
+      position: relative;
+      z-index: 1;
+      width: min(820px, 100%);
+      height: min(90vh, 980px);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      box-sizing: border-box;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.05);
+      border-radius: 22px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.22);
+      overflow: hidden;
+      transform: translateY(8px) scale(.985);
+      transition: transform .2s ease;
+    }
+
+    .rules-modal.open .rules-modal-content {
+      transform: translateY(0) scale(1);
+    }
+
+    .rules-modal-header {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid #E5E5EA;
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+
+    .rules-modal-title {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.3;
+      font-weight: 750;
+      color: #1C1C1E;
+      letter-spacing: -.2px;
+    }
+
+    .rules-modal-subtitle {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: #8E8E93;
+    }
+
+    .rules-close-btn {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border: 0;
+      border-radius: 50%;
+      background: #F2F2F7;
+      color: #636366;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .rules-close-btn:hover { background: #E5E5EA; }
+    .rules-close-btn:active { transform: scale(.92); }
+
+    .rules-modal-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: none;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-gutter: stable;
+      padding: 18px 20px calc(56px + env(safe-area-inset-bottom, 0px));
+      box-sizing: border-box;
+    }
+
+    .rules-overview {
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border-radius: 15px;
+      background: #F8F8FA;
+      border: 1px solid #EDEDF0;
+      color: #3A3A3C;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .rule-section {
+      margin: 0 0 12px;
+      padding: 16px;
+      border-radius: 17px;
+      background: #fff;
+      border: 1px solid #EDEDF0;
+    }
+
+    .rule-section:last-child { margin-bottom: 0; }
+
+    .rule-section h3 {
+      margin: 0 0 11px;
+      font-size: 16px;
+      line-height: 1.4;
+      color: #007AFF;
+      font-weight: 750;
+    }
+
+    .rule-section h4 {
+      margin: 16px 0 8px;
+      padding-top: 13px;
+      border-top: 1px solid #F0F0F2;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #1C1C1E;
+      font-weight: 700;
+    }
+
+    .rule-section h4:first-of-type {
+      padding-top: 0;
+      border-top: 0;
+      margin-top: 12px;
+    }
+
+    .rule-section p {
+      margin: 0 0 8px;
+      font-size: 14px;
+      line-height: 1.72;
+      color: #3A3A3C;
+    }
+
+    .rule-section p:last-child { margin-bottom: 0; }
+
+    .rule-section ul,
+    .rule-section ol {
+      margin: 7px 0 8px;
+      padding-left: 22px;
+    }
+
+    .rule-section li {
+      margin: 4px 0;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #3A3A3C;
+    }
+
+    .rule-note {
+      margin-top: 10px !important;
+      padding: 10px 12px;
+      border-radius: 11px;
+      background: #F8F8FA;
+      color: #636366 !important;
+      font-size: 13px !important;
+    }
+
+    .simple-example {
+      margin: 9px 0;
+      padding: 10px 12px;
+      border-radius: 11px;
+      background: #F8F8FA;
+      border: 1px solid #E5E5EA;
+      color: #1C1C1E;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 650;
+      overflow-x: auto;
+    }
+
+    .tile-example {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 4px;
+      margin: 10px 0 4px;
+      min-height: 52px;
+    }
+
+    .rule-tile {
+      width: 42px;
+      height: auto;
+      display: block;
+      border: 1px solid #E5E5EA;
+      border-radius: 5px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,.06);
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+
+
+    .rules-formula {
+      margin: 9px 0;
+      padding: 11px 13px;
+      border-radius: 11px;
+      background: #F2F2F7;
+      text-align: center;
+      color: #1C1C1E;
+      font-size: 14px;
+      line-height: 1.7;
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      .rules-modal { padding: 8px; align-items: flex-end; }
+      .rules-modal-content {
+        width: 100%;
+        height: 92vh;
+        max-height: 92vh;
+        border-radius: 20px 20px 16px 16px;
+      }
+      .rules-modal-body {
+        padding: 14px 12px calc(56px + env(safe-area-inset-bottom, 0px));
+      }
+      .rule-section { padding: 14px; border-radius: 15px; }
+      .rules-modal-header { padding: 16px 15px; }
+      .tile-example { gap: 3px; }
+      .rule-tile { width: 38px; }
+    }
+
+    body.rules-modal-open { overflow: hidden; }
+
+    .fab-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+
     .container {
       max-width: 98vw;
       margin: 0 auto;
@@ -710,6 +973,18 @@
   </div>
 </div>
 <div class="fab-container">
+    <button type="button" class="fab-button" id="rulesOpenButton" title="規則說明" aria-label="規則說明" onclick="openRulesModal()">
+      <!-- 說明書／規則圖示 -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11a2 2 0 0 1 2 2v16a2 2 0 0 0-2-2H6.5A2.5 2.5 0 0 0 4 21.5z"></path>
+        <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H13a2 2 0 0 0-2 2"></path>
+        <path d="M6.5 7H9"></path>
+        <path d="M6.5 10H9"></path>
+        <path d="M15 7h2.5"></path>
+        <path d="M15 10h2.5"></path>
+      </svg>
+    </button>
+
     <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" class="fab-button" title="下載 PDF 版" aria-label="下載 PDF 版">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -719,6 +994,195 @@
       </svg>
     </a>
   </div>
+
+
+<!-- 規則說明視窗 -->
+<div id="rulesModal" class="rules-modal" aria-hidden="true">
+  <div class="rules-modal-overlay" onclick="closeRulesModal()"></div>
+  <section class="rules-modal-content" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle">
+    <header class="rules-modal-header">
+      <div>
+        <h2 id="rulesModalTitle" class="rules-modal-title">港式台灣麻雀規則</h2>
+      </div>
+      <button type="button" class="rules-close-btn" onclick="closeRulesModal()" aria-label="關閉規則說明視窗">×</button>
+    </header>
+
+    <div class="rules-modal-body">
+      <section class="rule-section">
+        <h3>1. 起手牌</h3>
+        <p>每位玩家起手持有 <strong>16 隻麻雀</strong>。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>2. 食糊及自摸</h3>
+        <p>食糊時，會因應不同牌型計算番數。</p>
+        <h4>自摸</h4>
+        <p>自摸時，<strong>不得將自摸牌直接拍入或插入手牌內</strong>。</p>
+        <p>正確操作為：</p>
+        <ol>
+          <li>先將食糊的牌翻開；</li>
+          <li>再將手牌翻開。</li>
+        </ol>
+        <p>否則<strong>不能食糊</strong>，直至完成過水後才可再次食糊。</p>
+        <p>如玩家當時已<strong>叮牌</strong>，則視為<strong>企糊</strong>。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>3. 過水</h3>
+        <p>當玩家放棄當下可以食糊的機會後，於<strong>同一巡內</strong>即進入過水狀態，期間<strong>不能再次食糊</strong>。</p>
+        <p>即使其後摸到可以自摸的牌，亦不能食糊。</p>
+        <h4>過水解除方法</h4>
+        <p>玩家必須：</p>
+        <p><strong>自己摸牌後，打出一張「非食糊牌」</strong></p>
+        <p>完成上述動作後，方可解除過水限制。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>4. 企糊</h3>
+        <ul>
+          <li>不可以食糊；</li>
+          <li>不可以改變手牌；</li>
+          <li>只能進行正常的摸牌及打牌。</li>
+        </ul>
+      </section>
+
+      <section class="rule-section">
+        <h3>5. 上牌</h3>
+        <p>上牌時，吃入的順子必須<strong>放置於副露中間</strong>。</p>
+        <p>例如以七筒、八筒上九筒：</p>
+        <div class="tile-example" aria-label="七筒、八筒、九筒">
+          <img class="rule-tile" src="tiles/7t.svg" alt="七筒" draggable="false">
+          <img class="rule-tile" src="tiles/8t.svg" alt="八筒" draggable="false">
+          <img class="rule-tile" src="tiles/9t.svg" alt="九筒" draggable="false">
+        </div>
+      </section>
+
+      <section class="rule-section">
+        <h3>6. 沒有包自摸</h3>
+        <p>沒有包自摸。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>7. 叫碰不碰</h3>
+        <p>玩家叫碰後，如最終沒有碰該牌，須<strong>罰一底</strong>。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>8. 追牌</h3>
+        <p>追牌是指同一張牌於<strong>同一巡內被三家跟打</strong>。</p>
+        <p>例如：</p>
+        <div class="simple-example">A 打 5 萬 → B 打 5 萬 → C 打 5 萬 → D 打 5 萬</div>
+        <p>當三家均於同一巡內跟打 5 萬，即構成追牌。</p>
+        <p><strong>第一位打出該牌的玩家 A 須向其餘三家各罰一底。</strong></p>
+        <p>備註：</p>
+        <ul>
+          <li>如追牌為<strong>番子</strong>，罰一底；</li>
+          <li>如追牌為<strong>非番子</strong>，罰兩底。</li>
+        </ul>
+      </section>
+
+      <section class="rule-section">
+        <h3>9. 暗槓</h3>
+        <p>暗槓可<strong>獎一底</strong>。</p>
+        <p>但該局結束後，玩家必須將暗槓牌<strong>翻開展示</strong>。</p>
+        <p>如未有翻開暗槓牌，則須<strong>罰兩底</strong>。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>10. 叮（聽牌）</h3>
+        <p>「叮」的概念類似日本麻雀的立直，但<strong>不限於門清</strong>。</p>
+        <p>當玩家<strong>叫糊</strong>時，可以選擇叮牌。</p>
+        <p>叮牌時，捨出的牌必須<strong>橫放</strong>，作為叮牌的標記。</p>
+        <p>叮牌後，直至該局結束（食糊或流局）為止：</p>
+        <ul>
+          <li>不得轉章；</li>
+          <li>不得上牌；</li>
+          <li>不得碰牌；</li>
+          <li>不得槓牌。</li>
+        </ul>
+        <p>如在<strong>不影響其他三家正常進行遊戲</strong>的情況下，玩家可以離開座位，觀看其他三家的手牌及牌山。</p>
+        <p>如有其他玩家打出你的食糊牌，則<strong>必須食糊，不得過水</strong>。</p>
+        <p>如你在此情況下放棄食糊，則該局開牌時視為<strong>詐糊</strong>。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>11. 起糊番數</h3>
+        <p>沒有限制最低起糊番數。</p>
+        <p>只要牌型符合食糊條件，即可食糊。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>12. 骰子獎罰</h3>
+        <p>擲骰時，如出現以下結果：</p>
+        <h4>連骰</h4>
+        <p>例如：</p>
+        <ul>
+          <li>[1、2、3]</li>
+          <li>[2、3、4]</li>
+        </ul>
+        <p>等連續三個數字，須<strong>罰一底</strong>。</p>
+        <h4>圍骰</h4>
+        <p>如擲出圍骰，則<strong>獎一底</strong>。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>13. 截糊、雙響及三響</h3>
+        <p>沒有截糊。</p>
+        <p>同一張牌可以同時讓多名玩家食糊，因此可出現：</p>
+        <ul>
+          <li><strong>雙響</strong></li>
+          <li><strong>三響</strong></li>
+        </ul>
+      </section>
+
+      <section class="rule-section">
+        <h3>14. 拉劈</h3>
+        <p>玩家之間的食糊番數<strong>不會立即結算</strong>，而是先記下累積，並根據之後的食糊情況進行變化及結算。</p>
+        <p>假設：</p>
+        <p><strong>A 食糊，B 出銃，10 番</strong></p>
+        <p>此時 A 與 B 之間<strong>不立即結算</strong>，而是記錄 B 尚欠 A <strong>10 番</strong>。</p>
+        <p>之後按以下情況處理：</p>
+
+        <h4>i. A 及 B 以外的玩家食糊，或 B 只食其他玩家</h4>
+        <p>則 <strong>A 與 B 上局累積的番數直接結算</strong>。</p>
+        <p>此時，A 與 B 之間先前累積番數結束。</p>
+
+        <h4>ii. A 食 B 以外的兩家</h4>
+        <p>由於該次食糊與 B 無關，<strong>A 與 B 之間上局累積的番數維持不變</strong>，不會因此增加或減少。</p>
+        <p>例如：</p>
+        <p>上局：</p>
+        <p><strong>A 食 B，10 番</strong></p>
+        <p>此時 B 尚欠 A <strong>10 番</strong>。</p>
+        <p>今局：</p>
+        <p><strong>A 食 C、D，20 番</strong></p>
+        <p>此時 C、D 尚欠 A <strong>20 番</strong>，而 A 與 B 之間仍然維持累積 <strong>10 番</strong>。</p>
+
+        <h4>iii. A 再食 B，或 A 自摸 (拉)</h4>
+        <p>則 B 上局累積欠 A 的番數會先<strong>乘以 1.5</strong>，再加上該局食糊所得的番數，並繼續累積。</p>
+        <p>例如：</p>
+        <p>上局：</p>
+        <p><strong>A 食 B，10 番</strong></p>
+        <p>今局：</p>
+        <p><strong>A 再食 B，20 番</strong></p>
+        <p>則 B 尚欠 A：</p>
+        <p><strong>10 × 1.5 + 20 = 35 番</strong></p>
+        <p>如 A 下一局再次食 B 或自摸，則會以這 <strong>35 番</strong> 作為下一次計算的基礎，再乘以 1.5，然後加上下一局新番數。</p>
+
+        <h4>iv. B 食 A，或 B 自摸 (劈)</h4>
+        <p>B 需要支付 : A 與 B 上局累積番數的一半。</p>
+        <p>而本局 B 食糊的番數會開始累積，如此類推。</p>
+      </section>
+
+      <section class="rule-section">
+        <h3>15. 投降</h3>
+        <p>投降是與拉劈相關的保護機制。</p>
+        <p>如玩家被<strong>同一名玩家連續食糊 3 次</strong>，可以選擇投降，並<strong>立即結算當時的累積番數</strong>。</p>
+        <p>若玩家選擇<strong>不投降，則繼續累積番數</strong>。</p>
+        <p>下一個投降機會為被<strong>同一名玩家連續食糊 6 次</strong>，如此類推。</p>
+      </section>
+    </div>
+  </section>
+</div>
 <script>
 const noteData = {
   "清一色": {
@@ -1290,6 +1754,24 @@ function closeDrawer() {
   document.getElementById('infoDrawer').classList.remove('open');
 }
 
+function openRulesModal() {
+  const modal = document.getElementById('rulesModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('rules-modal-open');
+  const closeBtn = modal.querySelector('.rules-close-btn');
+  if (closeBtn) requestAnimationFrame(() => closeBtn.focus());
+}
+
+function closeRulesModal() {
+  const modal = document.getElementById('rulesModal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('rules-modal-open');
+}
+
 function preloadTiles() {
   const uniqueTiles = new Set();
   
@@ -1314,6 +1796,10 @@ function toggleCollapse(btn) {
   const wrapper = btn.closest('.table-wrapper');
   wrapper.classList.toggle('expanded');
 }
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeRulesModal();
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   preloadTiles();
