@@ -984,15 +984,6 @@
         <path d="M15 10h2.5"></path>
       </svg>
     </button>
-
-    <a href="https://drive.google.com/file/d/1o8vdQuQSvTxJeb3jo8RISlELpdWr01z3/view?usp=drive_link" target="_blank" class="fab-button" title="下載 PDF 版" aria-label="下載 PDF 版">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-        <line x1="12" y1="18" x2="12" y2="12"></line>
-        <polyline points="9 15 12 18 15 15"></polyline>
-      </svg>
-    </a>
   </div>
 
 
@@ -1803,6 +1794,15 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   preloadTiles();
+
+  const RULES_VIEWED_KEY = 'mahjongRulesViewed';
+
+  if (!localStorage.getItem(RULES_VIEWED_KEY)) {
+    localStorage.setItem(RULES_VIEWED_KEY, '1');
+    requestAnimationFrame(() => {
+      openRulesModal();
+    });
+  }
 
 document.querySelectorAll('td:first-child').forEach(td => {
   const itemName = td.innerText.trim();
