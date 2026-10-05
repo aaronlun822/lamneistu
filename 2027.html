@@ -925,6 +925,11 @@
       color: #636366;
       margin: 0 0 10px;
     }
+    .date-picker-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 46px;
+    }
     .date-picker-display {
       width: 100%;
       min-height: 46px;
@@ -938,7 +943,6 @@
       font-weight: 650;
       text-align: left;
       padding: 0 14px;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -961,10 +965,15 @@
     }
     .date-picker-native {
       position: absolute;
-      width: 1px;
-      height: 1px;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
       opacity: 0;
-      pointer-events: none;
+      cursor: pointer;
+      z-index: 2;
+      font-size: 16px;
+      -webkit-tap-highlight-color: transparent;
     }
     .players-list { display: flex; flex-direction: column; gap: 10px; }
     .player-entry {
@@ -1163,19 +1172,21 @@
     <div id="addGameBody" class="add-game-body">
       <section class="add-game-section">
         <h3 class="add-game-section-title">日期</h3>
-        <button type="button" id="gameDateDisplay" class="date-picker-display placeholder">
-          <span id="gameDateText">選擇日期</span>
-          <span class="calendar-glyph" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="3.25" y="5.25" width="17.5" height="15.5" rx="3.25" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M7.25 3.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M16.75 3.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M3.75 9.5H20.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M8 13H8.01M12 13H12.01M16 13H16.01M8 16.5H8.01M12 16.5H12.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-            </svg>
-          </span>
-        </button>
-        <input id="gameDateInput" class="date-picker-native" type="date" tabindex="-1" aria-hidden="true">
+        <div class="date-picker-wrap">
+          <div id="gameDateDisplay" class="date-picker-display placeholder" aria-hidden="true">
+            <span id="gameDateText">選擇日期</span>
+            <span class="calendar-glyph" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3.25" y="5.25" width="17.5" height="15.5" rx="3.25" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M7.25 3.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M16.75 3.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M3.75 9.5H20.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8 13H8.01M12 13H12.01M16 13H16.01M8 16.5H8.01M12 16.5H12.01" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </div>
+          <input id="gameDateInput" class="date-picker-native" type="date" aria-label="選擇牌局日期">
+        </div>
       </section>
 
       <section class="add-game-section">
@@ -1221,6 +1232,7 @@
     ) : null;
 
     let globalData = {};
+    let gameColumnMeta = {};
     let allSheetNames = [];
     let activeSheetName = '';
     let currentSortCol = 'total';
@@ -1355,23 +1367,30 @@
       allSheetNames.push('總排名');
 
       globalData = {};
+      gameColumnMeta = {};
       monthNos.forEach(monthNo => {
-        const monthGames = games.filter(g => g.monthNo === monthNo && g.year === activeYear);
-        const days = [...new Set(monthGames.map(g => g.day))].sort((a,b) => a-b);
-        const header = [null, 'Total', ...days];
+        // 同一天的不同 Game ID 必須各自佔一欄，不再把同日牌局合併。
+        const monthGames = games
+          .filter(g => g.monthNo === monthNo && g.year === activeYear)
+          .sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+        const columns = monthGames.map(g => g.id);
+        const header = [null, 'Total', ...monthGames.map(g => g.day)];
         const rows = rawPlayers.map(p => {
-          const dayTotals = days.map(day => {
-            const total = monthGames
-              .filter(g => g.day === day)
-              .flatMap(g => g.results)
-              .filter(r => r.playerId === Number(p.id))
-              .reduce((sum, r) => sum + r.score, 0);
-            return total === 0 ? '' : total;
+          const gameScores = monthGames.map(game => {
+            const result = game.results.find(r => r.playerId === Number(p.id));
+            return result ? result.score : '';
           });
-          const total = dayTotals.reduce((sum,v) => sum + (Number(v) || 0), 0);
-          return [p.name, total, ...dayTotals];
+          const total = gameScores.reduce((sum,v) => sum + (Number(v) || 0), 0);
+          return [p.name, total, ...gameScores];
         });
-        globalData[monthName(monthNo)] = [[String(monthNo)], header, ...rows];
+        const sheetName = monthName(monthNo);
+        gameColumnMeta[sheetName] = columns.map((gameId, index) => ({
+          gameId,
+          colIndex: index + 2,
+          playedOn: monthGames[index].played_on,
+          day: monthGames[index].day
+        }));
+        globalData[sheetName] = [[String(monthNo)], header, ...rows];
       });
 
       const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
@@ -1447,6 +1466,12 @@
       document.getElementById('overallBtn').addEventListener('click', () => switchSheet('總排名'));
     }
 
+    function getGameColumnIndex(sheetName, gameId) {
+      const meta = gameColumnMeta[sheetName] || [];
+      const found = meta.find(item => Number(item.gameId) === Number(gameId));
+      return found ? found.colIndex : null;
+    }
+
     function switchSheet(sheetName) {
       activeSheetName = sheetName;
       currentSortCol = 'total';
@@ -1491,10 +1516,14 @@
       return focusedCol !== null ? [focusedCol, ...cols] : cols;
     }
 
-    function formatHeaderDate(dayVal, data) {
+    function formatHeaderDate(dayVal, data, sheetName, colIndex) {
       if (isNaN(Number(dayVal))) return dayVal;
       const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth()+1);
-      return `${dayVal}/${monthStr}`;
+      const base = `${dayVal}/${monthStr}`;
+      const meta = (gameColumnMeta[sheetName] || []).find(x => x.colIndex === colIndex);
+      if (!meta) return base;
+      const sameDayCount = (gameColumnMeta[sheetName] || []).filter(x => x.playedOn === meta.playedOn).length;
+      return sameDayCount > 1 ? `${base} · #${meta.gameId}` : base;
     }
 
     function renderTableLayout() {
@@ -1505,7 +1534,7 @@
       const headHtml = colIndices.map(j => {
         const val = data[1][j];
         const isF = j === focusedDateCol;
-        const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val,data)) : '-';
+        const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data, activeSheetName, j)) : '-';
         const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
         return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
       }).join('');
@@ -1708,7 +1737,7 @@
       sheet.addEventListener('touchcancel',()=>{profileDrag.active=false;sheet.classList.remove('dragging');sheet.style.transform='';},{passive:true});
     }
 
-    // ===== Add Game Drawer =====
+    // ===== Add Game Modal =====
     function createAddGameRow(removable=false) {
       return { id: ++addGameRowSeq, removable, playerId:'', mode:'select', playerName:'', sign:1, score:'' };
     }
@@ -1786,7 +1815,6 @@
       document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
       document.getElementById('addGameDrawer').setAttribute('aria-hidden','false');
       document.body.classList.add('profile-open');
-      setTimeout(()=>document.getElementById('gameDateDisplay')?.focus({preventScroll:true}),180);
     }
 
     function closeAddGameDrawer() {
@@ -1845,9 +1873,12 @@
         rawGames.push(createdGame);
         rawResults.push(...(resultRows||payload));
         aggregateDatabaseData();
-        activeSheetName=monthName(createdGame.monthNo);
-        currentSortCol='total'; sortAscending=false; focusedDateCol=null;
-        renderControls(); renderTableLayout();
+        activeSheetName = monthName(createdGame.monthNo);
+        currentSortCol = 'total';
+        sortAscending = false;
+        focusedDateCol = getGameColumnIndex(activeSheetName, createdGame.id);
+        renderControls();
+        renderTableLayout();
         closeAddGameDrawer();
         showToast('已新增牌局');
       } catch(err) {
@@ -1873,11 +1904,6 @@
       const dateInput=document.getElementById('gameDateInput');
       const dateDisplay=document.getElementById('gameDateDisplay');
       const dateText=document.getElementById('gameDateText');
-      dateDisplay.addEventListener('click',()=>{
-        try { if(typeof dateInput.showPicker==='function') dateInput.showPicker(); else dateInput.click(); }
-        catch(_) { dateInput.click(); }
-      });
-      dateInput.addEventListener('keydown',e=>e.preventDefault());
       dateInput.addEventListener('change',()=>{
         dateText.textContent=formatDateDisplay(dateInput.value);
         dateDisplay.classList.toggle('placeholder',!dateInput.value);
