@@ -970,11 +970,13 @@
       height: 100%;
       margin: 0;
       opacity: 0;
+      pointer-events: none;
       cursor: pointer;
       z-index: 2;
       font-size: 16px;
       -webkit-tap-highlight-color: transparent;
     }
+    .date-picker-wrap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .players-list { display: flex; flex-direction: column; gap: 10px; }
     .player-entry {
       display: grid;
@@ -1064,6 +1066,7 @@
       font-weight: 650;
       cursor: pointer;
     }
+    .add-more-players:disabled { pointer-events: none; }
     .add-game-error {
       display: none;
       margin-top: 10px;
@@ -1520,10 +1523,7 @@
       if (isNaN(Number(dayVal))) return dayVal;
       const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth()+1);
       const base = `${dayVal}/${monthStr}`;
-      const meta = (gameColumnMeta[sheetName] || []).find(x => x.colIndex === colIndex);
-      if (!meta) return base;
-      const sameDayCount = (gameColumnMeta[sheetName] || []).filter(x => x.playedOn === meta.playedOn).length;
-      return sameDayCount > 1 ? `${base} · #${meta.gameId}` : base;
+      return base;
     }
 
     function renderTableLayout() {
@@ -1798,6 +1798,17 @@
         const row=addGameRows.find(r=>String(r.id)===String(btn.dataset.rowBack)); if(!row) return;
         row.mode='select'; row.playerName=''; row.playerId=''; renderAddGameRows();
       }));
+
+      updateAddPlayerButtonState();
+    }
+
+    function updateAddPlayerButtonState() {
+      const btn = document.getElementById('addPlayerRow');
+      if (!btn) return;
+      const maxReached = addGameRows.length >= 8;
+      btn.disabled = maxReached;
+      btn.style.opacity = maxReached ? '0.45' : '';
+      btn.style.cursor = maxReached ? 'default' : '';
     }
 
     function openAddGameDrawer() {
@@ -1817,8 +1828,8 @@
       document.body.classList.add('profile-open');
     }
 
-    function closeAddGameDrawer() {
-      if(addGameSaving) return;
+    function closeAddGameDrawer(force = false) {
+      if(addGameSaving && !force) return;
       document.getElementById('addGameBackdrop').classList.remove('show');
       document.getElementById('addGameDrawer').classList.remove('show');
       document.getElementById('addGameBackdrop').setAttribute('aria-hidden','true');
@@ -1874,12 +1885,23 @@
         rawResults.push(...(resultRows||payload));
         aggregateDatabaseData();
         activeSheetName = monthName(createdGame.monthNo);
-        currentSortCol = 'total';
-        sortAscending = false;
-        focusedDateCol = getGameColumnIndex(activeSheetName, createdGame.id);
+        const focusedGameCol = getGameColumnIndex(activeSheetName, createdGame.id);
+        // 完整沿用月份表格「點擊日期欄位」的 Focus 行為：
+        // 1) 該欄移到最左固定位置
+        // 2) 該欄藍色高亮
+        // 3) 以該局分數排序，參與該局的玩家自動排在最頂部
+        if (focusedGameCol !== null) {
+          focusedDateCol = focusedGameCol;
+          currentSortCol = focusedGameCol;
+          sortAscending = false;
+        } else {
+          focusedDateCol = null;
+          currentSortCol = 'total';
+          sortAscending = false;
+        }
         renderControls();
         renderTableLayout();
-        closeAddGameDrawer();
+        closeAddGameDrawer(true);
         showToast('已新增牌局');
       } catch(err) {
         showAddGameError(`新增失敗：${escapeHtml(err.message || String(err))}`);
@@ -1894,7 +1916,7 @@
       document.getElementById('addGameBackdrop').addEventListener('click',closeAddGameDrawer);
       document.getElementById('saveGameButton').addEventListener('click',saveAddGame);
       document.getElementById('addPlayerRow').addEventListener('click',()=>{
-        if(addGameRows.length>=12) return;
+        if(addGameRows.length>=8) return;
         addGameRows.push(createAddGameRow(true));
         renderAddGameRows();
         const drawer=document.getElementById('addGameBody');
@@ -1903,7 +1925,27 @@
 
       const dateInput=document.getElementById('gameDateInput');
       const dateDisplay=document.getElementById('gameDateDisplay');
+      const dateWrap=document.querySelector('.date-picker-wrap');
       const dateText=document.getElementById('gameDateText');
+
+      const openNativeDatePicker = (event) => {
+        if (event) event.preventDefault();
+        try {
+          if (typeof dateInput.showPicker === 'function') {
+            dateInput.showPicker();
+            return;
+          }
+        } catch (_) {}
+        dateInput.click();
+      };
+
+      // 以真正的使用者點擊觸發原生 date picker，同時兼顧桌面 Chrome / Edge、
+      // Safari 及手機瀏覽器；不讓 input 自己吃掉點擊，所以不會出現只有一邊能按的情況。
+      dateWrap.addEventListener('click', openNativeDatePicker);
+      dateDisplay.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') openNativeDatePicker(event);
+      });
+
       dateInput.addEventListener('change',()=>{
         dateText.textContent=formatDateDisplay(dateInput.value);
         dateDisplay.classList.toggle('placeholder',!dateInput.value);
