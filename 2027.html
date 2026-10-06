@@ -885,6 +885,62 @@
       line-height: 1.2;
       font-weight: 750;
     }
+    .add-game-header-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      padding-top: 4px;
+    }
+    .add-game-mode-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 32px;
+      padding: 0 9px;
+      border: none;
+      border-radius: 10px;
+      background: #F2F2F7;
+      color: #007AFF;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+    .add-game-mode-btn svg {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+    .add-game-mode-btn:active { opacity: .65; }
+    .edit-game-picker {
+      display: none;
+      margin-top: 10px;
+    }
+    .edit-game-picker.show { display: block; }
+    .edit-game-select {
+      width: 100%;
+      height: 46px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 12px;
+      background: #F2F2F7;
+      color: #1C1C1E;
+      padding: 0 12px;
+      font: inherit;
+      font-size: 16px;
+      outline: none;
+    }
+    .edit-game-empty {
+      display: none;
+      margin-top: 9px;
+      padding: 9px 2px 0;
+      color: #8E8E93;
+      font-size: 13px;
+    }
+    .edit-game-empty.show { display: block; }
     .add-game-close {
       width: 34px;
       height: 34px;
@@ -963,20 +1019,34 @@
       height: 100%;
       display: block;
     }
+    /*
+     * 讓真正的 <input type="date"> 覆蓋整個日期區域並直接接收點擊。
+     * 不再依賴 showPicker()/input.click()，讓桌面與手機都由瀏覽器/OS
+     * 自己開啟原生日期選擇器。
+     */
     .date-picker-native {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       margin: 0;
-      opacity: 0;
-      pointer-events: none;
+      padding: 0;
+      opacity: 0.001;
+      pointer-events: auto;
       cursor: pointer;
-      z-index: 2;
+      z-index: 3;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      -webkit-appearance: none;
+      appearance: none;
       font-size: 16px;
       -webkit-tap-highlight-color: transparent;
     }
-    .date-picker-wrap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .date-picker-wrap {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
     .players-list { display: flex; flex-direction: column; gap: 10px; }
     .player-entry {
       display: grid;
@@ -1131,6 +1201,9 @@
       }
       .add-game-drawer.show { transform: translateY(0); }
       .add-game-header { padding-top: 22px; }
+      .add-game-header-left { gap: 6px; max-width: calc(100% - 44px); }
+      .add-game-header-title { font-size: 19px; }
+      .add-game-mode-btn { min-height: 30px; padding: 0 7px; font-size: 12px; }
       .add-game-header::before {
         top: 8px;
       }
@@ -1169,15 +1242,23 @@
   <div id="addGameBackdrop" class="add-game-backdrop" aria-hidden="true"></div>
   <aside id="addGameDrawer" class="add-game-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="addGameTitle">
     <div class="add-game-header">
-      <h2 id="addGameTitle" class="add-game-header-title">新增牌局</h2>
+      <div class="add-game-header-left">
+        <h2 id="addGameTitle" class="add-game-header-title">新增牌局</h2>
+        <button type="button" class="add-game-mode-btn" id="addGameModeToggle" aria-label="修改牌局">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4.5 19.5L5.4 15.8L15.9 5.3C16.7 4.5 18 4.5 18.8 5.3L18.7 5.4L18.7 5.5L18.8 5.6C19.6 6.4 19.6 7.7 18.8 8.5L8.3 19L4.5 19.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M14.4 6.8L17.2 9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span id="addGameModeToggleText">修改</span>
+        </button>
+      </div>
       <button type="button" class="add-game-close" id="addGameClose" aria-label="關閉">×</button>
     </div>
     <div id="addGameBody" class="add-game-body">
       <section class="add-game-section">
-        <h3 class="add-game-section-title">日期</h3>
         <div class="date-picker-wrap">
           <div id="gameDateDisplay" class="date-picker-display placeholder" aria-hidden="true">
-            <span id="gameDateText">選擇日期</span>
+            <span id="gameDateText"></span>
             <span class="calendar-glyph" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3.25" y="5.25" width="17.5" height="15.5" rx="3.25" stroke="currentColor" stroke-width="1.8"/>
@@ -1190,10 +1271,15 @@
           </div>
           <input id="gameDateInput" class="date-picker-native" type="date" aria-label="選擇牌局日期">
         </div>
+        <div id="editGamePicker" class="edit-game-picker">
+          <select id="editGameSelect" class="edit-game-select" aria-label="選擇牌局">
+            <option value=""></option>
+          </select>
+        </div>
+        <div id="editGameEmpty" class="edit-game-empty">該日期沒有牌局</div>
       </section>
 
       <section class="add-game-section">
-        <h3 class="add-game-section-title">玩家</h3>
         <div id="playerRows" class="players-list"></div>
         <button type="button" id="addPlayerRow" class="add-more-players">＋新增人數</button>
         <div id="addGameError" class="add-game-error" role="alert"></div>
@@ -1251,6 +1337,8 @@
     let addGameRowSeq = 0;
     let addGameSaving = false;
     let addGameToastTimer = null;
+    let addGameMode = 'add';
+    let editingGameId = null;
 
     function escapeHtml(value) {
       return String(value ?? '')
@@ -1737,9 +1825,121 @@
       sheet.addEventListener('touchcancel',()=>{profileDrag.active=false;sheet.classList.remove('dragging');sheet.style.transform='';},{passive:true});
     }
 
-    // ===== Add Game Modal =====
+    // ===== Add Game / Edit Game Modal =====
     function createAddGameRow(removable=false) {
+
       return { id: ++addGameRowSeq, removable, playerId:'', mode:'select', playerName:'', sign:1, score:'' };
+    }
+
+    function setAddGameMode(mode) {
+      addGameMode = mode === 'edit' ? 'edit' : 'add';
+      editingGameId = null;
+      const title = document.getElementById('addGameTitle');
+      const toggle = document.getElementById('addGameModeToggle');
+      const toggleText = document.getElementById('addGameModeToggleText');
+      const submit = document.getElementById('saveGameButton');
+      const picker = document.getElementById('editGamePicker');
+      const empty = document.getElementById('editGameEmpty');
+      if (addGameMode === 'edit') {
+        title.textContent = '修改牌局';
+        toggleText.textContent = '新增';
+        toggle.setAttribute('aria-label','新增牌局');
+        toggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span id="addGameModeToggleText">新增</span>`;
+        submit.textContent = '儲存修改';
+      } else {
+        title.textContent = '新增牌局';
+        toggleText.textContent = '修改';
+        toggle.setAttribute('aria-label','修改牌局');
+        toggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.5 19.5L5.4 15.8L15.9 5.3C16.7 4.5 18 4.5 18.8 5.3L18.7 5.4L18.7 5.5L18.8 5.6C19.6 6.4 19.6 7.7 18.8 8.5L8.3 19L4.5 19.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14.4 6.8L17.2 9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span id="addGameModeToggleText">修改</span>`;
+        submit.textContent = '新增牌局';
+      }
+      picker.classList.remove('show');
+      empty.classList.remove('show');
+    }
+
+    function resetEditSelection() {
+      editingGameId = null;
+      const picker = document.getElementById('editGamePicker');
+      const empty = document.getElementById('editGameEmpty');
+      const select = document.getElementById('editGameSelect');
+      picker.classList.remove('show');
+      empty.classList.remove('show');
+      select.innerHTML = '<option value=""></option>';
+      select.value = '';
+      resetAddGameRows();
+      renderAddGameRows();
+    }
+
+    function getGamesForDate(dateStr) {
+      return rawGames
+        .filter(g => String(g.played_on) === String(dateStr))
+        .sort((a,b) => a.id - b.id);
+    }
+
+    function populateEditGamesForDate(dateStr) {
+      const picker = document.getElementById('editGamePicker');
+      const empty = document.getElementById('editGameEmpty');
+      const select = document.getElementById('editGameSelect');
+      editingGameId = null;
+      if (!dateStr) {
+        picker.classList.remove('show');
+        empty.classList.remove('show');
+        select.innerHTML = '<option value=""></option>';
+        select.value = '';
+        resetAddGameRows();
+        renderAddGameRows();
+        return;
+      }
+      const games = getGamesForDate(dateStr);
+      select.innerHTML = '<option value=""></option>' + games.map(g => `<option value="${g.id}">牌局 #${g.id}</option>`).join('');
+      if (!games.length) {
+        picker.classList.remove('show');
+        empty.classList.add('show');
+        resetAddGameRows();
+        renderAddGameRows();
+        return;
+      }
+      empty.classList.remove('show');
+      if (games.length === 1) {
+        picker.classList.remove('show');
+        select.value = String(games[0].id);
+        loadGameIntoForm(games[0].id);
+      } else {
+        picker.classList.add('show');
+        select.value = '';
+        resetAddGameRows();
+        renderAddGameRows();
+      }
+    }
+
+    function loadGameIntoForm(gameId) {
+      const game = rawGames.find(g => Number(g.id) === Number(gameId));
+      if (!game) {
+        editingGameId = null;
+        resetAddGameRows();
+        renderAddGameRows();
+        return;
+      }
+      editingGameId = Number(game.id);
+      const dateInput = document.getElementById('gameDateInput');
+      const dateDisplay = document.getElementById('gameDateDisplay');
+      const dateText = document.getElementById('gameDateText');
+      dateInput.value = String(game.played_on);
+      dateText.textContent = formatDateDisplay(game.played_on);
+      dateDisplay.classList.remove('placeholder');
+
+      const results = [...(game.results || [])].slice(0,8);
+      addGameRows = results.map((r, index) => ({
+        id: ++addGameRowSeq,
+        removable: index >= 4,
+        playerId: String(r.playerId),
+        mode: 'select',
+        playerName: '',
+        sign: Number(r.score) < 0 ? -1 : 1,
+        score: Number(r.score) || 0
+      }));
+      while (addGameRows.length < 4) addGameRows.push(createAddGameRow(false));
+      renderAddGameRows();
     }
 
     function resetAddGameRows() {
@@ -1757,12 +1957,12 @@
         const selectedElsewhere=getSelectedIds(row.id);
         const entryClass=row.removable?'player-entry':'player-entry required';
         const nameControl = row.mode==='input'
-          ? `<div class="inline-player-wrap"><input class="inline-player-input" data-row-id="${row.id}" value="${escapeHtml(row.playerName)}" placeholder="玩家名稱" autocomplete="off" enterkeyhint="done"><button type="button" class="inline-player-back" data-row-back="${row.id}">返回</button></div>`
-          : `<select class="player-select" data-row-select="${row.id}"><option value="">選擇玩家</option>${rawPlayers.map(p=>`<option value="${p.id}" ${String(p.id)===String(row.playerId)?'selected':''} ${selectedElsewhere.has(String(p.id))?'disabled':''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
+          ? `<div class="inline-player-wrap"><input class="inline-player-input" data-row-id="${row.id}" value="${escapeHtml(row.playerName)}" placeholder="" autocomplete="off" enterkeyhint="done"><button type="button" class="inline-player-back" data-row-back="${row.id}">返回</button></div>`
+          : `<select class="player-select" data-row-select="${row.id}"><option value=""></option>${rawPlayers.map(p=>`<option value="${p.id}" ${String(p.id)===String(row.playerId)?'selected':''} ${selectedElsewhere.has(String(p.id))?'disabled':''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
         const scoreAbs = row.score === '' ? '' : Math.abs(Number(row.score)||0);
         const scoreClass = row.score==='' ? 'zero' : (row.sign<0 && Number(scoreAbs)>0 ? 'lose' : (row.sign>0 && Number(scoreAbs)>0 ? 'win' : 'zero'));
         const removeHtml = row.removable ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>` : '';
-        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign<0?'negative':'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign<0?'−':'+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
+        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign<0?'negative':'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign<0?'−':'+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" value="${scoreAbs}" placeholder="" aria-label="分數">${removeHtml}</div>`;
       }).join('');
 
       host.querySelectorAll('[data-row-select]').forEach(select=>select.addEventListener('change',e=>{
@@ -1813,13 +2013,34 @@
 
     function openAddGameDrawer() {
       if(addGameSaving) return;
+      setAddGameMode('add');
       resetAddGameRows();
       showAddGameError('');
       const input=document.getElementById('gameDateInput');
       const display=document.getElementById('gameDateDisplay');
       const text=document.getElementById('gameDateText');
       input.value='';
-      text.textContent='選擇日期'; display.classList.add('placeholder');
+      text.textContent=''; display.classList.add('placeholder');
+      resetEditSelection();
+      renderAddGameRows();
+      document.getElementById('addGameBackdrop').classList.add('show');
+      document.getElementById('addGameDrawer').classList.add('show');
+      document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
+      document.getElementById('addGameDrawer').setAttribute('aria-hidden','false');
+      document.body.classList.add('profile-open');
+    }
+
+    function openEditGameDrawer() {
+      if(addGameSaving) return;
+      setAddGameMode('edit');
+      resetAddGameRows();
+      showAddGameError('');
+      const input=document.getElementById('gameDateInput');
+      const display=document.getElementById('gameDateDisplay');
+      const text=document.getElementById('gameDateText');
+      input.value='';
+      text.textContent=''; display.classList.add('placeholder');
+      resetEditSelection();
       renderAddGameRows();
       document.getElementById('addGameBackdrop').classList.add('show');
       document.getElementById('addGameDrawer').classList.add('show');
@@ -1853,65 +2074,90 @@
       return player.id;
     }
 
+    function collectCurrentGameResults() {
+      const chosen=[];
+      for(const row of addGameRows){
+        if(row.mode==='select' && !row.playerId) throw new Error('請選擇所有玩家。');
+        if(row.mode==='input' && !String(row.playerName||'').trim()) throw new Error('請輸入玩家名稱。');
+        const abs = row.score==='' ? null : Math.abs(Number(row.score));
+        if(abs===null || !Number.isFinite(abs)) throw new Error('請輸入所有分數。');
+        chosen.push({row, abs});
+      }
+      return chosen;
+    }
+
+    async function resolveCurrentRows() {
+      const selected = collectCurrentGameResults();
+      const chosen=[];
+      for(const item of selected){
+        const playerId=await ensurePlayerForAddGameRow(item.row);
+        if(chosen.some(x=>x.playerId===playerId)) throw new Error('同一位玩家不能重複。');
+        chosen.push({playerId,score:item.row.sign<0?-item.abs:item.abs});
+      }
+      if(chosen.length<1) throw new Error('請至少新增一位玩家。');
+      return chosen;
+    }
+
     async function saveAddGame() {
       if(addGameSaving) return;
       showAddGameError('');
       const date=document.getElementById('gameDateInput').value;
       if(!date) { showAddGameError('請先選擇日期。'); return; }
-      if(addGameRows.length<1) { showAddGameError('請至少新增一位玩家。'); return; }
-      const chosen=[];
-      for(const row of addGameRows){
-        if(row.mode==='select' && !row.playerId){ showAddGameError('請選擇所有玩家。'); return; }
-        if(row.mode==='input' && !String(row.playerName||'').trim()){ showAddGameError('請輸入玩家名稱。'); return; }
-        const abs = row.score==='' ? null : Math.abs(Number(row.score));
-        if(abs===null || !Number.isFinite(abs)) { showAddGameError('請輸入所有分數。'); return; }
-        const playerId=await ensurePlayerForAddGameRow(row);
-        if(chosen.some(x=>x.playerId===playerId)) { showAddGameError('同一位玩家不能重複。'); return; }
-        chosen.push({playerId,score:row.sign<0?-abs:abs});
-      }
 
       const saveBtn=document.getElementById('saveGameButton');
-      addGameSaving=true; saveBtn.disabled=true; saveBtn.textContent='新增中…';
+      addGameSaving=true;
+      saveBtn.disabled=true;
+      saveBtn.textContent=addGameMode==='edit'?'儲存中…':'新增中…';
       try {
-        const {data:game,error:gameError}=await supabaseClient.from('games').insert({played_on:date}).select('id,played_on').single();
-        if(gameError) throw gameError;
-        const createdGame={id:Number(game.id),played_on:String(game.played_on),monthNo:new Date(`${game.played_on}T00:00:00`).getMonth()+1,year:new Date(`${game.played_on}T00:00:00`).getFullYear(),day:new Date(`${game.played_on}T00:00:00`).getDate(),results:[]};
-        const payload=chosen.map(x=>({game_id:createdGame.id,player_id:x.playerId,score:x.score}));
-        const {data:resultRows,error:resultError}=await supabaseClient.from('game_result').insert(payload).select('id,game_id,player_id,score');
-        if(resultError) throw resultError;
-        const playerById=new Map(rawPlayers.map(p=>[Number(p.id),p]));
-        createdGame.results=payload.map(r=>({playerId:Number(r.player_id),playerName:playerById.get(Number(r.player_id))?.name||'',score:Number(r.score)}));
-        rawGames.push(createdGame);
-        rawResults.push(...(resultRows||payload));
-        aggregateDatabaseData();
-        activeSheetName = monthName(createdGame.monthNo);
-        const focusedGameCol = getGameColumnIndex(activeSheetName, createdGame.id);
-        // 完整沿用月份表格「點擊日期欄位」的 Focus 行為：
-        // 1) 該欄移到最左固定位置
-        // 2) 該欄藍色高亮
-        // 3) 以該局分數排序，參與該局的玩家自動排在最頂部
-        if (focusedGameCol !== null) {
-          focusedDateCol = focusedGameCol;
-          currentSortCol = focusedGameCol;
-          sortAscending = false;
+        const chosen=await resolveCurrentRows();
+        let targetGameId=null;
+        if(addGameMode==='edit') {
+          if(!editingGameId) throw new Error('請選擇要修改的牌局。');
+          targetGameId=Number(editingGameId);
+          const { error } = await supabaseClient.rpc('update_game', {
+            p_game_id: targetGameId,
+            p_played_on: date,
+            p_results: chosen.map(x=>({player_id:x.playerId,score:x.score}))
+          });
+          if(error) throw error;
         } else {
-          focusedDateCol = null;
-          currentSortCol = 'total';
-          sortAscending = false;
+          const {data:game,error:gameError}=await supabaseClient.from('games').insert({played_on:date}).select('id,played_on').single();
+          if(gameError) throw gameError;
+          targetGameId=Number(game.id);
+          const payload=chosen.map(x=>({game_id:targetGameId,player_id:x.playerId,score:x.score}));
+          const {data:resultRows,error:resultError}=await supabaseClient.from('game_result').insert(payload).select('id,game_id,player_id,score');
+          if(resultError) throw resultError;
         }
-        renderControls();
-        renderTableLayout();
+
+        const toastMessage=addGameMode==='edit'?'已修改牌局':'已新增牌局';
+        await fetchData();
+        const targetGame=rawGames.find(g=>Number(g.id)===Number(targetGameId));
+        if(targetGame) {
+          activeSheetName=monthName(targetGame.monthNo);
+          focusedDateCol=getGameColumnIndex(activeSheetName,targetGame.id);
+          currentSortCol=focusedDateCol!==null?focusedDateCol:'total';
+          sortAscending=false;
+          renderControls();
+          renderTableLayout();
+        }
         closeAddGameDrawer(true);
-        showToast('已新增牌局');
+        showToast(toastMessage);
       } catch(err) {
-        showAddGameError(`新增失敗：${escapeHtml(err.message || String(err))}`);
+        showAddGameError(`${addGameMode==='edit'?'修改失敗':'新增失敗'}：${escapeHtml(err.message || String(err))}`);
       } finally {
-        addGameSaving=false; saveBtn.disabled=false; saveBtn.textContent='新增牌局';
+        addGameSaving=false;
+        saveBtn.disabled=false;
+        saveBtn.textContent=addGameMode==='edit'?'儲存修改':'新增牌局';
       }
     }
 
     function setupAddGameDrawer() {
       document.getElementById('addGameTrigger').addEventListener('click',openAddGameDrawer);
+      document.getElementById('addGameModeToggle').addEventListener('click',()=>{
+        if(addGameSaving) return;
+        if(addGameMode==='edit') openAddGameDrawer();
+        else openEditGameDrawer();
+      });
       document.getElementById('addGameClose').addEventListener('click',closeAddGameDrawer);
       document.getElementById('addGameBackdrop').addEventListener('click',closeAddGameDrawer);
       document.getElementById('saveGameButton').addEventListener('click',saveAddGame);
@@ -1925,31 +2171,20 @@
 
       const dateInput=document.getElementById('gameDateInput');
       const dateDisplay=document.getElementById('gameDateDisplay');
-      const dateWrap=document.querySelector('.date-picker-wrap');
       const dateText=document.getElementById('gameDateText');
-
-      const openNativeDatePicker = (event) => {
-        if (event) event.preventDefault();
-        try {
-          if (typeof dateInput.showPicker === 'function') {
-            dateInput.showPicker();
-            return;
-          }
-        } catch (_) {}
-        dateInput.click();
-      };
-
-      // 以真正的使用者點擊觸發原生 date picker，同時兼顧桌面 Chrome / Edge、
-      // Safari 及手機瀏覽器；不讓 input 自己吃掉點擊，所以不會出現只有一邊能按的情況。
-      dateWrap.addEventListener('click', openNativeDatePicker);
-      dateDisplay.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') openNativeDatePicker(event);
-      });
-
       dateInput.addEventListener('change',()=>{
         dateText.textContent=formatDateDisplay(dateInput.value);
         dateDisplay.classList.toggle('placeholder',!dateInput.value);
+        showAddGameError('');
+        if(addGameMode==='edit') populateEditGamesForDate(dateInput.value);
       });
+
+      document.getElementById('editGameSelect').addEventListener('change',e=>{
+        showAddGameError('');
+        if(!e.currentTarget.value){ editingGameId=null; resetAddGameRows(); renderAddGameRows(); return; }
+        loadGameIntoForm(Number(e.currentTarget.value));
+      });
+
       document.addEventListener('keydown',e=>{
         if(e.key==='Escape') {
           const drawer=document.getElementById('addGameDrawer');
