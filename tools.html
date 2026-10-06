@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My tools</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+
+<style>
+  *{
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+
+  body{
+    margin:0;
+    background:#f5f5f7;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    padding:40px 20px;
+  }
+
+  .main-container {
+    display: flex;
+    width: 100%;
+    max-width: 1060px;
+    gap: 24px;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+    align-self: stretch;
+  }
+
+  .card{
+    width:100%;
+    background:#fff;
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  }
+
+  .clipboard-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1{
+    margin:0 0 24px;
+    font-size:24px;
+    text-align:center;
+  }
+
+  input[type="number"],
+  input[type="text"],
+  input[type="date"],
+  textarea {
+    width:100%;
+    padding:14px 16px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    font-size:18px;
+    outline:none;
+    transition:border-color .2s;
+  }
+
+  textarea {
+    font-size: 16px;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  input[type="number"]:focus,
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  textarea:focus {
+    border-color:#111;
+  }
+
+  .action-btn{
+    width:100%;
+    margin-top:16px;
+    border:none;
+    border-radius:12px;
+    padding:14px;
+    font-size:16px;
+    cursor:pointer;
+    background:#111;
+    color:#fff;
+    transition:
+      transform .2s,
+      box-shadow .2s,
+      background-color .2s;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+
+  .action-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .action-btn:disabled{
+    background:#ccc;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:none;
+  }
+
+  .action-btn.success{
+    background:#34c759;
+  }
+
+  .result{
+    margin-top:24px;
+    background:#f7f7f7;
+    border-radius:14px;
+    padding:18px;
+    min-height:80px;
+    font-size:22px;
+    line-height:1.6;
+    overflow-wrap:anywhere;
+  }
+
+  .drop-zone{
+    border:2px dashed #ddd;
+    border-radius:14px;
+    padding:32px 16px;
+    text-align:center;
+    color:#888;
+    cursor:pointer;
+    transition:
+      border-color .2s,
+      background-color .2s,
+      color .2s;
+    font-size:16px;
+    background:#fafafa;
+    margin-bottom:16px;
+  }
+
+  .drop-zone:hover,
+  .drop-zone.dragover{
+    border-color:#111;
+    background:#f0f0f0;
+    color:#111;
+  }
+
+  .file-info{
+    font-size:14px;
+    color:#666;
+    margin-bottom:8px;
+    text-align:center;
+  }
+
+  .status-text{
+    margin-top:12px;
+    font-size:14px;
+    text-align:center;
+    color:#666;
+  }
+
+  .progress-wrapper{
+    width:100%;
+    height:10px;
+    background:#e5e5e5;
+    border-radius:999px;
+    overflow:hidden;
+    margin-top:16px;
+    display:none;
+  }
+
+  .progress-bar{
+    width:0%;
+    height:100%;
+    background:#111;
+    transition:width .2s;
+  }
+
+  .switch-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .switch-label{
+    font-size:15px;
+    font-weight:600;
+    color:#C4C4C4;
+    transition:color .2s;
+  }
+
+  .switch-label.active{
+    color:#111;
+  }
+
+  .switch{
+    position:relative;
+    width:58px;
+    height:32px;
+  }
+
+  .switch input{
+    opacity:0;
+    width:0;
+    height:0;
+  }
+
+  .slider{
+    position:absolute;
+    inset:0;
+    background:#d1d1d6;
+    border-radius:999px;
+    transition:.25s;
+    cursor:pointer;
+  }
+
+  .slider::before{
+    content:"";
+    position:absolute;
+    width:26px;
+    height:26px;
+    left:3px;
+    top:3px;
+    background:#fff;
+    border-radius:50%;
+    transition:.25s;
+    box-shadow:0 2px 6px rgba(0,0,0,.2);
+  }
+
+  .switch input:checked + .slider{
+    background:#34c759;
+  }
+
+  .switch input:checked + .slider::before{
+    transform:translateX(26px);
+  }
+
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f7f7f7;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: grab;
+    border: 2px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  .file-item:active {
+    cursor: grabbing;
+  }
+
+  .file-item.dragging {
+    opacity: 0.5;
+  }
+
+  .file-item.drag-over {
+    border-color: #111;
+    background: #eaeaea;
+  }
+
+  .file-item-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 85%;
+    pointer-events: none;
+  }
+
+  .remove-btn {
+    color: #ff3b30;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0 4px;
+  }
+
+  .remove-btn:hover {
+    color: #d70000;
+  }
+
+  .clip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .clip-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f7f7f7;
+    padding: 8px 12px;
+    border-radius: 12px;
+  }
+
+  .clip-text-btn {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #333;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .clip-text-btn:hover {
+    border-color: #111;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  .clip-text-btn.active {
+    background: #34c759;
+    color: #fff;
+    border-color: #34c759;
+  }
+
+  .clip-item-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    user-select: none;
+  }
+
+  .clip-action-link {
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .clip-action-link.edit {
+    color: #0071e3;
+  }
+
+  .clip-action-link.edit:hover {
+    text-decoration: underline;
+  }
+
+  .clip-action-link.delete {
+    color: #ff3b30;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .clip-action-link.delete:hover {
+    color: #d70000;
+  }
+
+  @media (max-width: 900px) {
+    .main-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .left-column, .right-column {
+      max-width: 500px;
+    }
+    .clipboard-card {
+      height: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="main-container">
+  
+  <div class="left-column">
+    
+    <!-- 新增功能：數日子 -->
+    <div class="card">
+      <h1>計日子</h1>
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <div style="flex: 1;">
+          <label for="startDate" style="display: block; margin-bottom: 8px; font-size: 14px; color: #666; padding-left: 4px;">起始日期</label>
+          <input type="date" id="startDate" />
+        </div>
+        <div style="flex: 1;">
+          <label for="endDate" style="display: block; margin-bottom: 8px; font-size: 14px; color: #666; padding-left: 4px;">結束日期</label>
+          <input type="date" id="endDate" />
+        </div>
+      </div>
+      <div class="result" id="daysResult" style="text-align: center;">請選擇日期</div>
+    </div>
+
+    <!-- 原有功能：合併 PDF -->
+    <div class="card">
+      <h1>合併 PDF</h1>
+
+      <div class="drop-zone" id="mergeDropZone">
+        拖曳多個 PDF 檔案到此處，或點擊選擇檔案
+        <input type="file" id="mergePdfInput" accept="application/pdf" multiple hidden />
+      </div>
+
+      <div class="file-list" id="mergeFileList"></div>
+
+      <button class="action-btn" id="mergeBtn" style="display:none;">
+        合併並下載
+      </button>
+
+      <div class="status-text" id="mergeStatusText"></div>
+    </div>
+
+    <!-- 原有功能：PDF 轉 JPG -->
+    <div class="card">
+      <h1>PDF 轉 JPG</h1>
+
+      <div class="drop-zone" id="dropZone">
+        拖曳 PDF 檔案到此處，或點擊選擇檔案
+        <input type="file" id="pdfInput" accept="application/pdf" hidden />
+      </div>
+
+      <div id="pdfOptions" style="display:none;">
+        <div class="file-info" id="fileInfoText"></div>
+        <input type="text" id="pageSelection" placeholder="選擇頁數 (例: 1-3, 5) 留空為全部" />
+        <button class="action-btn" id="convertBtn">轉換並下載</button>
+        <div class="progress-wrapper" id="progressWrapper">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <div class="status-text" id="statusText"></div>
+    </div>
+
+    <!-- 將數字轉大寫移動至最下方 -->
+    <div class="card">
+      <h1>數字轉大寫</h1>
+
+      <div class="switch-wrapper">
+        <span class="switch-label active" id="zhLabel">中文大寫</span>
+        <label class="switch">
+          <input type="checkbox" id="languageSwitch" />
+          <span class="slider"></span>
+        </label>
+        <span class="switch-label" id="enLabel">English</span>
+      </div>
+
+      <input type="number" id="amount" step="0.01" placeholder="請輸入金額" />
+
+      <div class="result" id="result">港幣零元正</div>
+
+      <button class="action-btn" id="copyBtn">複製</button>
+    </div>
+    
+  </div>
+
+  <div class="right-column">
+    <div class="card clipboard-card">
+      <h1>剪貼板</h1>
+      
+      <div class="clip-input-group">
+        <textarea id="clipInput" placeholder="在此輸入文字內容..." rows="3"></textarea>
+        <button class="action-btn" id="addClipBtn">新增</button>
+      </div>
+
+      <div class="clip-list" id="clipList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// --- 數日子功能 (Days Calculator) ---
+const daysEls = {
+  startDate: document.getElementById("startDate"),
+  endDate: document.getElementById("endDate"),
+  result: document.getElementById("daysResult")
+};
+
+const today = new Date();
+const yyyy = today.getFullYear();
+const mm = String(today.getMonth() + 1).padStart(2, '0'); // 月份從 0 開始，所以要 +1
+const dd = String(today.getDate()).padStart(2, '0');
+daysEls.startDate.value = `${yyyy}-${mm}-${dd}`;
+
+function calculateDays() {
+  const startVal = daysEls.startDate.value;
+  const endVal = daysEls.endDate.value;
+
+  if (!startVal || !endVal) {
+    daysEls.result.innerText = "請輸入完整的起始及結束日期";
+    return;
+  }
+
+  const startDate = new Date(startVal);
+  const endDate = new Date(endVal);
+  
+  // 重置時間為凌晨，確保整天計算準確
+  startDate.setHours(0, 0, 0, 0);
+  endDate.setHours(0, 0, 0, 0);
+
+  const diffTime = endDate.getTime() - startDate.getTime();
+  const diffDays = diffTime / (1000 * 3600 * 24);
+  
+  if (diffDays === 0) {
+    daysEls.result.innerText = "相距 0 日 (同一天)";
+  } else {
+    daysEls.result.innerText = `相差 ${Math.abs(diffDays)} 日`;
+  }
+}
+
+// 加入事件監聽器，只要更改日期就會自動觸發計算
+daysEls.startDate.addEventListener("change", calculateDays);
+daysEls.endDate.addEventListener("change", calculateDays);
+
+
+// --- 數字轉大寫功能 ---
+const digitMap = ["零","壹","貳","參","肆","伍","陸","柒","捌","玖"];
+const unitMap = ["","拾","佰","仟"];
+const sectionUnit = ["","萬","億","兆"];
+
+const els = {
+  amount: document.getElementById("amount"),
+  result: document.getElementById("result"),
+  copyBtn: document.getElementById("copyBtn"),
+  languageSwitch: document.getElementById("languageSwitch"),
+  zhLabel: document.getElementById("zhLabel"),
+  enLabel: document.getElementById("enLabel"),
+};
+
+function sectionToChinese(section){
+  let str = "";
+  let unitPos = 0;
+  let zero = true;
+  while(section > 0){
+    const v = section % 10;
+    if(v === 0){
+      if(!zero){ zero = true; str = digitMap[0] + str; }
+    }else{
+      zero = false; str = digitMap[v] + unitMap[unitPos] + str;
+    }
+    unitPos++;
+    section = Math.floor(section / 10);
+  }
+  return str;
+}
+
+function numberToChinese(inputStr){
+  if(!inputStr || isNaN(parseFloat(inputStr))) return "請輸入有效金額";
+  const parts = inputStr.split(".");
+  const integerNum = parseInt(parts[0], 10) || 0;
+  let fractionStr = parts[1] || "";
+  fractionStr = fractionStr.slice(0,2).padEnd(2,"0");
+  const tenCent = parseInt(fractionStr[0], 10);
+  const cent = parseInt(fractionStr[1], 10);
+  let integerResult = "";
+
+  if(integerNum === 0){
+    integerResult = "零";
+  }else{
+    let num = integerNum;
+    let unitPos = 0;
+    let needZero = false;
+    while(num > 0){
+      const section = num % 10000;
+      if(needZero && section !== 0) integerResult = "零" + integerResult;
+      let sectionStr = sectionToChinese(section);
+      if(section !== 0) sectionStr += sectionUnit[unitPos];
+      integerResult = sectionStr + integerResult;
+      needZero = section < 1000 && section > 0;
+      num = Math.floor(num / 10000);
+      unitPos++;
+    }
+    integerResult = integerResult
+      .replace(/零+/g, "零").replace(/零萬/g, "萬").replace(/零億/g, "億").replace(/零兆/g, "兆").replace(/零$/g, "");
+  }
+
+  let decimalResult = "";
+  if(tenCent === 0 && cent === 0){
+    decimalResult = "元正";
+  }else{
+    decimalResult = "元";
+    if(tenCent > 0) decimalResult += digitMap[tenCent] + "角";
+    else if(integerNum > 0 && cent > 0) decimalResult += "零";
+    if(cent > 0) decimalResult += digitMap[cent] + "分";
+  }
+
+  if(integerNum === 0 && (tenCent > 0 || cent > 0)){
+    let cleanDecimal = "";
+    if(tenCent > 0) cleanDecimal += digitMap[tenCent] + "角";
+    if(cent > 0) cleanDecimal += digitMap[cent] + "分";
+    return "港幣" + cleanDecimal;
+  }
+  return "港幣" + integerResult + decimalResult;
+}
+
+const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
+const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+function convertHundreds(num){
+  let str = "";
+  if(num >= 100){
+    str += ones[Math.floor(num / 100)] + " Hundred";
+    num %= 100;
+    if(num > 0) str += " ";
+  }
+  if(num >= 20){
+    str += tens[Math.floor(num / 10)];
+    if(num % 10 > 0) str += "-" + ones[num % 10];
+  }else if(num >= 10){
+    str += teens[num - 10];
+  }else if(num > 0){
+    str += ones[num];
+  }
+  return str;
+}
+
+function numberToEnglish(inputStr){
+  if(!inputStr || isNaN(parseFloat(inputStr))) return "Please enter a valid amount";
+  const parts = inputStr.split(".");
+  const integerNum = parseInt(parts[0], 10) || 0;
+  let fractionStr = (parts[1] || "").slice(0,2).padEnd(2,"0");
+  const cents = parseInt(fractionStr, 10);
+
+  if(integerNum === 0 && cents === 0) return "Zero Dollars Only";
+
+  const scales = ["", "Thousand", "Million", "Billion", "Trillion"];
+  let num = integerNum;
+  let scaleIndex = 0;
+  let words = [];
+
+  while(num > 0){
+    const chunk = num % 1000;
+    if(chunk > 0){
+      let chunkWords = convertHundreds(chunk);
+      if(scales[scaleIndex]) chunkWords += " " + scales[scaleIndex];
+      words.unshift(chunkWords);
+    }
+    num = Math.floor(num / 1000);
+    scaleIndex++;
+  }
+
+  let result = words.length > 0 ? words.join(" ") : "Zero";
+  result += " Dollars";
+  if(cents > 0) result += " and " + convertHundreds(cents) + " Cents";
+  result += " Only";
+  return result;
+}
+
+function updateResult(){
+  const input = els.amount.value;
+  const isEnglish = els.languageSwitch.checked;
+  if(input === ""){
+    els.result.innerText = isEnglish ? "Zero Dollars Only" : "港幣零元正";
+    return;
+  }
+  const num = parseFloat(input);
+  if(isNaN(num) || num < 0){
+    els.result.innerText = isEnglish ? "Please enter a valid amount" : "請輸入有效金額";
+    return;
+  }
+  els.result.innerText = isEnglish ? numberToEnglish(input) : numberToChinese(input);
+}
+
+function copyResult(){
+  navigator.clipboard.writeText(els.result.innerText).then(() => {
+    els.copyBtn.innerText = "已複製";
+    els.copyBtn.classList.add("success");
+    document.querySelectorAll(".clip-text-btn").forEach(b => b.classList.remove("active"));
+    activeClipIndex = null;
+  }).catch(() => { alert("複製失敗"); });
+}
+
+els.languageSwitch.addEventListener("change", () => {
+  const isEnglish = els.languageSwitch.checked;
+  els.zhLabel.classList.toggle("active", !isEnglish);
+  els.enLabel.classList.toggle("active", isEnglish);
+  updateResult();
+  els.copyBtn.innerText = "複製";
+  els.copyBtn.classList.remove("success");
+});
+
+els.amount.addEventListener("input", () => {
+  updateResult();
+  els.copyBtn.innerText = "複製";
+  els.copyBtn.classList.remove("success");
+});
+
+els.copyBtn.addEventListener("click", copyResult);
+updateResult();
+
+// --- 合併 PDF 功能 ---
+const mergeEls = {
+  dropZone: document.getElementById("mergeDropZone"),
+  pdfInput: document.getElementById("mergePdfInput"),
+  fileList: document.getElementById("mergeFileList"),
+  mergeBtn: document.getElementById("mergeBtn"),
+  statusText: document.getElementById("mergeStatusText")
+};
+
+let filesToMerge = [];
+let dragStartIndex = null;
+
+mergeEls.dropZone.addEventListener("click", () => mergeEls.pdfInput.click());
+
+mergeEls.dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  mergeEls.dropZone.classList.add("dragover");
+});
+
+mergeEls.dropZone.addEventListener("dragleave", () => {
+  mergeEls.dropZone.classList.remove("dragover");
+});
+
+mergeEls.dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  mergeEls.dropZone.classList.remove("dragover");
+  if(e.dataTransfer.files.length){
+    handleMergeFiles(e.dataTransfer.files);
+  }
+});
+
+mergeEls.pdfInput.addEventListener("change", (e) => {
+  if(e.target.files.length){
+    handleMergeFiles(e.target.files);
+  }
+});
+
+function handleMergeFiles(files){
+  for(let file of files){
+    if(file.type === "application/pdf"){
+      filesToMerge.push(file);
+    }
+  }
+  renderMergeList();
+  mergeEls.pdfInput.value = "";
+}
+
+function swapMergeItems(fromIndex, toIndex) {
+  if (fromIndex === toIndex || fromIndex === null) return;
+  const item = filesToMerge.splice(fromIndex, 1)[0];
+  filesToMerge.splice(toIndex, 0, item);
+  renderMergeList();
+}
+
+function renderMergeList(){
+  mergeEls.fileList.innerHTML = "";
+  
+  if(filesToMerge.length > 0){
+    mergeEls.mergeBtn.style.display = "flex";
+  } else {
+    mergeEls.mergeBtn.style.display = "none";
+  }
+
+  filesToMerge.forEach((file, index) => {
+    const item = document.createElement("div");
+    item.className = "file-item";
+    item.draggable = true;
+
+    item.addEventListener('dragstart', () => {
+      dragStartIndex = index;
+      item.classList.add('dragging');
+    });
+
+    item.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      item.classList.add('drag-over');
+    });
+
+    item.addEventListener('dragleave', () => {
+      item.classList.remove('drag-over');
+    });
+
+    item.addEventListener('drop', (e) => {
+      e.preventDefault();
+      item.classList.remove('drag-over');
+      const dragEndIndex = index;
+      swapMergeItems(dragStartIndex, dragEndIndex);
+    });
+
+    item.addEventListener('dragend', () => {
+      item.classList.remove('dragging');
+    });
+    
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "file-item-name";
+    nameSpan.innerText = `${index + 1}. ${file.name}`;
+    
+    const removeBtn = document.createElement("span");
+    removeBtn.className = "remove-btn";
+    removeBtn.innerText = "✕";
+    removeBtn.onclick = () => {
+      filesToMerge.splice(index, 1);
+      renderMergeList();
+    };
+    
+    item.appendChild(nameSpan);
+    item.appendChild(removeBtn);
+    mergeEls.fileList.appendChild(item);
+  });
+  
+  mergeEls.statusText.innerText = "";
+}
+
+mergeEls.mergeBtn.addEventListener("click", async () => {
+  if(filesToMerge.length < 2){
+    mergeEls.statusText.innerText = "請至少選擇兩個 PDF 檔案以進行合併。";
+    return;
+  }
+  
+  mergeEls.mergeBtn.disabled = true;
+  mergeEls.statusText.innerText = "正在合併 PDF，請稍候...";
+  
+  try {
+    const { PDFDocument } = PDFLib;
+    const mergedPdf = await PDFDocument.create();
+    
+    for(let file of filesToMerge){
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfToMerge = await PDFDocument.load(arrayBuffer);
+      const copiedPages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
+      
+      copiedPages.forEach((page) => {
+        mergedPdf.addPage(page);
+      });
+    }
+    
+    const mergedPdfBytes = await mergedPdf.save();
+    const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Merged_Document.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    
+    mergeEls.statusText.innerText = "合併完成！";
+    
+  } catch(error) {
+    console.error(error);
+    mergeEls.statusText.innerText = "合併過程發生錯誤。";
+  } finally {
+    mergeEls.mergeBtn.disabled = false;
+  }
+});
+
+// --- PDF 轉 JPG 功能 ---
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const pdfEls = {
+  dropZone: document.getElementById("dropZone"),
+  pdfInput: document.getElementById("pdfInput"),
+  pdfOptions: document.getElementById("pdfOptions"),
+  fileInfoText: document.getElementById("fileInfoText"),
+  pageSelection: document.getElementById("pageSelection"),
+  convertBtn: document.getElementById("convertBtn"),
+  statusText: document.getElementById("statusText"),
+  progressWrapper: document.getElementById("progressWrapper"),
+  progressBar: document.getElementById("progressBar")
+};
+
+let currentPdf = null;
+let originalFileName = "";
+
+pdfEls.dropZone.addEventListener("click", () => pdfEls.pdfInput.click());
+pdfEls.dropZone.addEventListener("dragover", (e) => { e.preventDefault(); pdfEls.dropZone.classList.add("dragover"); });
+pdfEls.dropZone.addEventListener("dragleave", () => pdfEls.dropZone.classList.remove("dragover"));
+pdfEls.dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  pdfEls.dropZone.classList.remove("dragover");
+  if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+pdfEls.pdfInput.addEventListener("change", (e) => {
+  if(e.target.files.length) handleFile(e.target.files[0]);
+});
+
+async function handleFile(file){
+  if(file.type !== "application/pdf"){ alert("請上傳 PDF 格式檔案！"); return; }
+  pdfEls.statusText.innerText = "載入 PDF 中...";
+  originalFileName = file.name.replace(/\.pdf$/i, '');
+  try{
+    const arrayBuffer = await file.arrayBuffer();
+    currentPdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    pdfEls.pdfOptions.style.display = "block";
+    pdfEls.fileInfoText.innerText = `已載入：${file.name}（共 ${currentPdf.numPages} 頁）`;
+    pdfEls.pageSelection.value = "";
+    pdfEls.statusText.innerText = "";
+  }catch(error){
+    console.error(error);
+    pdfEls.statusText.innerText = "讀取 PDF 失敗。";
+  }
+}
+
+function parsePages(input, maxPage){
+  if(!input.trim()) return Array.from({ length:maxPage }, (_, i) => i + 1);
+  const pages = new Set();
+  const parts = input.split(",");
+  for(let part of parts){
+    part = part.trim();
+    if(part.includes("-")){
+      const [startStr, endStr] = part.split("-");
+      const start = parseInt(startStr, 10);
+      const end = parseInt(endStr, 10);
+      if(start > 0 && end <= maxPage && start <= end){
+        for(let i = start; i <= end; i++) pages.add(i);
+      }
+    }else{
+      const num = parseInt(part, 10);
+      if(num > 0 && num <= maxPage) pages.add(num);
+    }
+  }
+  return Array.from(pages).sort((a,b) => a - b);
+}
+
+function updateProgress(current, total){
+  const percent = Math.round((current / total) * 100);
+  pdfEls.progressBar.style.width = `${percent}%`;
+  pdfEls.statusText.innerText = `正在轉換第 ${current} / ${total} 頁（${percent}%）`;
+}
+
+async function renderPage(pageNum){
+  const page = await currentPdf.getPage(pageNum);
+  const viewport = page.getViewport({ scale: 2 });
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  await page.render({ canvasContext: context, viewport }).promise;
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.95));
+  context.clearRect(0,0,canvas.width,canvas.height);
+  canvas.width = 0; canvas.height = 0;
+  return { pageNum, blob };
+}
+
+async function renderPagesWithConcurrency(pages, concurrency = 2){
+  const results = [];
+  let completed = 0;
+  let currentIndex = 0;
+  async function worker(){
+    while(currentIndex < pages.length){
+      const index = currentIndex++;
+      const pageNum = pages[index];
+      const result = await renderPage(pageNum);
+      results.push(result);
+      completed++;
+      updateProgress(completed, pages.length);
+    }
+  }
+  const workers = Array.from({ length: concurrency }, () => worker());
+  await Promise.all(workers);
+  return results.sort((a,b) => a.pageNum - b.pageNum);
+}
+
+async function convertAndDownload(){
+  if(!currentPdf) return;
+  const pagesToConvert = parsePages(pdfEls.pageSelection.value, currentPdf.numPages);
+  if(pagesToConvert.length === 0){
+    pdfEls.statusText.innerText = "請輸入有效頁碼範圍！"; return;
+  }
+  pdfEls.convertBtn.disabled = true;
+  pdfEls.progressWrapper.style.display = "block";
+  pdfEls.progressBar.style.width = "0%";
+  try{
+    const renderedPages = await renderPagesWithConcurrency(pagesToConvert, 2);
+    if(renderedPages.length === 1){
+      const single = renderedPages[0];
+      const url = URL.createObjectURL(single.blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${originalFileName}_page_${single.pageNum}.jpg`;
+      document.body.appendChild(a);
+      a.click(); a.remove(); URL.revokeObjectURL(url);
+    }else{
+      pdfEls.statusText.innerText = "正在打包 ZIP...";
+      const zip = new JSZip();
+      renderedPages.forEach(item => {
+        const paddedNum = String(item.pageNum).padStart(3, "0");
+        zip.file(`${originalFileName}_page_${paddedNum}.jpg`, item.blob);
+      });
+      const content = await zip.generateAsync({ type:"blob" });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${originalFileName}.zip`;
+      document.body.appendChild(a);
+      a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+    pdfEls.statusText.innerText = "轉換完成！";
+  }catch(error){
+    console.error(error);
+    pdfEls.statusText.innerText = "轉換過程發生錯誤。";
+  }finally{
+    pdfEls.convertBtn.disabled = false;
+  }
+}
+
+pdfEls.convertBtn.addEventListener("click", convertAndDownload);
+
+// --- 剪貼板功能 ---
+const clipEls = {
+  input: document.getElementById("clipInput"),
+  addBtn: document.getElementById("addClipBtn"),
+  list: document.getElementById("clipList")
+};
+
+let clipboardItems = JSON.parse(localStorage.getItem("mytools_clipboard")) || [
+  "感謝您的來信，我們會盡快處理您的請求。",
+  "請參閱附件中的相關文件與說明檔案。",
+  "如有任何疑問或需要進一步協助，歡迎隨時與我聯絡。"
+];
+let editingIndex = null;
+let activeClipIndex = null;
+
+function saveClipboard() {
+  localStorage.setItem("mytools_clipboard", JSON.stringify(clipboardItems));
+}
+
+function renderClipboard() {
+  clipEls.list.innerHTML = "";
+  
+  clipboardItems.forEach((text, index) => {
+    const item = document.createElement("div");
+    item.className = "clip-item";
+    
+    const btn = document.createElement("button");
+    btn.className = "clip-text-btn";
+    btn.innerText = text;
+    
+    if (activeClipIndex === index) {
+      btn.classList.add("active");
+    }
+    
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(text).then(() => {
+        document.querySelectorAll(".clip-text-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeClipIndex = index;
+        
+        els.copyBtn.innerText = "複製";
+        els.copyBtn.classList.remove("success");
+      }).catch(() => {
+        alert("複製失敗，請手動複製。");
+      });
+    });
+    
+    const actions = document.createElement("div");
+    actions.className = "clip-item-actions";
+    
+    const editBtn = document.createElement("span");
+    editBtn.className = "clip-action-link edit";
+    editBtn.innerText = "編輯";
+    editBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      startEditClip(index);
+    });
+    
+    const delBtn = document.createElement("span");
+    delBtn.className = "clip-action-link delete";
+    delBtn.innerText = "✕";
+    delBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteClip(index);
+    });
+    
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+    item.appendChild(btn);
+    item.appendChild(actions);
+    clipEls.list.appendChild(item);
+  });
+}
+
+function startEditClip(index) {
+  editingIndex = index;
+  clipEls.input.value = clipboardItems[index];
+  clipEls.addBtn.innerText = "儲存修改";
+  clipEls.addBtn.classList.add("success");
+  clipEls.input.focus();
+}
+
+function deleteClip(index) {
+  if (confirm("確定要刪除此剪貼項目嗎？")) {
+    clipboardItems.splice(index, 1);
+    if (editingIndex === index) {
+      resetClipInput();
+    }
+    if (activeClipIndex === index) {
+      activeClipIndex = null;
+    } else if (activeClipIndex > index) {
+      activeClipIndex--;
+    }
+    saveClipboard();
+    renderClipboard();
+  }
+}
+
+function resetClipInput() {
+  editingIndex = null;
+  clipEls.input.value = "";
+  clipEls.addBtn.innerText = "新增";
+  clipEls.addBtn.classList.remove("success");
+}
+
+clipEls.addBtn.addEventListener("click", () => {
+  const text = clipEls.input.value.trim();
+  if (!text) return;
+  
+  if (editingIndex !== null) {
+    clipboardItems[editingIndex] = text;
+    resetClipInput();
+  } else {
+    clipboardItems.push(text);
+    clipEls.input.value = "";
+  }
+  saveClipboard();
+  renderClipboard();
+});
+
+renderClipboard();
+
+</script>
+
+</body>
+</html>
