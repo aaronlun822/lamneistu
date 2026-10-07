@@ -1498,6 +1498,7 @@
     let adminSession = null;
     let isAdminUser = false;
     let adminAuthChecking = false;
+    let adminAuthCheckPromise = null;
     let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
 
     function escapeHtml(value) {
@@ -2034,26 +2035,39 @@
     }
 
     async function refreshAdminAccess() {
-      if (!supabaseClient || adminAuthChecking) return false;
-      adminAuthChecking = true;
-      try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        adminSession = session || null;
-        if (!session) {
-          isAdminUser = false;
-          return false;
-        }
+      if (!supabaseClient) return false;
 
-        const { data, error } = await supabaseClient.rpc('is_current_user_admin');
-        if (error) throw error;
-        isAdminUser = data === true;
-        return isAdminUser;
-      } catch (err) {
-        isAdminUser = false;
-        console.error('Admin auth check failed:', err);
-        return false;
+      // 避免 OAuth callback / INITIAL_SESSION 與頁面初始化同時檢查權限時，
+      // 第二個呼叫因為「正在檢查」而直接被當成 false，誤判成「不在白名單」。
+      if (adminAuthCheckPromise) return adminAuthCheckPromise;
+
+      adminAuthChecking = true;
+      adminAuthCheckPromise = (async () => {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          adminSession = session || null;
+          if (!session) {
+            isAdminUser = false;
+            return false;
+          }
+
+          const { data, error } = await supabaseClient.rpc('is_current_user_admin');
+          if (error) throw error;
+          isAdminUser = data === true;
+          return isAdminUser;
+        } catch (err) {
+          isAdminUser = false;
+          console.error('Admin auth check failed:', err);
+          return false;
+        } finally {
+          adminAuthChecking = false;
+        }
+      })();
+
+      try {
+        return await adminAuthCheckPromise;
       } finally {
-        adminAuthChecking = false;
+        adminAuthCheckPromise = null;
       }
     }
 
