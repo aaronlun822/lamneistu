@@ -891,7 +891,33 @@
       gap: 9px;
       min-width: 0;
       padding-top: 4px;
+      max-width: calc(100% - 120px);
     }
+    .add-game-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      padding-top: 4px;
+    }
+    .add-game-delete-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      color: #8E8E93;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .add-game-delete-btn:hover { background: #F2F2F7; }
+    .add-game-delete-btn:active { opacity: .6; }
+    .add-game-delete-btn svg { width: 20px; height: 20px; display: block; }
+    .add-game-delete-btn[hidden] { display: none; }
     .add-game-mode-btn {
       display: inline-flex;
       align-items: center;
@@ -1323,7 +1349,10 @@
       }
       .add-game-drawer.show { transform: translateY(0); }
       .add-game-header { padding-top: 22px; }
-      .add-game-header-left { gap: 6px; max-width: calc(100% - 44px); }
+      .add-game-header-left { gap: 6px; max-width: calc(100% - 120px); }
+      .add-game-header-actions { gap: 3px; }
+      .add-game-delete-btn { width: 32px; height: 32px; }
+      .add-game-delete-btn svg { width: 18px; height: 18px; }
       .add-game-header-title { font-size: 19px; }
       .add-game-mode-btn { min-height: 30px; padding: 0 7px; font-size: 12px; }
       .add-game-header::before {
@@ -1336,8 +1365,8 @@
       }
       .player-entry.required { grid-template-columns: minmax(0, 1fr) 50px minmax(90px, .65fr); }
       .sign-switch { width: 50px; }
-      .player-select, .inline-player-input { font-size: 14px; }
       .score-input { font-size: 16px; }
+      .player-select, .inline-player-input { font-size: 14px; }
     }
 
   </style>
@@ -1374,7 +1403,17 @@
           </svg>
         </button>
       </div>
-      <button type="button" class="add-game-close" id="addGameClose" aria-label="關閉">×</button>
+      <div class="add-game-header-actions">
+        <button type="button" class="add-game-delete-btn" id="editGameDeleteToggle" aria-label="刪除牌局" title="刪除牌局" hidden>
+          <svg id="editGameDeleteIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4.75 7.25H19.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M9.25 4.25H14.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M7 7.25L7.75 19.25C7.82 20.38 8.76 21.25 9.89 21.25H14.11C15.24 21.25 16.18 20.38 16.25 19.25L17 7.25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M10 10.5V17.5M14 10.5V17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button type="button" class="add-game-close" id="addGameClose" aria-label="關閉">×</button>
+      </div>
     </div>
     <div id="addGameBody" class="add-game-body">
       <section class="add-game-section">
@@ -1494,6 +1533,7 @@
     let addGameToastTimer = null;
     let addGameMode = 'add';
     let editingGameId = null;
+    let editingGameIsDeleted = false;
 
     // ===== Google Admin Auth =====
     let adminSession = null;
@@ -1592,6 +1632,7 @@
         return {
           id: Number(g.id),
           played_on: date,
+          is_deleted: Boolean(g.is_deleted),
           monthNo: dt.getMonth() + 1,
           year: dt.getFullYear(),
           day: dt.getDate(),
@@ -1612,9 +1653,10 @@
       });
 
       rawGames = games;
-      activeYear = games.length ? games[games.length - 1].year : new Date().getFullYear();
+      const displayGames = games.filter(g => !g.is_deleted);
+      activeYear = displayGames.length ? displayGames[displayGames.length - 1].year : new Date().getFullYear();
 
-      const currentYearGames = games.filter(g => g.year === activeYear);
+      const currentYearGames = displayGames.filter(g => g.year === activeYear);
       const monthNos = [...new Set(currentYearGames.map(g => g.monthNo).filter(Boolean))].sort((a,b) => a-b);
       allSheetNames = monthNos.map(monthName);
       allSheetNames.push('總排名');
@@ -1623,7 +1665,7 @@
       gameColumnMeta = {};
       monthNos.forEach(monthNo => {
         // 同一天的不同 Game ID 必須各自佔一欄，不再把同日牌局合併。
-        const monthGames = games
+        const monthGames = displayGames
           .filter(g => g.monthNo === monthNo && g.year === activeYear)
           .sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
         const columns = monthGames.map(g => g.id);
@@ -1655,7 +1697,7 @@
       const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
       const overallRows = rawPlayers.map(p => {
         const monthlyTotals = monthNos.map(monthNo =>
-          games
+          displayGames
             .filter(g => g.monthNo === monthNo && g.year === activeYear)
             .flatMap(g => g.results)
             .filter(r => r.playerId === Number(p.id))
@@ -1682,7 +1724,7 @@
       try {
         const [players, games, results] = await Promise.all([
           selectAllRows('players', 'id,name,is_active', ['id']),
-          selectAllRows('games', 'id,played_on', ['played_on','id']),
+          selectAllRows('games', 'id,played_on,is_deleted', ['played_on','id']),
           selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
         ]);
         rawPlayers = (players || []).filter(p => p && p.name).map(p => ({ ...p, id: Number(p.id) }));
@@ -1872,7 +1914,7 @@
       stats.month.sheetName = profileMonthName;
       const targetMonthNo = profileMonthName ? Number(globalData[profileMonthName]?.[0]?.[0]) || 0 : 0;
 
-      [...rawGames].filter(game => game.year === activeYear).sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id-b.id).forEach(game => {
+      [...rawGames].filter(game => !game.is_deleted && game.year === activeYear).sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id-b.id).forEach(game => {
         const mine = game.results.find(r => r.playerName === playerName);
         if (!mine) return;
         addOutcome(stats.year,mine.score);
@@ -1899,8 +1941,9 @@
 
     function getOverallRank(playerName) {
       const rows = rawPlayers.map(p => {
-        const total = rawGames.flatMap(g=>g.results).filter(r=>r.playerId===Number(p.id)).reduce((sum,r)=>sum+r.score,0);
-        const hasPart = rawGames.some(g=>g.results.some(r=>r.playerId===Number(p.id)));
+        const displayGames = rawGames.filter(g => !g.is_deleted);
+        const total = displayGames.flatMap(g=>g.results).filter(r=>r.playerId===Number(p.id)).reduce((sum,r)=>sum+r.score,0);
+        const hasPart = displayGames.some(g=>g.results.some(r=>r.playerId===Number(p.id)));
         return {name:p.name,total,hasPart};
       }).sort((a,b)=>b.hasPart-a.hasPart || b.total-a.total || a.name.localeCompare(b.name));
       let rank=1, displayRank=1, prev=null;
@@ -2081,7 +2124,7 @@
 
       const allowed = await refreshAdminAccess();
       if (allowed) {
-        if (typeof onSuccess === 'function') onSuccess();
+        if (typeof onSuccess === 'function') await onSuccess();
         return true;
       }
 
@@ -2178,7 +2221,7 @@
             pendingAdminAction = '';
             sessionStorage.removeItem('lamnei_admin_pending');
             closeAdminAuthModal(false);
-            openEditGameDrawerUnlocked();
+            await openEditGameDrawerUnlocked();
           }
         }, 0);
       });
@@ -2200,9 +2243,11 @@
     function setAddGameMode(mode) {
       addGameMode = mode === 'edit' ? 'edit' : 'add';
       editingGameId = null;
+      editingGameIsDeleted = false;
       const title = document.getElementById('addGameTitle');
       const toggle = document.getElementById('addGameModeToggle');
       const submit = document.getElementById('saveGameButton');
+      const deleteBtn = document.getElementById('editGameDeleteToggle');
       const picker = document.getElementById('editGamePicker');
       const empty = document.getElementById('editGameEmpty');
       if (addGameMode === 'edit') {
@@ -2214,6 +2259,7 @@
           <path d="M4.5 12H20.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg><span>返回</span>`;
         submit.textContent = '儲存修改';
+        if (deleteBtn) deleteBtn.hidden = true;
       } else {
         title.textContent = '新增牌局';
         toggle.setAttribute('aria-label', '修改牌局');
@@ -2223,6 +2269,7 @@
           <path d="M14.4 6.8L17.2 9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>`;
         submit.textContent = '新增牌局';
+        if (deleteBtn) deleteBtn.hidden = true;
       }
       picker.classList.remove('show');
       empty.classList.remove('show');
@@ -2230,6 +2277,9 @@
 
     function resetEditSelection() {
       editingGameId = null;
+      editingGameIsDeleted = false;
+      const deleteBtn = document.getElementById('editGameDeleteToggle');
+      if (deleteBtn) deleteBtn.hidden = true;
       const picker = document.getElementById('editGamePicker');
       const empty = document.getElementById('editGameEmpty');
       const select = document.getElementById('editGameSelect');
@@ -2252,6 +2302,8 @@
       const empty = document.getElementById('editGameEmpty');
       const select = document.getElementById('editGameSelect');
       editingGameId = null;
+      editingGameIsDeleted = false;
+      updateEditGameDeleteButton();
       if (!dateStr) {
         picker.classList.remove('show');
         empty.classList.remove('show');
@@ -2262,7 +2314,7 @@
         return;
       }
       const games = getGamesForDate(dateStr);
-      select.innerHTML = '<option value="" disabled>選擇牌局</option>' + games.map(g => `<option value="${g.id}">牌局 #${g.id}</option>`).join('');
+      select.innerHTML = '<option value="" disabled>選擇牌局</option>' + games.map(g => `<option value="${g.id}">${g.is_deleted ? `牌局 #${g.id}（已刪除）` : `牌局 #${g.id}`}</option>`).join('');
       if (!games.length) {
         picker.classList.remove('show');
         empty.classList.add('show');
@@ -2287,11 +2339,15 @@
       const game = rawGames.find(g => Number(g.id) === Number(gameId));
       if (!game) {
         editingGameId = null;
+        editingGameIsDeleted = false;
+        updateEditGameDeleteButton();
         resetAddGameRows();
         renderAddGameRows();
         return;
       }
       editingGameId = Number(game.id);
+      editingGameIsDeleted = Boolean(game.is_deleted);
+      updateEditGameDeleteButton();
       const dateInput = document.getElementById('gameDateInput');
       const dateDisplay = document.getElementById('gameDateDisplay');
       const dateText = document.getElementById('gameDateText');
@@ -2311,6 +2367,74 @@
       }));
       while (addGameRows.length < 4) addGameRows.push(createAddGameRow(false));
       renderAddGameRows();
+    }
+
+    function updateEditGameDeleteButton() {
+      const btn = document.getElementById('editGameDeleteToggle');
+      const icon = document.getElementById('editGameDeleteIcon');
+      if (!btn || !icon) return;
+      const isAvailable = addGameMode === 'edit' && !!editingGameId;
+      btn.hidden = !isAvailable;
+      if (!isAvailable) return;
+
+      if (editingGameIsDeleted) {
+        btn.setAttribute('aria-label', '復原牌局');
+        btn.setAttribute('title', '復原牌局');
+        icon.innerHTML = `
+          <path d="M7.25 7.5A7.75 7.75 0 1 1 5.2 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7.25 4.25V7.5H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 10.25L13.5 13.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M13.5 10.25L10 13.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        `;
+      } else {
+        btn.setAttribute('aria-label', '刪除牌局');
+        btn.setAttribute('title', '刪除牌局');
+        icon.innerHTML = `
+          <path d="M4.75 7.25H19.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M9.25 4.25H14.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M7 7.25L7.75 19.25C7.82 20.38 8.76 21.25 9.89 21.25H14.11C15.24 21.25 16.18 20.38 16.25 19.25L17 7.25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M10 10.5V17.5M14 10.5V17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        `;
+      }
+    }
+
+    async function toggleEditGameDeleted() {
+      if (addGameSaving || addGameMode !== 'edit' || !editingGameId) return;
+      if (!(await verifyAdminBeforeSave())) return;
+
+      const deleting = !editingGameIsDeleted;
+      const message = deleting
+        ? `確定要刪除牌局 #${editingGameId}？\n\n牌局會從月份表格及統計中隱藏，但仍可在修改牌局中復原。`
+        : `確定要復原牌局 #${editingGameId}？`;
+      if (!window.confirm(message)) return;
+
+      const btn = document.getElementById('editGameDeleteToggle');
+      if (btn) btn.disabled = true;
+      addGameSaving = true;
+      showAddGameError('');
+      try {
+        const { data, error } = await supabaseClient.rpc('admin_set_game_deleted', {
+          p_game_id: Number(editingGameId),
+          p_is_deleted: deleting
+        });
+        if (error) throw error;
+        if (data !== true) throw new Error(deleting ? '刪除牌局失敗。' : '復原牌局失敗。');
+
+        const targetId = Number(editingGameId);
+        await fetchData();
+        const targetGame = rawGames.find(g => Number(g.id) === targetId);
+        if (!targetGame) throw new Error('找不到更新後的牌局。');
+
+        editingGameIsDeleted = Boolean(targetGame.is_deleted);
+        loadGameIntoForm(targetId);
+        updateEditGameDeleteButton();
+        showToast(editingGameIsDeleted ? '已刪除牌局' : '已復原牌局');
+      } catch (err) {
+        showAddGameError(`${deleting ? '刪除失敗' : '復原失敗'}：${escapeHtml(err.message || String(err))}`);
+      } finally {
+        addGameSaving = false;
+        if (btn) btn.disabled = false;
+      }
     }
 
     function resetAddGameRows() {
@@ -2401,8 +2525,9 @@
       document.body.classList.add('profile-open');
     }
 
-    function openEditGameDrawerUnlocked() {
+    async function openEditGameDrawerUnlocked() {
       if(addGameSaving) return;
+      await fetchData();
       setAddGameMode('edit');
       resetAddGameRows();
       showAddGameError('');
@@ -2515,6 +2640,8 @@
         await fetchData();
         const targetGame=rawGames.find(g=>Number(g.id)===Number(targetGameId));
         if(targetGame) {
+          editingGameIsDeleted = Boolean(targetGame.is_deleted);
+          if (addGameMode === 'edit') updateEditGameDeleteButton();
           activeSheetName=monthName(targetGame.monthNo);
           focusedDateCol=getGameColumnIndex(activeSheetName,targetGame.id);
           currentSortCol=focusedDateCol!==null?focusedDateCol:'total';
@@ -2543,6 +2670,7 @@
         if(addGameMode==='edit') openAddGameDrawer();
         else openEditGameDrawer();
       });
+      document.getElementById('editGameDeleteToggle').addEventListener('click',toggleEditGameDeleted);
       document.getElementById('addGameClose').addEventListener('click',closeAddGameDrawer);
       document.getElementById('addGameBackdrop').addEventListener('click',closeAddGameDrawer);
       document.getElementById('saveGameButton').addEventListener('click',saveAddGame);
@@ -2566,7 +2694,7 @@
 
       document.getElementById('editGameSelect').addEventListener('change',e=>{
         showAddGameError('');
-        if(!e.currentTarget.value){ editingGameId=null; resetAddGameRows(); renderAddGameRows(); return; }
+        if(!e.currentTarget.value){ editingGameId=null; editingGameIsDeleted=false; updateEditGameDeleteButton(); resetAddGameRows(); renderAddGameRows(); return; }
         loadGameIntoForm(Number(e.currentTarget.value));
       });
 
