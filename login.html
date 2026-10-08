@@ -800,7 +800,6 @@
     }
   
 
-    /* 新增牌局入口：純圖示按鈕，移除瀏覽器預設黑框 */
     #addGameTrigger {
       appearance: none;
       -webkit-appearance: none;
@@ -818,7 +817,6 @@
       box-shadow: none;
     }
 
-    /* ===== Add Game Modal ===== */
     .add-game-backdrop {
       position: fixed;
       inset: 0;
@@ -1004,12 +1002,6 @@
       box-shadow: 0 1px 0 rgba(0,0,0,.03);
     }
     .add-game-section:last-child { margin-bottom: 0; }
-    .add-game-section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #636366;
-      margin: 0 0 10px;
-    }
     .date-picker-wrap {
       position: relative;
       width: 100%;
@@ -1048,11 +1040,6 @@
       height: 100%;
       display: block;
     }
-    /*
-     * 讓真正的 <input type="date"> 覆蓋整個日期區域並直接接收點擊。
-     * 不再依賴 showPicker()/input.click()，讓桌面與手機都由瀏覽器/OS
-     * 自己開啟原生日期選擇器。
-     */
     .date-picker-native {
       position: absolute;
       inset: 0;
@@ -1072,11 +1059,6 @@
       font-size: 16px;
       -webkit-tap-highlight-color: transparent;
     }
-    .date-picker-wrap {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    /* Chrome / Edge 桌面版：把原生日曆圖示的可點擊區域擴大至整個日期選擇器 */
     .date-picker-native::-webkit-calendar-picker-indicator {
       position: absolute;
       inset: 0;
@@ -1226,7 +1208,6 @@
     }
     .add-game-toast.show { opacity: 1; transform: translate(-50%,0); }
 
-    /* ===== Google Admin Auth ===== */
     .admin-auth-backdrop {
       position: fixed;
       inset: 0;
@@ -1452,7 +1433,6 @@
   </aside>
   <div id="addGameToast" class="add-game-toast" role="status" aria-live="polite">已新增牌局</div>
 
-  <!-- Google 管理權限登入 -->
   <div id="adminAuthBackdrop" class="admin-auth-backdrop" aria-hidden="true"></div>
   <section id="adminAuthSheet" class="admin-auth-sheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="adminAuthTitle">
     <div class="admin-auth-card">
@@ -1493,7 +1473,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ===== Supabase =====
     const SUPABASE_URL = 'https://zpmoqpysipsexsgrlknr.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ihlscYsOOZJ2_GM4QdrQRA_MtMk1xNf';
 
@@ -1521,7 +1500,6 @@
     let currentSortCol = 'total';
     let sortAscending = false;
     let focusedDateCol = null;
-    let profileRequestToken = 0;
     let rawPlayers = [];
     let rawGames = [];
     let rawResults = [];
@@ -1535,10 +1513,6 @@
     let editingGameId = null;
     let editingGameIsDeleted = false;
 
-    // ===== Google Admin Auth =====
-    let adminSession = null;
-    let isAdminUser = false;
-    let adminAuthChecking = false;
     let adminAuthCheckPromise = null;
     let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
 
@@ -1579,12 +1553,10 @@
       addGameToastTimer = setTimeout(() => toast.classList.remove('show'), 1700);
     }
 
-    function renderSkeleton(isFirstLoad = true) {
-      if (isFirstLoad) {
-        document.getElementById('controlsArea').innerHTML = `
-          <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
-          <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>`;
-      }
+    function renderSkeleton() {
+      document.getElementById('controlsArea').innerHTML = `
+        <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
+        <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>`;
       const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
       const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
       const emptyRows = Array(8).fill(`<tr>
@@ -1614,7 +1586,7 @@
       while (true) {
         let query = supabaseClient.from(table).select(columns);
         const orders = Array.isArray(orderColumns) ? orderColumns : [orderColumns];
-        orders.forEach((column, index) => { query = query.order(column, { ascending: true }); });
+        orders.forEach(column => { query = query.order(column, { ascending: true }); });
         const { data, error } = await query.range(from, from + pageSize - 1);
         if (error) throw error;
         rows.push(...(data || []));
@@ -1664,12 +1636,10 @@
       globalData = {};
       gameColumnMeta = {};
       monthNos.forEach(monthNo => {
-        // 同一天的不同 Game ID 必須各自佔一欄，不再把同日牌局合併。
         const monthGames = displayGames
           .filter(g => g.monthNo === monthNo && g.year === activeYear)
           .sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
         const columns = monthGames.map(g => g.id);
-        // 月份表格固定至少保留 9 個日期欄；不足的欄位以空白資料補足，畫面上顯示「-」。
         const MIN_DATE_COLUMNS = 9;
         const dateColumnCount = Math.max(MIN_DATE_COLUMNS, monthGames.length);
         const paddedDates = monthGames.map(g => g.day);
@@ -1715,7 +1685,7 @@
     }
 
     async function fetchData() {
-      renderSkeleton(true);
+      renderSkeleton();
       if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
         document.getElementById('controlsArea').innerHTML = '';
         document.getElementById('contentArea').innerHTML = `<div class="error-container"><div>請先填入 Supabase 設定。</div></div>`;
@@ -1800,7 +1770,7 @@
       });
     }
 
-    function getColLimit(data, isOverall) { return Array.isArray(data?.[1]) ? data[1].length : 2; }
+    function getColLimit(data) { return Array.isArray(data?.[1]) ? data[1].length : 2; }
 
     function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
       let cols = Array.from({ length: Math.max(0, colLimit - 2) }, (_, i) => i + 2).filter(c => c !== focusedCol);
@@ -1817,7 +1787,7 @@
       return focusedCol !== null ? [focusedCol, ...cols] : cols;
     }
 
-    function formatHeaderDate(dayVal, data, sheetName, colIndex) {
+    function formatHeaderDate(dayVal, data) {
       if (isNaN(Number(dayVal))) return dayVal;
       const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth()+1);
       const base = `${dayVal}/${monthStr}`;
@@ -1828,11 +1798,11 @@
       const data = globalData[activeSheetName];
       if (!data) return;
       const isOverall = activeSheetName === '總排名';
-      const colIndices = getValidColumnsOrder(data, getColLimit(data,isOverall), focusedDateCol, isOverall);
+      const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
       const headHtml = colIndices.map(j => {
         const val = data[1][j];
         const isF = j === focusedDateCol;
-        const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data, activeSheetName, j)) : '-';
+        const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data)) : '-';
         const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
         return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
       }).join('');
@@ -1856,7 +1826,7 @@
       if (!tbody) return;
       const data = globalData[activeSheetName];
       const isOverall = activeSheetName === '總排名';
-      const colLimit = getColLimit(data,isOverall);
+      const colLimit = getColLimit(data);
       const colIndices = getValidColumnsOrder(data,colLimit,focusedDateCol,isOverall);
       let rows = data.slice(2).filter(r => r[0]).map(row => {
         const hasPart = row.slice(2,colLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
@@ -1991,16 +1961,13 @@
     }
 
     function openPlayerProfile(playerName) {
-      const token=++profileRequestToken;
       document.getElementById('profileName').textContent=playerName;
       document.getElementById('profileSubtitle').textContent=`整理 ${activeYear} 戰績…`;
-      document.getElementById('profileBody').innerHTML=`<section class="profile-section"><div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div><div class="profile-grid">${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}</div></section>`;
       document.body.classList.add('profile-open');
       document.getElementById('profileBackdrop').classList.add('show');
       document.getElementById('profileSheet').classList.add('show');
       document.getElementById('profileBackdrop').setAttribute('aria-hidden','false');
       document.getElementById('profileSheet').setAttribute('aria-hidden','false');
-      if (token!==profileRequestToken) return;
       const stats=collectPlayerStats(playerName);
       const currentRank=getOverallRank(playerName);
       document.getElementById('profileSubtitle').textContent=`${stats.profileMonthName||activeYear+' 年'} · ${currentRank?`目前總排名 ${currentRank}`:'玩家資料'}`;
@@ -2008,7 +1975,6 @@
     }
 
     function closePlayerProfile() {
-      profileRequestToken++;
       document.body.classList.remove('profile-open');
       const backdrop=document.getElementById('profileBackdrop'), sheet=document.getElementById('profileSheet');
       backdrop.classList.remove('show'); sheet.classList.remove('show');
@@ -2036,7 +2002,6 @@
       sheet.addEventListener('touchcancel',()=>{profileDrag.active=false;sheet.classList.remove('dragging');sheet.style.transform='';},{passive:true});
     }
 
-    // ===== Google Admin Auth =====
     function getAdminRedirectUrl() {
       return window.location.origin + window.location.pathname;
     }
@@ -2081,30 +2046,21 @@
     async function refreshAdminAccess() {
       if (!supabaseClient) return false;
 
-      // 避免 OAuth callback / INITIAL_SESSION 與頁面初始化同時檢查權限時，
-      // 第二個呼叫因為「正在檢查」而直接被當成 false，誤判成「不在白名單」。
       if (adminAuthCheckPromise) return adminAuthCheckPromise;
 
-      adminAuthChecking = true;
       adminAuthCheckPromise = (async () => {
         try {
           const { data: { session } } = await supabaseClient.auth.getSession();
-          adminSession = session || null;
-          if (!session) {
-            isAdminUser = false;
-            return false;
+           if (!session) {
+             return false;
           }
 
           const { data, error } = await supabaseClient.rpc('is_current_user_admin');
           if (error) throw error;
-          isAdminUser = data === true;
-          return isAdminUser;
+          return data === true;
         } catch (err) {
-          isAdminUser = false;
           console.error('Admin auth check failed:', err);
           return false;
-        } finally {
-          adminAuthChecking = false;
         }
       })();
 
@@ -2136,10 +2092,7 @@
         return false;
       }
 
-      // 已登入但不是白名單：停止管理 session，避免後續持續嘗試寫入。
       await supabaseClient.auth.signOut();
-      adminSession = null;
-      isAdminUser = false;
       pendingAdminAction = '';
       sessionStorage.removeItem('lamnei_admin_pending');
       openAdminAuthModal('此 Google 帳戶不在白名單內，不能使用新增／修改牌局功能。');
@@ -2192,20 +2145,15 @@
     async function initAdminAuth() {
       if (!supabaseClient) return;
 
-      supabaseClient.auth.onAuthStateChange((event, session) => {
-        adminSession = session || null;
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
         if (!session) {
-          isAdminUser = false;
           return;
         }
-        // Avoid doing another Supabase request inside the auth callback synchronously.
         setTimeout(async () => {
           const allowed = await refreshAdminAccess();
           if (!allowed) {
             if (pendingAdminAction) {
               await supabaseClient.auth.signOut();
-              adminSession = null;
-              isAdminUser = false;
               openAdminAuthModal('此 Google 帳戶不在白名單內，不能使用新增／修改牌局功能。');
               setAdminAuthError('請使用白名單內的 Google 帳戶。');
             }
@@ -2227,14 +2175,12 @@
       });
 
       const allowed = await refreshAdminAccess();
-      if (!allowed && pendingAdminAction && adminSession) {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!allowed && pendingAdminAction && session) {
         await supabaseClient.auth.signOut();
-        adminSession = null;
-        isAdminUser = false;
-      }
+         }
     }
 
-    // ===== Add Game / Edit Game Modal =====
     function createAddGameRow(removable=false) {
 
       return { id: ++addGameRowSeq, removable, playerId:'', mode:'select', playerName:'', sign:1, score:'' };
@@ -2509,7 +2455,6 @@
     function openAddGameDrawerUnlocked() {
       if(addGameSaving) return;
       setAddGameMode('add');
-      resetAddGameRows();
       showAddGameError('');
       const input=document.getElementById('gameDateInput');
       const display=document.getElementById('gameDateDisplay');
@@ -2517,7 +2462,6 @@
       input.value='';
       text.textContent='日期'; display.classList.add('placeholder');
       resetEditSelection();
-      renderAddGameRows();
       document.getElementById('addGameBackdrop').classList.add('show');
       document.getElementById('addGameDrawer').classList.add('show');
       document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
@@ -2529,7 +2473,6 @@
       if(addGameSaving) return;
       await fetchData();
       setAddGameMode('edit');
-      resetAddGameRows();
       showAddGameError('');
       const input=document.getElementById('gameDateInput');
       const display=document.getElementById('gameDateDisplay');
@@ -2537,7 +2480,6 @@
       input.value='';
       text.textContent='日期'; display.classList.add('placeholder');
       resetEditSelection();
-      renderAddGameRows();
       document.getElementById('addGameBackdrop').classList.add('show');
       document.getElementById('addGameDrawer').classList.add('show');
       document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
@@ -2632,7 +2574,7 @@
           if(gameError) throw gameError;
           targetGameId=Number(game.id);
           const payload=chosen.map(x=>({game_id:targetGameId,player_id:x.playerId,score:x.score}));
-          const {data:resultRows,error:resultError}=await supabaseClient.from('game_result').insert(payload).select('id,game_id,player_id,score');
+          const { error: resultError } = await supabaseClient.from('game_result').insert(payload);
           if(resultError) throw resultError;
         }
 
