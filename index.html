@@ -117,27 +117,6 @@
       flex: 0 0 auto;
     }
 
-    .mobile-view-toggle {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      height: 36px;
-      padding: 0 11px;
-      border: none;
-      border-radius: 18px;
-      background: #E5E5EA;
-      color: #1C1C1E;
-      font: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .mobile-view-toggle svg { width: 16px; height: 16px; display: block; }
-    .mobile-view-toggle:active { opacity: .65; }
-
     /* 手機牌局動態卡片 */
     .mobile-feed-wrap {
       padding: 0 14px 16px;
@@ -824,12 +803,6 @@
         margin-left: -8px;
       }
       .overall-btn {
-        height: 34px;
-        padding: 0 10px;
-        font-size: 13px;
-      }
-      .mobile-view-toggle {
-        display: inline-flex;
         height: 34px;
         padding: 0 10px;
         font-size: 13px;
@@ -1940,7 +1913,6 @@
     let rawResults = [];
     let activeYear = new Date().getFullYear();
     let tableScrollArrowResizeHandler = null;
-    let mobileViewMode = 'feed';
     let mobileFeedGameId = null;
     let mobileFeedNavigationToken = 0;
 
@@ -2000,17 +1972,6 @@
         document.getElementById('controlsArea').innerHTML = `
           <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
           <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>`;
-      }
-      if (window.matchMedia('(max-width: 600px)').matches && mobileViewMode === 'feed') {
-        document.getElementById('contentArea').innerHTML = `
-          <div class="mobile-feed-wrap">
-            <div class="mobile-game-card">
-              <div class="sk-box" style="height: 22px; width: 62%;"></div>
-              <div class="sk-box" style="height: 14px; width: 34%; margin-bottom: 20px;"></div>
-              ${Array(4).fill('<div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid #E5E5EA;"><div class="sk-box" style="width:25px;height:25px;border-radius:50%;margin:0;"></div><div class="sk-box" style="height:16px;flex:1;margin:0;"></div><div class="sk-box" style="height:18px;width:56px;margin:0;"></div></div>').join('')}
-            </div>
-          </div>`;
-        return;
       }
       const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
       const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
@@ -2245,10 +2206,6 @@
         <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${escapeHtml(m)}">
           <span>${escapeHtml(m)}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
         </div>`).join('');
-      const toggleLabel = mobileViewMode === 'feed' ? '表格' : '卡片';
-      const toggleIcon = mobileViewMode === 'feed'
-        ? '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9.5H20.5M9 9.5V19.5M15 9.5V19.5" stroke="currentColor" stroke-width="1.5"/></svg>'
-        : '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3.5" y="4" width="17" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13" width="17" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>';
       document.getElementById('controlsArea').innerHTML = `
         <div class="custom-dropdown-container" id="dropdownContainer">
           <button id="monthSelectorTrigger" class="month-dropdown">${escapeHtml(activeSheetName)}</button>
@@ -2256,7 +2213,6 @@
         </div>
         <div class="control-actions">
           <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
-          <button type="button" id="mobileViewToggle" class="mobile-view-toggle" aria-label="切換至${toggleLabel}" title="切換至${toggleLabel}" aria-pressed="${mobileViewMode === 'table'}">${toggleIcon}<span>${toggleLabel}</span></button>
         </div>`;
       const menu = document.getElementById('monthSelectorMenu');
       document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
@@ -2267,13 +2223,6 @@
         });
       });
       document.getElementById('overallBtn').addEventListener('click', () => switchSheet('總排名'));
-      const viewToggle = document.getElementById('mobileViewToggle');
-      if (viewToggle) viewToggle.addEventListener('click', () => {
-        mobileFeedNavigationToken += 1;
-        mobileViewMode = mobileViewMode === 'feed' ? 'table' : 'feed';
-        renderControls();
-        renderContent();
-      });
     }
 
     function getGameColumnIndex(sheetName, gameId) {
@@ -2300,13 +2249,8 @@
     }
 
     function renderContent() {
-      const mobile = window.matchMedia('(max-width: 600px)').matches;
-      if (mobile && mobileViewMode === 'feed') {
-        if (activeSheetName === '總排名') renderMobileOverallCards();
-        else renderMobileFeed();
-      } else {
-        renderTableLayout();
-      }
+      // 固定使用表格模式；手機版不再切換至牌局卡片。
+      renderTableLayout();
     }
 
     function getMobileFeedGames() {
