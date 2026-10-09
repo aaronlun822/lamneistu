@@ -110,6 +110,304 @@
       background: #FFFFFF; 
     }
 
+    .control-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .mobile-view-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 36px;
+      padding: 0 11px;
+      border: none;
+      border-radius: 18px;
+      background: #E5E5EA;
+      color: #1C1C1E;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-view-toggle svg { width: 16px; height: 16px; display: block; }
+    .mobile-view-toggle:active { opacity: .65; }
+
+    /* 手機牌局動態卡片 */
+    .mobile-feed-wrap {
+      padding: 0 14px 16px;
+    }
+    .mobile-feed-viewport {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 18px;
+      touch-action: pan-y;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .mobile-feed-track {
+      display: flex;
+      width: 300%;
+      transform: translate3d(-33.333333%, 0, 0);
+      will-change: transform;
+    }
+    .mobile-feed-track.dragging { transition: none !important; }
+    .mobile-feed-slide {
+      width: 33.333333%;
+      flex: 0 0 33.333333%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 0 2px;
+    }
+    .mobile-game-card {
+      min-height: 250px;
+      box-sizing: border-box;
+      padding: 16px;
+      border: 1px solid #E5E5EA;
+      border-radius: 18px;
+      background: #F8F8FA;
+    }
+    .mobile-game-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid #E5E5EA;
+    }
+    .mobile-game-heading { min-width: 0; }
+    .mobile-game-date {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 750;
+      letter-spacing: -.35px;
+    }
+    .mobile-game-subtitle {
+      margin-top: 5px;
+      color: #8E8E93;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .mobile-game-badge {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: #E5E5EA;
+      color: #636366;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .mobile-game-badge.latest {
+      background: #E8F2FF;
+      color: #007AFF;
+    }
+    .mobile-game-results {
+      margin-top: 3px;
+    }
+    .mobile-score-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      border-bottom: 1px solid #E5E5EA;
+    }
+    .mobile-score-row:last-child { border-bottom: none; }
+    .mobile-score-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: #E5E5EA;
+      color: #636366;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .mobile-player-name-btn {
+      display: block;
+      min-width: 0;
+      flex: 1 1 auto;
+      padding: 10px 0;
+      border: none;
+      background: transparent;
+      color: #1C1C1E;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 650;
+      text-align: left;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-player-name-btn:active { opacity: .55; }
+    .mobile-game-score {
+      flex: 0 0 auto;
+      font-size: 19px;
+      line-height: 1.2;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+    .mobile-game-empty {
+      padding: 24px 0 12px;
+      color: #8E8E93;
+      text-align: center;
+      font-size: 14px;
+    }
+    .mobile-month-ranking {
+      margin-top: 14px;
+      padding: 15px;
+      border: 1px solid #E5E5EA;
+      border-radius: 18px;
+      background: #FFFFFF;
+    }
+    .mobile-month-ranking-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #E5E5EA;
+    }
+    .mobile-month-ranking-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 750;
+    }
+    .mobile-month-ranking-subtitle {
+      color: #8E8E93;
+      font-size: 12px;
+    }
+    .mobile-month-rank-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      border-bottom: 1px solid #F0F0F3;
+    }
+    .mobile-month-rank-row:last-child { border-bottom: none; }
+    .mobile-month-rank-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #F2F2F7;
+      color: #636366;
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .mobile-month-rank-number.rank-1 { background: #FFD700; color: #FFFFFF; }
+    .mobile-month-rank-number.rank-2 { background: #C0C0C0; color: #FFFFFF; }
+    .mobile-month-rank-number.rank-3 { background: #CD7F32; color: #FFFFFF; }
+    .mobile-month-rank-row .mobile-player-name-btn {
+      padding: 8px 0;
+      font-size: 14px;
+    }
+    .mobile-month-rank-score {
+      flex: 0 0 auto;
+      font-size: 15px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+    .mobile-feed-footer { padding: 12px 2px 0; }
+    .mobile-feed-progress {
+      color: #8E8E93;
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .mobile-feed-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .mobile-feed-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 104px;
+      height: 36px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 18px;
+      background: #E5E5EA;
+      color: #1C1C1E;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-feed-nav-btn svg { width: 15px; height: 15px; }
+    .mobile-feed-nav-btn:disabled { color: #AEAEB2; background: #F2F2F7; cursor: default; }
+    .mobile-feed-nav-btn:not(:disabled):active { opacity: .6; }
+
+    .mobile-overall-list {
+      display: grid;
+      gap: 8px;
+      padding: 0 14px 16px;
+    }
+    .mobile-overall-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      padding: 13px 14px;
+      border: 1px solid #E5E5EA;
+      border-radius: 15px;
+      background: #F8F8FA;
+    }
+    .mobile-overall-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #E5E5EA;
+      color: #636366;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .mobile-overall-rank.rank-1 { background: #FFD700; color: #FFFFFF; }
+    .mobile-overall-rank.rank-2 { background: #C0C0C0; color: #FFFFFF; }
+    .mobile-overall-rank.rank-3 { background: #CD7F32; color: #FFFFFF; }
+    .mobile-overall-name {
+      flex: 1 1 auto;
+      min-width: 0;
+      font-size: 15px;
+      font-weight: 650;
+    }
+    .mobile-overall-score {
+      flex: 0 0 auto;
+      font-size: 18px;
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+    .mobile-card-empty {
+      margin: 0 14px 16px;
+      padding: 28px 16px;
+      border-radius: 16px;
+      background: #F8F8FA;
+      color: #8E8E93;
+      font-size: 14px;
+      text-align: center;
+    }
+
     .month-dropdown { 
       font-size: 22px; 
       font-weight: 700; 
@@ -514,6 +812,35 @@
     }
 
     @media (max-width: 600px) {
+      .table-controls {
+        padding: 14px 14px 12px;
+        gap: 7px;
+      }
+      .control-actions { gap: 6px; }
+      .month-dropdown {
+        max-width: 132px;
+        font-size: 19px;
+        padding: 8px 27px 8px 8px;
+        margin-left: -8px;
+      }
+      .overall-btn {
+        height: 34px;
+        padding: 0 10px;
+        font-size: 13px;
+      }
+      .mobile-view-toggle {
+        display: inline-flex;
+        height: 34px;
+        padding: 0 10px;
+        font-size: 13px;
+      }
+      .mobile-feed-wrap { padding: 0 12px 0; }
+      .mobile-game-card { padding: 14px; min-height: 230px; }
+      .mobile-game-date { font-size: 19px; }
+      .mobile-feed-nav-btn { min-width: 96px; }
+      .mobile-overall-list { padding: 0 12px 0; }
+      .mobile-overall-row { padding: 12px; }
+      .mobile-overall-score { font-size: 17px; }
       th, td { 
         padding: 8px 4px; 
         font-size: 13px; 
@@ -1163,8 +1490,9 @@
       gap: 8px;
       align-items: center;
     }
+    /* 必填的預設玩家列也預留刪除欄，所有列的名稱與分數欄保持對齊 */
     .player-entry.required {
-      grid-template-columns: minmax(0, 1fr) 54px minmax(105px, 0.72fr);
+      grid-template-columns: minmax(0, 1fr) 54px minmax(105px, 0.72fr) 34px;
     }
     .player-select,
     .inline-player-input,
@@ -1231,6 +1559,13 @@
       cursor: pointer;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
+    }
+    .player-remove-placeholder {
+      display: block;
+      width: 34px;
+      height: 34px;
+      visibility: hidden;
+      pointer-events: none;
     }
     .add-more-players {
       width: 100%;
@@ -1432,7 +1767,10 @@
         grid-template-columns: minmax(0, 1fr) 50px minmax(90px, .65fr) 32px;
         gap: 7px;
       }
-      .player-entry.required { grid-template-columns: minmax(0, 1fr) 50px minmax(90px, .65fr); }
+      /* 手機版同樣預留右側刪除欄，避免新增列後欄位跳位 */
+      .player-entry.required { grid-template-columns: minmax(0, 1fr) 50px minmax(90px, .65fr) 32px; }
+      .player-remove { width: 32px; height: 32px; }
+      .player-remove-placeholder { width: 32px; height: 32px; }
       .sign-switch { width: 50px; }
       .score-input { font-size: 16px; }
       .player-select, .inline-player-input { font-size: 14px; }
@@ -1562,7 +1900,7 @@
         <h2 id="profileName" class="profile-name">玩家</h2>
         <div id="profileSubtitle" class="profile-subtitle">玩家資料</div>
       </div>
-      <button id="profileClose" class="profile-close" type="button">×</button>
+      <button id="profileClose" class="profile-close" type="button" aria-label="關閉">×</button>
     </div>
     <div id="profileBody" class="profile-body"></div>
   </section>
@@ -1602,6 +1940,9 @@
     let rawResults = [];
     let activeYear = new Date().getFullYear();
     let tableScrollArrowResizeHandler = null;
+    let mobileViewMode = 'feed';
+    let mobileFeedGameId = null;
+    let mobileFeedNavigationToken = 0;
 
     let addGameRows = [];
     let addGameRowSeq = 0;
@@ -1660,6 +2001,17 @@
           <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
           <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>`;
       }
+      if (window.matchMedia('(max-width: 600px)').matches && mobileViewMode === 'feed') {
+        document.getElementById('contentArea').innerHTML = `
+          <div class="mobile-feed-wrap">
+            <div class="mobile-game-card">
+              <div class="sk-box" style="height: 22px; width: 62%;"></div>
+              <div class="sk-box" style="height: 14px; width: 34%; margin-bottom: 20px;"></div>
+              ${Array(4).fill('<div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid #E5E5EA;"><div class="sk-box" style="width:25px;height:25px;border-radius:50%;margin:0;"></div><div class="sk-box" style="height:16px;flex:1;margin:0;"></div><div class="sk-box" style="height:18px;width:56px;margin:0;"></div></div>').join('')}
+            </div>
+          </div>`;
+        return;
+      }
       const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
       const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
       const emptyRows = Array(8).fill(`<tr>
@@ -1670,12 +2022,12 @@
       </tr>`).join('');
       document.getElementById('contentArea').innerHTML = `
         <div class="table-scroll-shell">
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-left">
+          <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-right">
+          <button type="button" class="table-scroll-arrow table-scroll-arrow-right" aria-label="向右移動" title="向右移動">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -1799,6 +2151,59 @@
       }
     }
 
+    // PGRST303（JWT issued at future）屬於可短暫恢復的讀取錯誤，只對資料載入做有限次數重試。
+    const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
+
+    function isPgrst303Error(err) {
+      const code = String(err?.code || '').toUpperCase();
+      const message = [err?.message, err?.details, err?.hint, err?.error_description]
+        .filter(Boolean)
+        .map(String)
+        .join(' ');
+      return code === 'PGRST303' || /PGRST303|JWT\s+issued\s+at\s+future/i.test(message);
+    }
+
+    function waitForRetry(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function showPgrst303RetryStatus(retryNumber, maxRetries) {
+      const contentArea = document.getElementById('contentArea');
+      if (!contentArea) return;
+
+      let status = document.getElementById('pgrst303RetryStatus');
+      if (!status) {
+        status = document.createElement('div');
+        status.id = 'pgrst303RetryStatus';
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        status.style.cssText = 'margin: 0 0 12px; padding: 10px 14px; border-radius: 12px; background: #FFF7E6; color: #8A5B00; font-size: 13px; line-height: 1.45; text-align: center;';
+        contentArea.prepend(status);
+      }
+      status.textContent = `資料載入遇到暫時性 JWT 時間驗證問題，正在自動重試（${retryNumber}/${maxRetries}）…`;
+    }
+
+    async function loadSupabaseTablesWithPgrst303Retry(onRetry) {
+      let retryCount = 0;
+      while (true) {
+        try {
+          return await Promise.all([
+            selectAllRows('players', 'id,name,is_active', ['id']),
+            selectAllRows('games', 'id,played_on,is_deleted', ['played_on','id']),
+            selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
+          ]);
+        } catch (err) {
+          // 不重試權限、網絡或其他資料錯誤，只針對指定的 PGRST303。
+          if (!isPgrst303Error(err) || retryCount >= PGRST303_RETRY_DELAYS_MS.length) {
+            throw err;
+          }
+          retryCount += 1;
+          if (typeof onRetry === 'function') onRetry(retryCount, PGRST303_RETRY_DELAYS_MS.length);
+          await waitForRetry(PGRST303_RETRY_DELAYS_MS[retryCount - 1]);
+        }
+      }
+    }
+
     async function fetchData() {
       renderSkeleton(true);
       if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
@@ -1806,24 +2211,29 @@
         document.getElementById('contentArea').innerHTML = `<div class="error-container"><div>請先填入 Supabase 設定。</div></div>`;
         return;
       }
+
+      let automaticPgrst303Retries = 0;
       try {
-        const [players, games, results] = await Promise.all([
-          selectAllRows('players', 'id,name,is_active', ['id']),
-          selectAllRows('games', 'id,played_on,is_deleted', ['played_on','id']),
-          selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
-        ]);
+        const [players, games, results] = await loadSupabaseTablesWithPgrst303Retry((retryNumber, maxRetries) => {
+          automaticPgrst303Retries = retryNumber;
+          showPgrst303RetryStatus(retryNumber, maxRetries);
+        });
         rawPlayers = (players || []).filter(p => p && p.name).map(p => ({ ...p, id: Number(p.id) }));
         rawGames = games || [];
         rawResults = results || [];
         if (!rawPlayers.length) throw new Error('players 表沒有資料。');
         aggregateDatabaseData();
         renderControls();
-        renderTableLayout();
+        renderContent();
       } catch (err) {
         document.getElementById('controlsArea').innerHTML = '';
+        const errorText = escapeHtml(err.message || String(err));
+        const pgrst303Message = isPgrst303Error(err) && automaticPgrst303Retries > 0
+          ? `Supabase 載入失敗：JWT 時間驗證錯誤，已自動重試 ${automaticPgrst303Retries} 次仍未成功。請稍後再試。<div style="margin-top:8px;font-size:12px;opacity:.8;">詳細錯誤：${errorText}</div>`
+          : `Supabase 載入失敗：${errorText}`;
         document.getElementById('contentArea').innerHTML = `
           <div class="error-container">
-            <div>Supabase 載入失敗：${escapeHtml(err.message || String(err))}</div>
+            <div>${pgrst303Message}</div>
             <button class="retry-btn" onclick="fetchData()">重新載入</button>
           </div>`;
       }
@@ -1835,12 +2245,19 @@
         <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${escapeHtml(m)}">
           <span>${escapeHtml(m)}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
         </div>`).join('');
+      const toggleLabel = mobileViewMode === 'feed' ? '表格' : '卡片';
+      const toggleIcon = mobileViewMode === 'feed'
+        ? '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 9.5H20.5M9 9.5V19.5M15 9.5V19.5" stroke="currentColor" stroke-width="1.5"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="3.5" y="4" width="17" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13" width="17" height="7" rx="2" stroke="currentColor" stroke-width="1.7"/></svg>';
       document.getElementById('controlsArea').innerHTML = `
         <div class="custom-dropdown-container" id="dropdownContainer">
           <button id="monthSelectorTrigger" class="month-dropdown">${escapeHtml(activeSheetName)}</button>
           <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
         </div>
-        <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>`;
+        <div class="control-actions">
+          <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
+          <button type="button" id="mobileViewToggle" class="mobile-view-toggle" aria-label="切換至${toggleLabel}" title="切換至${toggleLabel}" aria-pressed="${mobileViewMode === 'table'}">${toggleIcon}<span>${toggleLabel}</span></button>
+        </div>`;
       const menu = document.getElementById('monthSelectorMenu');
       document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
       menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
@@ -1850,6 +2267,13 @@
         });
       });
       document.getElementById('overallBtn').addEventListener('click', () => switchSheet('總排名'));
+      const viewToggle = document.getElementById('mobileViewToggle');
+      if (viewToggle) viewToggle.addEventListener('click', () => {
+        mobileFeedNavigationToken += 1;
+        mobileViewMode = mobileViewMode === 'feed' ? 'table' : 'feed';
+        renderControls();
+        renderContent();
+      });
     }
 
     function getGameColumnIndex(sheetName, gameId) {
@@ -1859,12 +2283,307 @@
     }
 
     function switchSheet(sheetName) {
+      mobileFeedNavigationToken += 1;
       activeSheetName = sheetName;
       currentSortCol = 'total';
       sortAscending = false;
       focusedDateCol = null;
+      if (sheetName === '總排名') {
+        mobileFeedGameId = null;
+      } else {
+        const selectedMonth = Number(globalData[sheetName]?.[0]?.[0]) || 0;
+        const target = getMobileFeedGames().find(game => game.monthNo === selectedMonth);
+        mobileFeedGameId = target ? target.id : null;
+      }
       renderControls();
-      renderTableLayout();
+      renderContent();
+    }
+
+    function renderContent() {
+      const mobile = window.matchMedia('(max-width: 600px)').matches;
+      if (mobile && mobileViewMode === 'feed') {
+        if (activeSheetName === '總排名') renderMobileOverallCards();
+        else renderMobileFeed();
+      } else {
+        renderTableLayout();
+      }
+    }
+
+    function getMobileFeedGames() {
+      const chronological = rawGames
+        .filter(game => !game.is_deleted && game.year === activeYear)
+        .slice()
+        .sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+      const dayRounds = new Map();
+      chronological.forEach(game => {
+        const count = (dayRounds.get(game.played_on) || 0) + 1;
+        dayRounds.set(game.played_on, count);
+        game.mobileRoundNo = count;
+      });
+      return chronological.reverse();
+    }
+
+    function getMobileFeedContext() {
+      const games = getMobileFeedGames();
+      if (!games.length) return { games, index: -1, current: null, newer: null, older: null };
+      let index = games.findIndex(game => Number(game.id) === Number(mobileFeedGameId));
+      if (index < 0) {
+        const selectedMonth = activeSheetName === '總排名' ? 0 : (Number(globalData[activeSheetName]?.[0]?.[0]) || 0);
+        index = selectedMonth ? games.findIndex(game => game.monthNo === selectedMonth) : 0;
+        if (index < 0) index = 0;
+        mobileFeedGameId = games[index].id;
+      }
+      return {
+        games,
+        index,
+        current: games[index],
+        newer: games[index - 1] || games[index],
+        older: games[index + 1] || games[index]
+      };
+    }
+
+    function mobileGameCardHtml(game, listIndex) {
+      if (!game) return '';
+      const [year, month, day] = String(game.played_on).split('-').map(Number);
+      const dateLabel = `${year}年${month}月${day}日`;
+      const results = [...(game.results || [])].sort((a, b) => b.score - a.score || String(a.playerName).localeCompare(String(b.playerName), 'zh-Hant'));
+      const isLatest = listIndex === 0;
+      const resultHtml = results.length ? results.map((result, index) => {
+        const score = Number(result.score) || 0;
+        const scoreClass = score > 0 ? 'win' : (score < 0 ? 'lose' : '');
+        const scoreText = score > 0 ? `+${score}` : String(score);
+        return `<div class="mobile-score-row">
+          <span class="mobile-score-rank">${index + 1}</span>
+          <button type="button" class="mobile-player-name-btn" data-player="${escapeHtml(result.playerName)}">${escapeHtml(result.playerName)}</button>
+          <span class="mobile-game-score ${scoreClass}">${scoreText}</span>
+        </div>`;
+      }).join('') : '<div class="mobile-game-empty">這場牌局尚未有分數紀錄</div>';
+      return `<article class="mobile-game-card">
+        <header class="mobile-game-card-header">
+          <div class="mobile-game-heading">
+            <h2 class="mobile-game-date">${dateLabel}</h2>
+            <div class="mobile-game-subtitle">${monthName(game.monthNo)} · 第 ${game.mobileRoundNo} 場</div>
+          </div>
+          <span class="mobile-game-badge ${isLatest ? 'latest' : ''}">${isLatest ? '最新' : '牌局紀錄'}</span>
+        </header>
+        <div class="mobile-game-results">${resultHtml}</div>
+      </article>`;
+    }
+
+    function bindMobilePlayerLinks(root = document) {
+      root.querySelectorAll('.mobile-player-name-btn').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          openPlayerProfile(button.dataset.player);
+        });
+      });
+    }
+
+    function renderMobileFeed() {
+      const content = document.getElementById('contentArea');
+      const context = getMobileFeedContext();
+      if (!context.current) {
+        content.innerHTML = '<div class="mobile-card-empty">暫時沒有牌局紀錄。</div>';
+        return;
+      }
+      const prevIndex = context.index > 0 ? context.index - 1 : context.index;
+      const nextIndex = context.index < context.games.length - 1 ? context.index + 1 : context.index;
+      content.innerHTML = `<div class="mobile-feed-wrap">
+        <div class="mobile-feed-viewport" aria-label="牌局卡片，可左右滑動瀏覽">
+          <div class="mobile-feed-track">
+            <div class="mobile-feed-slide">${mobileGameCardHtml(context.games[prevIndex], prevIndex)}</div>
+            <div class="mobile-feed-slide">${mobileGameCardHtml(context.current, context.index)}</div>
+            <div class="mobile-feed-slide">${mobileGameCardHtml(context.games[nextIndex], nextIndex)}</div>
+          </div>
+        </div>
+        <div class="mobile-feed-footer">
+          <div class="mobile-feed-progress">第 ${context.index + 1} / ${context.games.length} 筆牌局 · 由新到舊</div>
+          <div class="mobile-feed-nav">
+            <button type="button" class="mobile-feed-nav-btn" id="mobileFeedNewer" ${context.index === 0 ? 'disabled' : ''}>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>較新一場</span>
+            </button>
+            <button type="button" class="mobile-feed-nav-btn" id="mobileFeedOlder" ${context.index === context.games.length - 1 ? 'disabled' : ''}>
+              <span>較舊一場</span><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+        ${mobileMonthRankingHtml()}
+      </div>`;
+      bindMobilePlayerLinks(content);
+      document.getElementById('mobileFeedNewer')?.addEventListener('click', () => animateMobileFeedStep(-1));
+      document.getElementById('mobileFeedOlder')?.addEventListener('click', () => animateMobileFeedStep(1));
+      attachMobileFeedGesture();
+    }
+
+    function mobileMonthRankingHtml() {
+      const monthNo = Number(globalData[activeSheetName]?.[0]?.[0]) || 0;
+      if (!monthNo) return '';
+      const totals = new Map();
+      rawGames.filter(game => !game.is_deleted && game.year === activeYear && game.monthNo === monthNo).forEach(game => {
+        (game.results || []).forEach(result => {
+          const name = String(result.playerName);
+          const entry = totals.get(name) || { name, total: 0 };
+          entry.total += Number(result.score) || 0;
+          totals.set(name, entry);
+        });
+      });
+      const entries = [...totals.values()].sort((a, b) => b.total - a.total || a.name.localeCompare(b.name, 'zh-Hant'));
+      let rank = 1, displayRank = 1, previousTotal = null;
+      entries.forEach(entry => {
+        if (entry.total !== previousTotal) { displayRank = rank; previousTotal = entry.total; }
+        entry.rank = displayRank;
+        rank++;
+      });
+      const rows = entries.length ? entries.map(entry => {
+        const rankClass = entry.rank <= 3 ? `rank-${entry.rank}` : '';
+        const scoreClass = entry.total > 0 ? 'win' : (entry.total < 0 ? 'lose' : '');
+        const scoreText = entry.total > 0 ? `+${entry.total}` : String(entry.total);
+        return `<div class="mobile-month-rank-row">
+          <span class="mobile-month-rank-number ${rankClass}">${entry.rank}</span>
+          <button type="button" class="mobile-player-name-btn" data-player="${escapeHtml(entry.name)}">${escapeHtml(entry.name)}</button>
+          <span class="mobile-month-rank-score ${scoreClass}">${scoreText}</span>
+        </div>`;
+      }).join('') : '<div class="mobile-game-empty">本月暫時沒有分數紀錄</div>';
+      return `<section class="mobile-month-ranking">
+        <div class="mobile-month-ranking-header">
+          <h3 class="mobile-month-ranking-title">本月排名</h3>
+          <span class="mobile-month-ranking-subtitle">${escapeHtml(monthName(monthNo))}</span>
+        </div>
+        <div class="mobile-month-rank-list">${rows}</div>
+      </section>`;
+    }
+
+    function renderMobileOverallCards() {
+      const data = globalData['總排名'];
+      if (!data || data.length <= 2) {
+        document.getElementById('contentArea').innerHTML = '<div class="mobile-card-empty">暫時沒有排名資料。</div>';
+        return;
+      }
+      const hasPlayed = new Set();
+      rawGames.filter(game => !game.is_deleted && game.year === activeYear).forEach(game => {
+        (game.results || []).forEach(result => hasPlayed.add(result.playerName));
+      });
+      const entries = data.slice(2).filter(row => row[0]).map(row => ({
+        name: String(row[0]),
+        total: Number(row[1]) || 0,
+        hasPart: hasPlayed.has(String(row[0]))
+      })).sort((a, b) => Number(b.hasPart) - Number(a.hasPart) || b.total - a.total || a.name.localeCompare(b.name, 'zh-Hant'));
+      let rank = 1, displayRank = 1, previousTotal = null;
+      entries.forEach((entry, index) => {
+        if (!entry.hasPart) { entry.rank = '-'; return; }
+        if (entry.total !== previousTotal) { displayRank = rank; previousTotal = entry.total; }
+        entry.rank = displayRank;
+        rank++;
+      });
+      const html = entries.map(entry => {
+        const rankClass = entry.rank <= 3 ? `rank-${entry.rank}` : '';
+        const rankText = entry.hasPart ? entry.rank : '-';
+        const scoreClass = entry.total > 0 ? 'win' : (entry.total < 0 ? 'lose' : '');
+        const scoreText = entry.total > 0 ? `+${entry.total}` : String(entry.total);
+        return `<article class="mobile-overall-row">
+          <span class="mobile-overall-rank ${rankClass}">${rankText}</span>
+          <button type="button" class="mobile-player-name-btn mobile-overall-name" data-player="${escapeHtml(entry.name)}">${escapeHtml(entry.name)}</button>
+          <span class="mobile-overall-score ${scoreClass}">${scoreText}</span>
+        </article>`;
+      }).join('');
+      document.getElementById('contentArea').innerHTML = `<div class="mobile-overall-list">${html}</div>`;
+      bindMobilePlayerLinks(document.getElementById('contentArea'));
+    }
+
+    function animateMobileFeedStep(direction) {
+      const context = getMobileFeedContext();
+      const targetIndex = context.index + direction;
+      const track = document.querySelector('.mobile-feed-track');
+      if (!track) return;
+      if (targetIndex < 0 || targetIndex >= context.games.length) {
+        track.classList.remove('dragging');
+        track.style.transition = 'transform 180ms ease-out';
+        track.style.transform = 'translate3d(-33.333333%,0,0)';
+        return;
+      }
+      mobileFeedNavigationToken += 1;
+      const token = mobileFeedNavigationToken;
+      track.classList.remove('dragging');
+      track.style.transition = 'transform 220ms cubic-bezier(.22,.61,.36,1)';
+      track.style.transform = direction > 0 ? 'translate3d(-66.666667%,0,0)' : 'translate3d(0,0,0)';
+      let finished = false;
+      let fallbackTimer = null;
+      const finish = () => {
+        if (finished || token !== mobileFeedNavigationToken) return;
+        finished = true;
+        track.removeEventListener('transitionend', onTransitionEnd);
+        if (fallbackTimer) clearTimeout(fallbackTimer);
+        const targetGame = context.games[targetIndex];
+        mobileFeedGameId = targetGame.id;
+        activeSheetName = monthName(targetGame.monthNo);
+        currentSortCol = 'total';
+        sortAscending = false;
+        focusedDateCol = null;
+        renderControls();
+        renderContent();
+      };
+      const onTransitionEnd = event => {
+        if (event.target === track && event.propertyName === 'transform') finish();
+      };
+      track.addEventListener('transitionend', onTransitionEnd);
+      fallbackTimer = setTimeout(finish, 280);
+    }
+
+    function attachMobileFeedGesture() {
+      const viewport = document.querySelector('.mobile-feed-viewport');
+      const track = viewport?.querySelector('.mobile-feed-track');
+      if (!viewport || !track) return;
+      let gesture = null;
+      viewport.addEventListener('pointerdown', event => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        gesture = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          deltaX: 0,
+          axis: null
+        };
+      });
+      viewport.addEventListener('pointermove', event => {
+        if (!gesture || gesture.pointerId !== event.pointerId) return;
+        const deltaX = event.clientX - gesture.startX;
+        const deltaY = event.clientY - gesture.startY;
+        if (!gesture.axis && (Math.abs(deltaX) > 7 || Math.abs(deltaY) > 7)) {
+          gesture.axis = Math.abs(deltaX) > Math.abs(deltaY) * 1.15 ? 'x' : 'y';
+          if (gesture.axis === 'x') {
+            track.classList.add('dragging');
+            try { viewport.setPointerCapture(event.pointerId); } catch (_) {}
+          }
+        }
+        if (gesture.axis === 'x') {
+          gesture.deltaX = deltaX;
+          if (event.cancelable) event.preventDefault();
+          track.style.transition = 'none';
+          const dragOffset = Math.abs(deltaX);
+          const dragOperator = deltaX < 0 ? '-' : '+';
+          track.style.transform = `translate3d(calc(-33.333333% ${dragOperator} ${dragOffset}px),0,0)`;
+        }
+      }, { passive: false });
+      const finishGesture = (event, cancelled = false) => {
+        if (!gesture || (event && gesture.pointerId !== event.pointerId)) return;
+        const currentGesture = gesture;
+        gesture = null;
+        if (currentGesture.axis !== 'x') return;
+        const width = Math.max(1, viewport.clientWidth);
+        const threshold = Math.max(42, width * 0.17);
+        if (!cancelled && currentGesture.deltaX <= -threshold) {
+          animateMobileFeedStep(1);
+        } else if (!cancelled && currentGesture.deltaX >= threshold) {
+          animateMobileFeedStep(-1);
+        } else {
+          track.style.transition = 'transform 180ms ease-out';
+          track.style.transform = 'translate3d(-33.333333%,0,0)';
+          track.classList.remove('dragging');
+        }
+      };
+      viewport.addEventListener('pointerup', event => finishGesture(event, false));
+      viewport.addEventListener('pointercancel', event => finishGesture(event, true));
+      viewport.addEventListener('lostpointercapture', event => finishGesture(event, true));
     }
 
     window.handleSort = function(colIndex) {
@@ -1923,12 +2642,12 @@
       }).join('');
       document.getElementById('contentArea').innerHTML = `
         <div class="table-scroll-shell">
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-left">
+          <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-right">
+          <button type="button" class="table-scroll-arrow table-scroll-arrow-right" aria-label="向右移動" title="向右移動">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -2583,7 +3302,9 @@
           : `<select class="player-select" data-row-select="${row.id}"><option value="" disabled ${row.playerId ? "" : "selected"}>玩家</option>${rawPlayers.map(p=>`<option value="${p.id}" ${String(p.id)===String(row.playerId)?'selected':''} ${selectedElsewhere.has(String(p.id))?'disabled':''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
         const scoreAbs = row.score === '' ? '' : Math.abs(Number(row.score)||0);
         const scoreClass = row.score==='' ? 'zero' : (row.sign<0 && Number(scoreAbs)>0 ? 'lose' : (row.sign>0 && Number(scoreAbs)>0 ? 'win' : 'zero'));
-        const removeHtml = row.removable ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>` : '';
+        const removeHtml = row.removable
+          ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>`
+          : `<span class="player-remove-placeholder" aria-hidden="true"></span>`;
         return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign<0?'negative':'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign<0?'−':'+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
       }).join('');
 
@@ -2772,8 +3493,9 @@
           focusedDateCol=getGameColumnIndex(activeSheetName,targetGame.id);
           currentSortCol=focusedDateCol!==null?focusedDateCol:'total';
           sortAscending=false;
+          mobileFeedGameId = targetGame.id;
           renderControls();
-          renderTableLayout();
+          renderContent();
         }
         closeAddGameDrawer(true);
         showToast(toastMessage);
@@ -2854,6 +3576,16 @@
 
     document.getElementById('profileBackdrop').addEventListener('click',closePlayerProfile);
     document.getElementById('profileClose').addEventListener('click',closePlayerProfile);
+
+    let lastMobileLayout = window.matchMedia('(max-width: 600px)').matches;
+    window.addEventListener('resize', () => {
+      const nowMobile = window.matchMedia('(max-width: 600px)').matches;
+      if (nowMobile !== lastMobileLayout) {
+        lastMobileLayout = nowMobile;
+        renderControls();
+        if (Object.keys(globalData).length) renderContent();
+      }
+    });
 
     setupProfileDrag();
     setupAddGameDrawer();
