@@ -2348,7 +2348,7 @@
       if (!session) {
         pendingAdminAction = action || 'add';
         sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
-        openAdminAuthModal('新增及修改牌局只限白名單 Google 帳戶使用。');
+        openAdminAuthModal('新增及修改牌局只限管理員使用。');
         return false;
       }
 
@@ -2357,7 +2357,7 @@
       isAdminUser = false;
       pendingAdminAction = '';
       sessionStorage.removeItem('lamnei_admin_pending');
-      openAdminAuthModal('此 Google 帳戶不在白名單內，不能使用新增／修改牌局功能。');
+      openAdminAuthModal('新增及修改牌局只限管理員使用。');
       return false;
     }
 
@@ -2368,7 +2368,7 @@
         closeAddGameDrawer(true);
         pendingAdminAction = addGameMode === 'edit' ? 'edit' : 'add';
         sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
-        openAdminAuthModal('請重新使用白名單 Google 帳戶登入。');
+        openAdminAuthModal('請重新使用管理員 Google 帳戶登入。');
         return false;
       }
       return true;
@@ -2420,8 +2420,8 @@
               await supabaseClient.auth.signOut();
               adminSession = null;
               isAdminUser = false;
-              openAdminAuthModal('此 Google 帳戶不在白名單內，不能使用新增／修改牌局功能。');
-              setAdminAuthError('請使用白名單內的 Google 帳戶。');
+              openAdminAuthModal('新增及修改牌局只限管理員使用。');
+              setAdminAuthError('請重新使用管理員 Google 帳戶登入。');
             }
             return;
           }
