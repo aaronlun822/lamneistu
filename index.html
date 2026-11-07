@@ -2808,6 +2808,90 @@
       return chosen;
     }
 
+    function collectNewGameRpcResults() {
+
+    const results = [];
+
+    for (const row of addGameRows) {
+
+        // 確認分數已輸入
+
+        if (
+            row.score === '' ||
+            row.score === null ||
+            row.score === undefined
+        ) {
+            throw new Error('請輸入所有分數。');
+        }
+
+        const score = Number(row.score);
+
+        // PostgreSQL integer 範圍驗證
+
+        if (
+            !Number.isSafeInteger(score) ||
+            score < -2147483648 ||
+            score > 2147483647
+        ) {
+            throw new Error('分數必須為有效整數。');
+        }
+
+
+        // 現有玩家
+
+        if (row.mode === 'select') {
+
+            if (!row.playerId) {
+                throw new Error('請選擇所有玩家。');
+            }
+
+            const playerId = Number(row.playerId);
+
+            if (
+                !Number.isSafeInteger(playerId) ||
+                playerId <= 0
+            ) {
+                throw new Error('玩家資料不正確。');
+            }
+
+            results.push({
+                player_id: playerId,
+                score: score
+            });
+
+        }
+
+
+        // 新玩家
+
+        else {
+
+            const playerName = String(
+                row.playerName || ''
+            ).trim();
+
+            if (!playerName) {
+                throw new Error('請輸入玩家名稱。');
+            }
+
+            results.push({
+                player_name: playerName,
+                score: score
+            });
+
+        }
+
+    }
+
+
+    if (results.length < 4 || results.length > 8) {
+        throw new Error('玩家人數必須為 4 至 8 人。');
+    }
+
+    return results;
+
+}
+
     async function resolveCurrentRows() {
       const selected = collectCurrentGameResults();
       const chosen=[];
@@ -2833,24 +2917,68 @@
       saveBtn.textContent=addGameMode==='edit'?'儲存中…':'新增中…';
       try {
         const chosen=await resolveCurrentRows();
-        let targetGameId=null;
-        if(addGameMode==='edit') {
-          if(!editingGameId) throw new Error('請選擇要修改的牌局。');
-          targetGameId=Number(editingGameId);
-          const { error } = await supabaseClient.rpc('admin_update_game', {
+let targetGameId = null;
+
+
+// ==========================================
+// 修改牌局：保留原有處理
+// ==========================================
+
+if (addGameMode === 'edit') {
+
+    const chosen = await resolveCurrentRows();
+
+    if (!editingGameId) {
+        throw new Error('請選擇要修改的牌局。');
+    }
+
+    targetGameId = Number(editingGameId);
+
+    const { error } = await supabaseClient.rpc(
+        'admin_update_game',
+        {
             p_game_id: targetGameId,
             p_played_on: date,
-            p_results: chosen.map(x=>({player_id:x.playerId,score:x.score}))
-          });
-          if(error) throw error;
-        } else {
-          const {data:game,error:gameError}=await supabaseClient.from('games').insert({played_on:date}).select('id,played_on').single();
-          if(gameError) throw gameError;
-          targetGameId=Number(game.id);
-          const payload=chosen.map(x=>({game_id:targetGameId,player_id:x.playerId,score:x.score}));
-          const {data:resultRows,error:resultError}=await supabaseClient.from('game_result').insert(payload).select('id,game_id,player_id,score');
-          if(resultError) throw resultError;
+            p_results: chosen.map(x => ({
+                player_id: x.playerId,
+                score: x.score
+            }))
         }
+    );
+
+    if (error) throw error;
+
+}
+
+
+// ==========================================
+// 新增牌局：使用新的 PostgreSQL RPC
+// ==========================================
+
+else {
+
+    const payload = collectNewGameRpcResults();
+
+    const { data, error } = await supabaseClient.rpc(
+        'admin_create_game',
+        {
+            p_played_on: date,
+            p_results: payload
+        }
+    );
+
+    if (error) throw error;
+
+    targetGameId = Number(data);
+
+    if (
+        !Number.isSafeInteger(targetGameId) ||
+        targetGameId <= 0
+    ) {
+        throw new Error('資料庫沒有返回有效的牌局編號。');
+    }
+
+}
 
         const toastMessage=addGameMode==='edit'?'已修改牌局':'已新增牌局';
         await fetchData();
