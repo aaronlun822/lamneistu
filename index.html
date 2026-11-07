@@ -875,9 +875,7 @@
       .duel-grid { grid-template-columns: 1fr 1fr; }
       .profile-name { font-size: 21px; }
     }
-  
 
-    /* 新增牌局入口：純圖示按鈕，移除瀏覽器預設黑框 */
     #addGameTrigger {
       appearance: none;
       -webkit-appearance: none;
@@ -895,7 +893,6 @@
       box-shadow: none;
     }
 
-    /* ===== Add Game Modal ===== */
     .add-game-backdrop {
       position: fixed;
       inset: 0;
@@ -1129,11 +1126,7 @@
       height: 100%;
       display: block;
     }
-    /*
-     * 讓真正的 <input type="date"> 覆蓋整個日期區域並直接接收點擊。
-     * 不再依賴 showPicker()/input.click()，讓桌面與手機都由瀏覽器/OS
-     * 自己開啟原生日期選擇器。
-     */
+    
     .date-picker-native {
       position: absolute;
       inset: 0;
@@ -1159,7 +1152,7 @@
     .add-game-drawer.show .date-picker-native {
       pointer-events: auto;
     }
-    /* Chrome / Edge 桌面版：把原生日曆圖示的可點擊區域擴大至整個日期選擇器 */
+    
     .date-picker-native::-webkit-calendar-picker-indicator {
       position: absolute;
       inset: 0;
@@ -1177,7 +1170,7 @@
       gap: 8px;
       align-items: center;
     }
-    /* 必填的預設玩家列也預留刪除欄，所有列的名稱與分數欄保持對齊 */
+    
     .player-entry.required {
       grid-template-columns: minmax(0, 1fr) 54px minmax(105px, 0.72fr) 34px;
     }
@@ -1317,7 +1310,10 @@
     }
     .add-game-toast.show { opacity: 1; transform: translate(-50%,0); }
 
-    /* ===== Google Admin Auth ===== */
+    .add-game-toast.warning {
+    background: rgba(138, 91, 0, 0.96);
+}
+
     .admin-auth-backdrop {
       position: fixed;
       inset: 0;
@@ -1489,7 +1485,6 @@
     </div>
   </div>
 
-
   <div id="addGameBackdrop" class="add-game-backdrop" aria-hidden="true"></div>
   <aside id="addGameDrawer" class="add-game-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="addGameTitle">
     <div class="add-game-header">
@@ -1551,7 +1546,6 @@
   </aside>
   <div id="addGameToast" class="add-game-toast" role="status" aria-live="polite">已新增牌局</div>
 
-  <!-- Google 管理權限登入 -->
   <div id="adminAuthBackdrop" class="admin-auth-backdrop" aria-hidden="true"></div>
   <section id="adminAuthSheet" class="admin-auth-sheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="adminAuthTitle">
     <div class="admin-auth-card">
@@ -1591,107 +1585,100 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://zpmoqpysipsexsgrlknr.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ihlscYsOOZJ2_GM4QdrQRA_MtMk1xNf';
-
-    const supabaseClient = (
-      window.supabase &&
-      SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
-      SUPABASE_PUBLISHABLE_KEY !== 'YOUR_SUPABASE_PUBLISHABLE_KEY'
-    ) ? window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          flowType: 'pkce'
-        }
-      }
-    ) : null;
-
-    let globalData = {};
-    let gameColumnMeta = {};
-    let allSheetNames = [];
-    let activeSheetName = '';
-    let currentSortCol = 'total';
-    let sortAscending = false;
-    let focusedDateCol = null;
-    let profileRequestToken = 0;
-    let rawPlayers = [];
-    let rawGames = [];
-    let rawResults = [];
-    let activeYear = new Date().getFullYear();
-    let tableScrollArrowResizeHandler = null;
-
-    let addGameRows = [];
-    let addGameRowSeq = 0;
-    let addGameSaving = false;
-    let addGameToastTimer = null;
-    let addGameMode = 'add';
-    let editingGameId = null;
-    let editingGameIsDeleted = false;
-
-    let adminSession = null;
-    let isAdminUser = false;
-    let adminAuthChecking = false;
-    let adminAuthCheckPromise = null;
-    let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
-
-    function escapeHtml(value) {
-      return String(value ?? '')
+  <script>const SUPABASE_URL = 'https://zpmoqpysipsexsgrlknr.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ihlscYsOOZJ2_GM4QdrQRA_MtMk1xNf';
+const supabaseClient = (window.supabase &&
+    SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
+    SUPABASE_PUBLISHABLE_KEY !== 'YOUR_SUPABASE_PUBLISHABLE_KEY') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce'
+    }
+}) : null;
+let globalData = {};
+let gameColumnMeta = {};
+let allSheetNames = [];
+let activeSheetName = '';
+let currentSortCol = 'total';
+let sortAscending = false;
+let focusedDateCol = null;
+let profileRequestToken = 0;
+let rawPlayers = [];
+let rawGames = [];
+let rawResults = [];
+let activeYear = new Date().getFullYear();
+let tableScrollArrowResizeHandler = null;
+let addGameRows = [];
+let addGameRowSeq = 0;
+let addGameSaving = false;
+let addGameToastTimer = null;
+let addGameMode = 'add';
+let editingGameId = null;
+let editingGameIsDeleted = false;
+let adminSession = null;
+let isAdminUser = false;
+let adminAuthChecking = false;
+let adminAuthCheckPromise = null;
+let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
+function escapeHtml(value) {
+    return String(value ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
-    }
-
-    function monthName(monthNo) {
-      const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return `${names[monthNo - 1]} ${activeYear}`;
-    }
-
-    function formatDateDisplay(dateStr) {
-      if (!dateStr) return '選擇日期';
-      const [y, m, d] = String(dateStr).split('-').map(Number);
-      if (!y || !m || !d) return dateStr;
-      return `${y}/${String(m).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
-    }
-
-    function showAddGameError(message) {
-      const el = document.getElementById('addGameError');
-      if (!el) return;
-      el.textContent = message || '';
-      el.classList.toggle('show', !!message);
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('addGameToast');
-      if (!toast) return;
-      toast.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(addGameToastTimer);
-      addGameToastTimer = setTimeout(() => toast.classList.remove('show'), 1700);
-    }
-
-    function renderSkeleton(isFirstLoad = true) {
-      if (isFirstLoad) {
+}
+function monthName(monthNo) {
+    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${names[monthNo - 1]} ${activeYear}`;
+}
+function formatDateDisplay(dateStr) {
+    if (!dateStr)
+        return '選擇日期';
+    const [y, m, d] = String(dateStr).split('-').map(Number);
+    if (!y || !m || !d)
+        return dateStr;
+    return `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+}
+function showAddGameError(message) {
+    const el = document.getElementById('addGameError');
+    if (!el)
+        return;
+    el.textContent = message || '';
+    el.classList.toggle('show', !!message);
+}
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('addGameToast');
+    if (!toast)
+        return;
+    toast.textContent = message;
+    toast.classList.toggle('warning', type === 'warning');
+    toast.classList.add('show');
+    clearTimeout(addGameToastTimer);
+    const duration = type === 'warning'
+        ? 4000
+        : 1700;
+    addGameToastTimer = setTimeout(() => {
+        toast.classList.remove('show', 'warning');
+    }, duration);
+}
+function renderSkeleton(isFirstLoad = true) {
+    if (isFirstLoad) {
         document.getElementById('controlsArea').innerHTML = `
           <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
           <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>`;
-      }
-      const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
-      const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
-      const emptyRows = Array(8).fill(`<tr>
+    }
+    const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
+    const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
+    const emptyRows = Array(8).fill(`<tr>
         <td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>
         <td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>
         <td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>
         ${emptyTd}
       </tr>`).join('');
-      document.getElementById('contentArea').innerHTML = `
+    document.getElementById('contentArea').innerHTML = `
         <div class="table-scroll-shell">
           <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -1715,208 +1702,238 @@
           </table>
           </div>
         </div>`;
-    }
-
-    async function selectAllRows(table, columns, orderColumns) {
-      const pageSize = 1000;
-      const rows = [];
-      let from = 0;
-      while (true) {
+}
+async function selectAllRows(table, columns, orderColumns) {
+    const pageSize = 1000;
+    const rows = [];
+    let from = 0;
+    while (true) {
         let query = supabaseClient.from(table).select(columns);
         const orders = Array.isArray(orderColumns) ? orderColumns : [orderColumns];
         orders.forEach(column => { query = query.order(column, { ascending: true }); });
         const { data, error } = await query.range(from, from + pageSize - 1);
-        if (error) throw error;
+        if (error)
+            throw error;
         rows.push(...(data || []));
-        if (!data || data.length < pageSize) break;
+        if (!data || data.length < pageSize)
+            break;
         from += pageSize;
-      }
-      return rows;
     }
-
-    function aggregateDatabaseData() {
-      const playerById = new Map(rawPlayers.map(p => [Number(p.id), p]));
-      const games = (rawGames || []).map(g => {
+    return rows;
+}
+function aggregateDatabaseData() {
+    const playerById = new Map(rawPlayers.map(p => [Number(p.id), p]));
+    const games = (rawGames || []).map(g => {
         const date = String(g.played_on);
         const dt = new Date(`${date}T00:00:00`);
         return {
-          id: Number(g.id),
-          played_on: date,
-          is_deleted: Boolean(g.is_deleted),
-          monthNo: dt.getMonth() + 1,
-          year: dt.getFullYear(),
-          day: dt.getDate(),
-          results: []
+            id: Number(g.id),
+            played_on: date,
+            is_deleted: Boolean(g.is_deleted),
+            monthNo: dt.getMonth() + 1,
+            year: dt.getFullYear(),
+            day: dt.getDate(),
+            results: []
         };
-      }).sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
-
-      const gamesById = new Map(games.map(g => [g.id, g]));
-      (rawResults || []).forEach(r => {
+    }).sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+    const gamesById = new Map(games.map(g => [g.id, g]));
+    (rawResults || []).forEach(r => {
         const game = gamesById.get(Number(r.game_id));
         const player = playerById.get(Number(r.player_id));
-        if (!game || !player) return;
+        if (!game || !player)
+            return;
         game.results.push({
-          playerId: Number(r.player_id),
-          playerName: player.name,
-          score: Number(r.score) || 0
+            playerId: Number(r.player_id),
+            playerName: player.name,
+            score: Number(r.score) || 0
         });
-      });
-
-      rawGames = games;
-      const displayGames = games.filter(g => !g.is_deleted);
-      activeYear = displayGames.length ? displayGames[displayGames.length - 1].year : new Date().getFullYear();
-
-      const currentYearGames = displayGames.filter(g => g.year === activeYear);
-      const monthNos = [...new Set(currentYearGames.map(g => g.monthNo).filter(Boolean))].sort((a,b) => a-b);
-      allSheetNames = monthNos.map(monthName);
-      allSheetNames.push('總排名');
-
-      globalData = {};
-      gameColumnMeta = {};
-      monthNos.forEach(monthNo => {
+    });
+    rawGames = games;
+    const displayGames = games.filter(g => !g.is_deleted);
+    activeYear = displayGames.length ? displayGames[displayGames.length - 1].year : new Date().getFullYear();
+    const currentYearGames = displayGames.filter(g => g.year === activeYear);
+    const monthNos = [...new Set(currentYearGames.map(g => g.monthNo).filter(Boolean))].sort((a, b) => a - b);
+    allSheetNames = monthNos.map(monthName);
+    allSheetNames.push('總排名');
+    globalData = {};
+    gameColumnMeta = {};
+    monthNos.forEach(monthNo => {
         const monthGames = displayGames
-          .filter(g => g.monthNo === monthNo && g.year === activeYear)
-          .sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+            .filter(g => g.monthNo === monthNo && g.year === activeYear)
+            .sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
         const columns = monthGames.map(g => g.id);
         const MIN_DATE_COLUMNS = 9;
         const dateColumnCount = Math.max(MIN_DATE_COLUMNS, monthGames.length);
         const paddedDates = monthGames.map(g => g.day);
-        while (paddedDates.length < dateColumnCount) paddedDates.push('');
+        while (paddedDates.length < dateColumnCount)
+            paddedDates.push('');
         const header = [null, 'Total', ...paddedDates];
         const rows = rawPlayers.map(p => {
-          const gameScores = monthGames.map(game => {
-            const result = game.results.find(r => r.playerId === Number(p.id));
-            return result ? result.score : '';
-          });
-          while (gameScores.length < dateColumnCount) gameScores.push('');
-          const total = gameScores.reduce((sum,v) => sum + (Number(v) || 0), 0);
-          return [p.name, total, ...gameScores];
+            const gameScores = monthGames.map(game => {
+                const result = game.results.find(r => r.playerId === Number(p.id));
+                return result ? result.score : '';
+            });
+            while (gameScores.length < dateColumnCount)
+                gameScores.push('');
+            const total = gameScores.reduce((sum, v) => sum + (Number(v) || 0), 0);
+            return [p.name, total, ...gameScores];
         });
         const sheetName = monthName(monthNo);
         gameColumnMeta[sheetName] = columns.map((gameId, index) => ({
-          gameId,
-          colIndex: index + 2,
-          playedOn: monthGames[index].played_on,
-          day: monthGames[index].day
+            gameId,
+            colIndex: index + 2,
+            playedOn: monthGames[index].played_on,
+            day: monthGames[index].day
         }));
         globalData[sheetName] = [[String(monthNo)], header, ...rows];
-      });
-
-      const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
-      const overallRows = rawPlayers.map(p => {
-        const monthlyTotals = monthNos.map(monthNo =>
-          displayGames
+    });
+    const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
+    const overallRows = rawPlayers.map(p => {
+        const monthlyTotals = monthNos.map(monthNo => displayGames
             .filter(g => g.monthNo === monthNo && g.year === activeYear)
             .flatMap(g => g.results)
             .filter(r => r.playerId === Number(p.id))
-            .reduce((sum,r) => sum + r.score, 0)
-        );
-        const total = monthlyTotals.reduce((sum,v) => sum + v, 0);
+            .reduce((sum, r) => sum + r.score, 0));
+        const total = monthlyTotals.reduce((sum, v) => sum + v, 0);
         return [p.name, total, ...monthlyTotals.map(v => v === 0 ? '' : v)];
-      });
-      globalData['總排名'] = [[String(activeYear)], overallHeader, ...overallRows];
-
-      const availableMonths = allSheetNames.filter(n => n !== '總排名');
-      if (!activeSheetName || !allSheetNames.includes(activeSheetName)) {
+    });
+    globalData['總排名'] = [[String(activeYear)], overallHeader, ...overallRows];
+    const availableMonths = allSheetNames.filter(n => n !== '總排名');
+    if (!activeSheetName || !allSheetNames.includes(activeSheetName)) {
         activeSheetName = availableMonths.length ? availableMonths[availableMonths.length - 1] : '總排名';
-      }
     }
-
-    // PGRST303（JWT issued at future）屬於可短暫恢復的讀取錯誤，只對資料載入做有限次數重試。
-    const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
-
-    function isPgrst303Error(err) {
-      const code = String(err?.code || '').toUpperCase();
-      const message = [err?.message, err?.details, err?.hint, err?.error_description]
+}
+const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
+function isPgrst303Error(err) {
+    const code = String(err?.code || '').toUpperCase();
+    const message = [err?.message, err?.details, err?.hint, err?.error_description]
         .filter(Boolean)
         .map(String)
         .join(' ');
-      return code === 'PGRST303' || /PGRST303|JWT\s+issued\s+at\s+future/i.test(message);
-    }
-
-    function waitForRetry(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    function showPgrst303RetryStatus(retryNumber, maxRetries) {
-      const contentArea = document.getElementById('contentArea');
-      if (!contentArea) return;
-
-      let status = document.getElementById('pgrst303RetryStatus');
-      if (!status) {
+    return code === 'PGRST303' || /PGRST303|JWT\s+issued\s+at\s+future/i.test(message);
+}
+function waitForRetry(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+function showPgrst303RetryStatus(retryNumber, maxRetries) {
+    const contentArea = document.getElementById('contentArea');
+    if (!contentArea)
+        return;
+    let status = document.getElementById('pgrst303RetryStatus');
+    if (!status) {
         status = document.createElement('div');
         status.id = 'pgrst303RetryStatus';
         status.setAttribute('role', 'status');
         status.setAttribute('aria-live', 'polite');
         status.style.cssText = 'margin: 0 0 12px; padding: 10px 14px; border-radius: 12px; background: #FFF7E6; color: #8A5B00; font-size: 13px; line-height: 1.45; text-align: center;';
         contentArea.prepend(status);
-      }
-      status.textContent = `資料載入遇到暫時性 JWT 時間驗證問題，正在自動重試（${retryNumber}/${maxRetries}）…`;
     }
-
-    async function loadSupabaseTablesWithPgrst303Retry(onRetry) {
-      let retryCount = 0;
-      while (true) {
+    status.textContent = `資料載入遇到暫時性 JWT 時間驗證問題，正在自動重試（${retryNumber}/${maxRetries}）…`;
+}
+async function loadSupabaseTablesWithPgrst303Retry(onRetry) {
+    let retryCount = 0;
+    while (true) {
         try {
-          return await Promise.all([
-            selectAllRows('players', 'id,name,is_active', ['id']),
-            selectAllRows('games', 'id,played_on,is_deleted', ['played_on','id']),
-            selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
-          ]);
-        } catch (err) {
-          // 不重試權限、網絡或其他資料錯誤，只針對指定的 PGRST303。
-          if (!isPgrst303Error(err) || retryCount >= PGRST303_RETRY_DELAYS_MS.length) {
-            throw err;
-          }
-          retryCount += 1;
-          if (typeof onRetry === 'function') onRetry(retryCount, PGRST303_RETRY_DELAYS_MS.length);
-          await waitForRetry(PGRST303_RETRY_DELAYS_MS[retryCount - 1]);
+            return await Promise.all([
+                selectAllRows('players', 'id,name,is_active', ['id']),
+                selectAllRows('games', 'id,played_on,is_deleted', ['played_on', 'id']),
+                selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
+            ]);
         }
-      }
+        catch (err) {
+            if (!isPgrst303Error(err) || retryCount >= PGRST303_RETRY_DELAYS_MS.length) {
+                throw err;
+            }
+            retryCount += 1;
+            if (typeof onRetry === 'function')
+                onRetry(retryCount, PGRST303_RETRY_DELAYS_MS.length);
+            await waitForRetry(PGRST303_RETRY_DELAYS_MS[retryCount - 1]);
+        }
     }
-
-    async function fetchData() {
-      renderSkeleton(true);
-      if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
+}
+async function fetchData() {
+    renderSkeleton(true);
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL' ||
+        SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
         document.getElementById('controlsArea').innerHTML = '';
-        document.getElementById('contentArea').innerHTML = `<div class="error-container"><div>請先填入 Supabase 設定。</div></div>`;
-        return;
-      }
-
-      let automaticPgrst303Retries = 0;
-      try {
+        document.getElementById('contentArea').innerHTML = `
+            <div class="error-container">
+                <div>請先填入 Supabase 設定。</div>
+            </div>
+        `;
+        return false;
+    }
+    let automaticPgrst303Retries = 0;
+    try {
         const [players, games, results] = await loadSupabaseTablesWithPgrst303Retry((retryNumber, maxRetries) => {
-          automaticPgrst303Retries = retryNumber;
-          showPgrst303RetryStatus(retryNumber, maxRetries);
+            automaticPgrst303Retries = retryNumber;
+            showPgrst303RetryStatus(retryNumber, maxRetries);
         });
-        rawPlayers = (players || []).filter(p => p && p.name).map(p => ({ ...p, id: Number(p.id) }));
+        rawPlayers = (players || [])
+            .filter(p => p && p.name)
+            .map(p => ({
+            ...p,
+            id: Number(p.id)
+        }));
         rawGames = games || [];
         rawResults = results || [];
-        if (!rawPlayers.length) throw new Error('players 表沒有資料。');
+        if (!rawPlayers.length) {
+            throw new Error('players 表沒有資料。');
+        }
         aggregateDatabaseData();
         renderControls();
         renderContent();
-      } catch (err) {
+        const retryStatus = document.getElementById('pgrst303RetryStatus');
+        if (retryStatus) {
+            retryStatus.remove();
+        }
+        return true;
+    }
+    catch (err) {
         document.getElementById('controlsArea').innerHTML = '';
         const errorText = escapeHtml(err.message || String(err));
         const pgrst303Message = isPgrst303Error(err) && automaticPgrst303Retries > 0
-          ? `Supabase 載入失敗：JWT 時間驗證錯誤，已自動重試 ${automaticPgrst303Retries} 次仍未成功。請稍後再試。<div style="margin-top:8px;font-size:12px;opacity:.8;">詳細錯誤：${errorText}</div>`
-          : `Supabase 載入失敗：${errorText}`;
-        document.getElementById('contentArea').innerHTML = `
-          <div class="error-container">
-            <div>${pgrst303Message}</div>
-            <button class="retry-btn" onclick="fetchData()">重新載入</button>
-          </div>`;
-      }
-    }
+            ? `
+                    Supabase 載入失敗：JWT 時間驗證錯誤，
+                    已自動重試 ${automaticPgrst303Retries} 次仍未成功。
+                    請稍後再試。
 
-    function renderControls() {
-      const isOverall = activeSheetName === '總排名';
-      const menuHtml = allSheetNames.filter(n => n !== '總排名').map(m => `
+                    <div style="
+                        margin-top:8px;
+                        font-size:12px;
+                        opacity:.8;
+                    ">
+                        詳細錯誤：${errorText}
+                    </div>
+                `
+            : `Supabase 載入失敗：${errorText}`;
+        document.getElementById('contentArea').innerHTML = `
+
+            <div class="error-container">
+
+                <div>${pgrst303Message}</div>
+
+                <button
+                    class="retry-btn"
+                    type="button"
+                    onclick="fetchData()"
+                >
+                    重新載入
+                </button>
+
+            </div>
+
+        `;
+        return false;
+    }
+}
+function renderControls() {
+    const isOverall = activeSheetName === '總排名';
+    const menuHtml = allSheetNames.filter(n => n !== '總排名').map(m => `
         <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${escapeHtml(m)}">
           <span>${escapeHtml(m)}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
         </div>`).join('');
-      document.getElementById('controlsArea').innerHTML = `
+    document.getElementById('controlsArea').innerHTML = `
         <div class="custom-dropdown-container" id="dropdownContainer">
           <button id="monthSelectorTrigger" class="month-dropdown">${escapeHtml(activeSheetName)}</button>
           <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
@@ -1924,92 +1941,87 @@
         <div class="control-actions">
           <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
         </div>`;
-      const menu = document.getElementById('monthSelectorMenu');
-      document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
-      menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
+    const menu = document.getElementById('monthSelectorMenu');
+    document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
+    menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
         item.addEventListener('click', e => {
-          menu.classList.remove('show');
-          switchSheet(e.currentTarget.getAttribute('data-value'));
+            menu.classList.remove('show');
+            switchSheet(e.currentTarget.getAttribute('data-value'));
         });
-      });
-      document.getElementById('overallBtn').addEventListener('click', () => switchSheet('總排名'));
-    }
-
-    function getGameColumnIndex(sheetName, gameId) {
-      const meta = gameColumnMeta[sheetName] || [];
-      const found = meta.find(item => Number(item.gameId) === Number(gameId));
-      return found ? found.colIndex : null;
-    }
-
-    function switchSheet(sheetName) {
-      activeSheetName = sheetName;
-      currentSortCol = 'total';
-      sortAscending = false;
-      focusedDateCol = null;
-      renderControls();
-      renderContent();
-    }
-
-    function renderContent() {
-      // 固定使用表格模式；手機版不再切換至牌局卡片。
-      renderTableLayout();
-    }
-
-    window.handleSort = function(colIndex) {
-      const prevFocused = focusedDateCol;
-      sortAscending = currentSortCol === colIndex ? !sortAscending : false;
-      currentSortCol = colIndex;
-      focusedDateCol = colIndex === 'total' ? null : colIndex;
-      (prevFocused !== focusedDateCol || focusedDateCol !== null) ? renderTableLayout() : (updateHeaderIcons(), renderTableBody());
-    };
-
-    const getSortIcon = (col) => currentSortCol === col ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>') : '';
-
-    function updateHeaderIcons() {
-      document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+    });
+    document.getElementById('overallBtn').addEventListener('click', () => switchSheet('總排名'));
+}
+function getGameColumnIndex(sheetName, gameId) {
+    const meta = gameColumnMeta[sheetName] || [];
+    const found = meta.find(item => Number(item.gameId) === Number(gameId));
+    return found ? found.colIndex : null;
+}
+function switchSheet(sheetName) {
+    activeSheetName = sheetName;
+    currentSortCol = 'total';
+    sortAscending = false;
+    focusedDateCol = null;
+    renderControls();
+    renderContent();
+}
+function renderContent() {
+    renderTableLayout();
+}
+window.handleSort = function (colIndex) {
+    const prevFocused = focusedDateCol;
+    sortAscending = currentSortCol === colIndex ? !sortAscending : false;
+    currentSortCol = colIndex;
+    focusedDateCol = colIndex === 'total' ? null : colIndex;
+    (prevFocused !== focusedDateCol || focusedDateCol !== null) ? renderTableLayout() : (updateHeaderIcons(), renderTableBody());
+};
+const getSortIcon = (col) => currentSortCol === col ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>') : '';
+function updateHeaderIcons() {
+    document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
         const col = th.dataset.col;
         const icon = th.querySelector('.sort-icon-container');
-        if (icon) icon.innerHTML = getSortIcon(col === 'total' ? 'total' : parseInt(col, 10));
-      });
-    }
-
-    function getColLimit(data) { return Array.isArray(data?.[1]) ? data[1].length : 2; }
-
-    function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
-      let cols = Array.from({ length: Math.max(0, colLimit - 2) }, (_, i) => i + 2).filter(c => c !== focusedCol);
-      if (!isOverall) {
-        cols.sort((a,b) => {
-          const vA = data[1][a], vB = data[1][b];
-          const hasA = vA !== '' && vA !== undefined, hasB = vB !== '' && vB !== undefined;
-          if (hasA && !hasB) return -1;
-          if (!hasA && hasB) return 1;
-          if (hasA && hasB && !isNaN(Number(vA)) && !isNaN(Number(vB))) return Number(vB) - Number(vA);
-          return 0;
+        if (icon)
+            icon.innerHTML = getSortIcon(col === 'total' ? 'total' : parseInt(col, 10));
+    });
+}
+function getColLimit(data) { return Array.isArray(data?.[1]) ? data[1].length : 2; }
+function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
+    let cols = Array.from({ length: Math.max(0, colLimit - 2) }, (_, i) => i + 2).filter(c => c !== focusedCol);
+    if (!isOverall) {
+        cols.sort((a, b) => {
+            const vA = data[1][a], vB = data[1][b];
+            const hasA = vA !== '' && vA !== undefined, hasB = vB !== '' && vB !== undefined;
+            if (hasA && !hasB)
+                return -1;
+            if (!hasA && hasB)
+                return 1;
+            if (hasA && hasB && !isNaN(Number(vA)) && !isNaN(Number(vB)))
+                return Number(vB) - Number(vA);
+            return 0;
         });
-      }
-      return focusedCol !== null ? [focusedCol, ...cols] : cols;
     }
-
-    function formatHeaderDate(dayVal, data) {
-      if (isNaN(Number(dayVal))) return dayVal;
-      const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth()+1);
-      const base = `${dayVal}/${monthStr}`;
-      return base;
-    }
-
-    function renderTableLayout() {
-      const data = globalData[activeSheetName];
-      if (!data) return;
-      const isOverall = activeSheetName === '總排名';
-      const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
-      const headHtml = colIndices.map(j => {
+    return focusedCol !== null ? [focusedCol, ...cols] : cols;
+}
+function formatHeaderDate(dayVal, data) {
+    if (isNaN(Number(dayVal)))
+        return dayVal;
+    const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth() + 1);
+    const base = `${dayVal}/${monthStr}`;
+    return base;
+}
+function renderTableLayout() {
+    const data = globalData[activeSheetName];
+    if (!data)
+        return;
+    const isOverall = activeSheetName === '總排名';
+    const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
+    const headHtml = colIndices.map(j => {
         const val = data[1][j];
         const isF = j === focusedDateCol;
         const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data)) : '-';
         const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
         return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
-      }).join('');
-      document.getElementById('contentArea').innerHTML = `
+    }).join('');
+    document.getElementById('contentArea').innerHTML = `
         <div class="table-scroll-shell">
           <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -2032,438 +2044,466 @@
           </table>
           </div>
         </div>`;
-      renderTableBody();
-      setupTableScrollArrows();
-      document.querySelectorAll('#tableHead th[data-col]').forEach(th => th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col,10))));
-    }
-
-    function setupTableScrollArrows() {
-      const shell = document.querySelector('.table-scroll-shell');
-      const container = shell?.querySelector('.table-container');
-      if (!shell || !container) return;
-      const left = shell.querySelector('.table-scroll-arrow-left');
-      const right = shell.querySelector('.table-scroll-arrow-right');
-      if (!left || !right) return;
-
-      if (tableScrollArrowResizeHandler) {
+    renderTableBody();
+    setupTableScrollArrows();
+    document.querySelectorAll('#tableHead th[data-col]').forEach(th => th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col, 10))));
+}
+function setupTableScrollArrows() {
+    const shell = document.querySelector('.table-scroll-shell');
+    const container = shell?.querySelector('.table-container');
+    if (!shell || !container)
+        return;
+    const left = shell.querySelector('.table-scroll-arrow-left');
+    const right = shell.querySelector('.table-scroll-arrow-right');
+    if (!left || !right)
+        return;
+    if (tableScrollArrowResizeHandler) {
         window.removeEventListener('resize', tableScrollArrowResizeHandler);
-      }
-
-      const refresh = () => {
+    }
+    const refresh = () => {
         const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
         const scrollable = maxScroll > 2;
         shell.classList.toggle('has-horizontal-scroll', scrollable);
         left.classList.toggle('can-move', scrollable && container.scrollLeft > 2);
         right.classList.toggle('can-move', scrollable && container.scrollLeft < maxScroll - 2);
-      };
-
-      const move = direction => {
+    };
+    const move = direction => {
         const amount = Math.max(240, Math.floor(container.clientWidth * 0.7));
         container.scrollBy({ left: direction * amount, behavior: 'smooth' });
-      };
-
-      left.addEventListener('click', () => move(-1));
-      right.addEventListener('click', () => move(1));
-      container.addEventListener('scroll', refresh, { passive: true });
-      tableScrollArrowResizeHandler = refresh;
-      window.addEventListener('resize', tableScrollArrowResizeHandler);
-      requestAnimationFrame(() => requestAnimationFrame(refresh));
-    }
-
-    function renderTableBody() {
-      const tbody = document.getElementById('tableBody');
-      if (!tbody) return;
-      const data = globalData[activeSheetName];
-      const isOverall = activeSheetName === '總排名';
-      const colLimit = getColLimit(data);
-      const colIndices = getValidColumnsOrder(data,colLimit,focusedDateCol,isOverall);
-      let rows = data.slice(2).filter(r => r[0]).map(row => {
-        const hasPart = row.slice(2,colLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
+    };
+    left.addEventListener('click', () => move(-1));
+    right.addEventListener('click', () => move(1));
+    container.addEventListener('scroll', refresh, { passive: true });
+    tableScrollArrowResizeHandler = refresh;
+    window.addEventListener('resize', tableScrollArrowResizeHandler);
+    requestAnimationFrame(() => requestAnimationFrame(refresh));
+}
+function renderTableBody() {
+    const tbody = document.getElementById('tableBody');
+    if (!tbody)
+        return;
+    const data = globalData[activeSheetName];
+    const isOverall = activeSheetName === '總排名';
+    const colLimit = getColLimit(data);
+    const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
+    let rows = data.slice(2).filter(r => r[0]).map(row => {
+        const hasPart = row.slice(2, colLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
         return { data: row, total: Number(row[1]) || 0, hasPart };
-      }).sort((a,b) => b.hasPart - a.hasPart || b.total - a.total);
-      let rank = 1, displayRank = 1, prev = null;
-      rows.forEach(r => {
-        if (!r.hasPart) { r.rank='-'; return; }
-        if (r.total !== prev) { displayRank = rank; prev = r.total; }
-        r.rank=displayRank; rank++;
-      });
-      rows.sort((a,b) => {
-        if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
+    }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total);
+    let rank = 1, displayRank = 1, prev = null;
+    rows.forEach(r => {
+        if (!r.hasPart) {
+            r.rank = '-';
+            return;
+        }
+        if (r.total !== prev) {
+            displayRank = rank;
+            prev = r.total;
+        }
+        r.rank = displayRank;
+        rank++;
+    });
+    rows.sort((a, b) => {
+        if (!a.hasPart || !b.hasPart)
+            return b.hasPart - a.hasPart;
         const vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
         const vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
-        return sortAscending ? vA-vB : vB-vA;
-      });
-      tbody.innerHTML = rows.map(r => {
+        return sortAscending ? vA - vB : vB - vA;
+    });
+    tbody.innerHTML = rows.map(r => {
         const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
         const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
         const colsHtml = colIndices.map(j => {
-          const v = r.data[j];
-          const hasV = v !== '' && v !== undefined;
-          const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
-          return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
+            const v = r.data[j];
+            const hasV = v !== '' && v !== undefined;
+            const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
+            return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
         }).join('');
         const playerName = String(r.data[0] ?? '');
         return `<tr><td>${rHtml}</td><td><button type="button" class="player-name-btn" data-player="${escapeHtml(playerName)}">${escapeHtml(playerName)}</button></td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
-      }).join('');
-      tbody.querySelectorAll('.player-name-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); openPlayerProfile(btn.dataset.player); }));
-    }
-
-    function addOutcome(record, score) {
-      record.games++;
-      record.total += score;
-      record.scores.push(score);
-      if (score > 0) record.wins++;
-      else if (score < 0) record.losses++;
-      else record.draws++;
-    }
-
-    function collectPlayerStats(playerName) {
-      const stats = {
+    }).join('');
+    tbody.querySelectorAll('.player-name-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); openPlayerProfile(btn.dataset.player); }));
+}
+function addOutcome(record, score) {
+    record.games++;
+    record.total += score;
+    record.scores.push(score);
+    if (score > 0)
+        record.wins++;
+    else if (score < 0)
+        record.losses++;
+    else
+        record.draws++;
+}
+function collectPlayerStats(playerName) {
+    const stats = {
         name: playerName,
-        month: {games:0,wins:0,losses:0,draws:0,total:0,scores:[],sheetName:''},
-        year: {games:0,wins:0,losses:0,draws:0,total:0,scores:[]},
+        month: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [], sheetName: '' },
+        year: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [] },
         recent: [],
         opponents: {}
-      };
-      let profileMonthName = activeSheetName;
-      if (profileMonthName === '總排名') {
+    };
+    let profileMonthName = activeSheetName;
+    if (profileMonthName === '總排名') {
         profileMonthName = allSheetNames.filter(n => n !== '總排名').slice(-1)[0] || '';
-      }
-      stats.profileMonthName = profileMonthName;
-      stats.month.sheetName = profileMonthName;
-      const targetMonthNo = profileMonthName ? Number(globalData[profileMonthName]?.[0]?.[0]) || 0 : 0;
-
-      [...rawGames].filter(game => !game.is_deleted && game.year === activeYear).sort((a,b) => a.played_on.localeCompare(b.played_on) || a.id-b.id).forEach(game => {
+    }
+    stats.profileMonthName = profileMonthName;
+    stats.month.sheetName = profileMonthName;
+    const targetMonthNo = profileMonthName ? Number(globalData[profileMonthName]?.[0]?.[0]) || 0 : 0;
+    [...rawGames].filter(game => !game.is_deleted && game.year === activeYear).sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id).forEach(game => {
         const mine = game.results.find(r => r.playerName === playerName);
-        if (!mine) return;
-        addOutcome(stats.year,mine.score);
-        if (game.monthNo === targetMonthNo && game.year === activeYear) addOutcome(stats.month,mine.score);
-        stats.recent.push({score:mine.score,sheet:monthName(game.monthNo),monthNo:game.monthNo,date:`${game.day}/${game.monthNo}`,gameId:game.id});
+        if (!mine)
+            return;
+        addOutcome(stats.year, mine.score);
+        if (game.monthNo === targetMonthNo && game.year === activeYear)
+            addOutcome(stats.month, mine.score);
+        stats.recent.push({ score: mine.score, sheet: monthName(game.monthNo), monthNo: game.monthNo, date: `${game.day}/${game.monthNo}`, gameId: game.id });
         game.results.forEach(op => {
-          if (op.playerName === playerName) return;
-          if (!stats.opponents[op.playerName]) stats.opponents[op.playerName] = {name:op.playerName,games:0,wins:0,losses:0,draws:0};
-          const duel = stats.opponents[op.playerName];
-          duel.games++;
-          if (mine.score > 0 && op.score < 0) duel.wins++;
-          else if (mine.score < 0 && op.score > 0) duel.losses++;
-          else duel.draws++;
+            if (op.playerName === playerName)
+                return;
+            if (!stats.opponents[op.playerName])
+                stats.opponents[op.playerName] = { name: op.playerName, games: 0, wins: 0, losses: 0, draws: 0 };
+            const duel = stats.opponents[op.playerName];
+            duel.games++;
+            if (mine.score > 0 && op.score < 0)
+                duel.wins++;
+            else if (mine.score < 0 && op.score > 0)
+                duel.losses++;
+            else
+                duel.draws++;
         });
-      });
-      stats.recent = stats.recent.slice(-10).reverse();
-      return stats;
-    }
-
-    function pct(wins,games) { return games ? `${((wins/games)*100).toFixed(1)}%` : '-'; }
-    function rateClass(wins,games) { if (!games) return ''; const rate=wins/games; return rate>.5?'win':(rate<.5?'lose':''); }
-    function signedNumber(n) { if (!Number.isFinite(n)) return '-'; return n>0?`+${n}`:String(n); }
-    function signedClass(n) { if (!Number.isFinite(n)||n===0) return ''; return n>0?'win':'lose'; }
-
-    function getOverallRank(playerName) {
-      const rows = rawPlayers.map(p => {
+    });
+    stats.recent = stats.recent.slice(-10).reverse();
+    return stats;
+}
+function pct(wins, games) { return games ? `${((wins / games) * 100).toFixed(1)}%` : '-'; }
+function rateClass(wins, games) { if (!games)
+    return ''; const rate = wins / games; return rate > .5 ? 'win' : (rate < .5 ? 'lose' : ''); }
+function signedNumber(n) { if (!Number.isFinite(n))
+    return '-'; return n > 0 ? `+${n}` : String(n); }
+function signedClass(n) { if (!Number.isFinite(n) || n === 0)
+    return ''; return n > 0 ? 'win' : 'lose'; }
+function getOverallRank(playerName) {
+    const rows = rawPlayers.map(p => {
         const displayGames = rawGames.filter(g => !g.is_deleted);
-        const total = displayGames.flatMap(g=>g.results).filter(r=>r.playerId===Number(p.id)).reduce((sum,r)=>sum+r.score,0);
-        const hasPart = displayGames.some(g=>g.results.some(r=>r.playerId===Number(p.id)));
-        return {name:p.name,total,hasPart};
-      }).sort((a,b)=>b.hasPart-a.hasPart || b.total-a.total || a.name.localeCompare(b.name));
-      let rank=1, displayRank=1, prev=null;
-      for (const r of rows) {
-        if (!r.hasPart) continue;
-        if (r.total !== prev) { displayRank=rank; prev=r.total; }
-        if (r.name===playerName) return displayRank;
+        const total = displayGames.flatMap(g => g.results).filter(r => r.playerId === Number(p.id)).reduce((sum, r) => sum + r.score, 0);
+        const hasPart = displayGames.some(g => g.results.some(r => r.playerId === Number(p.id)));
+        return { name: p.name, total, hasPart };
+    }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total || a.name.localeCompare(b.name));
+    let rank = 1, displayRank = 1, prev = null;
+    for (const r of rows) {
+        if (!r.hasPart)
+            continue;
+        if (r.total !== prev) {
+            displayRank = rank;
+            prev = r.total;
+        }
+        if (r.name === playerName)
+            return displayRank;
         rank++;
-      }
-      return null;
     }
-
-    function renderProfileStats(stats) {
-      const m=stats.month, y=stats.year;
-      const recentHtml = stats.recent.length ? stats.recent.map(g=>{
-        const cls=g.score>0?'win':(g.score<0?'lose':'zero');
-        return `<div class="recent-game ${cls}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}">${g.score>0?'+':''}${g.score}</div>`;
-      }).join('') : `<div class="profile-empty">暫無參加紀錄</div>`;
-      const opponents=Object.values(stats.opponents).filter(o=>o.games>=3).map(o=>({...o,rate:o.games?o.wins/o.games:0})).sort((a,b)=>a.rate-b.rate||b.games-a.games||a.name.localeCompare(b.name));
-      const potentialNemesis=opponents[0]||null, nemesis=(potentialNemesis&&potentialNemesis.rate<.5)?potentialNemesis:null;
-      const potentialBenefactor=opponents.length?opponents[opponents.length-1]:null, benefactor=(potentialBenefactor&&potentialBenefactor.rate>.5)?potentialBenefactor:null;
-      let best=null,worst=null;
-      if(y.scores.length){ const max=Math.max(...y.scores), min=Math.min(...y.scores); best=max>0?max:null; worst=min<0?min:null; }
-      const monthWinRateClass=rateClass(m.wins,m.games), yearWinRateClass=rateClass(y.wins,y.games);
-      const monthAvg=m.games?Number((m.total/m.games).toFixed(1)):null, yearAvg=y.games?Number((y.total/y.games).toFixed(1)):null;
-      document.getElementById('profileBody').innerHTML=`
-        <section class="profile-section"><div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName||'-')}</div><div class="profile-grid">
+    return null;
+}
+function renderProfileStats(stats) {
+    const m = stats.month, y = stats.year;
+    const recentHtml = stats.recent.length ? stats.recent.map(g => {
+        const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
+        return `<div class="recent-game ${cls}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}">${g.score > 0 ? '+' : ''}${g.score}</div>`;
+    }).join('') : `<div class="profile-empty">暫無參加紀錄</div>`;
+    const opponents = Object.values(stats.opponents).filter(o => o.games >= 3).map(o => ({ ...o, rate: o.games ? o.wins / o.games : 0 })).sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
+    const potentialNemesis = opponents[0] || null, nemesis = (potentialNemesis && potentialNemesis.rate < .5) ? potentialNemesis : null;
+    const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null, benefactor = (potentialBenefactor && potentialBenefactor.rate > .5) ? potentialBenefactor : null;
+    let best = null, worst = null;
+    if (y.scores.length) {
+        const max = Math.max(...y.scores), min = Math.min(...y.scores);
+        best = max > 0 ? max : null;
+        worst = min < 0 ? min : null;
+    }
+    const monthWinRateClass = rateClass(m.wins, m.games), yearWinRateClass = rateClass(y.wins, y.games);
+    const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null, yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
+    document.getElementById('profileBody').innerHTML = `
+        <section class="profile-section"><div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div><div class="profile-grid">
           <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins,m.games)}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg===null?'-':signedNumber(monthAvg)}</div></div>
+          <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
+          <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
           <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
         </div></section>
         <section class="profile-section"><div class="profile-section-title">${activeYear} 年度戰績</div><div class="profile-grid">
           <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins,y.games)}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg===null?'-':signedNumber(yearAvg)}</div></div>
+          <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins, y.games)}</div></div>
+          <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
           <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
         </div></section>
-        <section class="profile-section"><div class="profile-section-title">近期 10 場</div><div class="recent-grid">${recentHtml}</div><div class="recent-meta"><span>最新 → 最舊</span><span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g=>g.score>0).length,stats.recent.length)}</span></div></section>
+        <section class="profile-section"><div class="profile-section-title">近期 10 場</div><div class="recent-grid">${recentHtml}</div><div class="recent-meta"><span>最新 → 最舊</span><span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span></div></section>
         <section class="profile-section"><div class="profile-section-title">魔鬼 / 天使</div><div class="duel-grid">
-          <div class="duel-card"><div class="duel-label">😈 魔鬼</div>${nemesis?`<div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins,nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div>`:`<div class="duel-opponent" style="text-align:center;margin-top:12px;color:#8E8E93;font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
-          <div class="duel-card"><div class="duel-label">😇 天使</div>${benefactor?`<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins,benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>`:`<div class="duel-opponent" style="text-align:center;margin-top:12px;color:#8E8E93;font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
+          <div class="duel-card"><div class="duel-label">😈 魔鬼</div>${nemesis ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:#8E8E93;font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
+          <div class="duel-card"><div class="duel-label">😇 天使</div>${benefactor ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:#8E8E93;font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
         </div></section>
-        <section class="profile-section"><div class="profile-section-title">最佳 / 最差單局</div><div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best===null?'-':signedNumber(best)}</div></div><div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst===null?'-':signedNumber(worst)}</div></div></section>`;
-    }
-
-    function openPlayerProfile(playerName) {
-      const token=++profileRequestToken;
-      document.getElementById('profileName').textContent=playerName;
-      document.getElementById('profileSubtitle').textContent=`整理 ${activeYear} 戰績…`;
-      document.getElementById('profileBody').innerHTML=`<section class="profile-section"><div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div><div class="profile-grid">${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}</div></section>`;
-      document.body.classList.add('profile-open');
-      document.getElementById('profileBackdrop').classList.add('show');
-      document.getElementById('profileSheet').classList.add('show');
-      document.getElementById('profileBackdrop').setAttribute('aria-hidden','false');
-      document.getElementById('profileSheet').setAttribute('aria-hidden','false');
-      if (token!==profileRequestToken) return;
-      const stats=collectPlayerStats(playerName);
-      const currentRank=getOverallRank(playerName);
-      document.getElementById('profileSubtitle').textContent=`${stats.profileMonthName||activeYear+' 年'} · ${currentRank?`目前總排名 ${currentRank}`:'玩家資料'}`;
-      renderProfileStats(stats);
-    }
-
-    function closePlayerProfile() {
-      profileRequestToken++;
-      document.body.classList.remove('profile-open');
-      const backdrop=document.getElementById('profileBackdrop'), sheet=document.getElementById('profileSheet');
-      backdrop.classList.remove('show'); sheet.classList.remove('show');
-      backdrop.setAttribute('aria-hidden','true'); sheet.setAttribute('aria-hidden','true');
-    }
-
-    let profileDrag={active:false,startY:0,currentY:0};
-    function setupProfileDrag() {
-      const sheet=document.getElementById('profileSheet'), body=document.getElementById('profileBody');
-      sheet.addEventListener('touchstart',e=>{
-        if(window.innerWidth>600 || !sheet.classList.contains('show') || e.touches.length!==1) return;
-        const touch=e.touches[0], target=e.target, fromHeader=!!target.closest('.profile-header')||!!target.closest('.profile-grabber'), bodyAtTop=body.scrollTop<=0;
-        if(!fromHeader && !bodyAtTop) return;
-        profileDrag.active=true; profileDrag.startY=touch.clientY; profileDrag.currentY=touch.clientY; sheet.classList.add('dragging');
-      },{passive:true});
-      sheet.addEventListener('touchmove',e=>{
-        if(!profileDrag.active || window.innerWidth>600 || e.touches.length!==1) return;
-        const y=e.touches[0].clientY, delta=Math.max(0,y-profileDrag.startY); profileDrag.currentY=y;
-        if(delta>0) sheet.style.transform=`translateY(${delta}px)`;
-      },{passive:true});
-      sheet.addEventListener('touchend',()=>{
-        if(!profileDrag.active) return;
-        const delta=Math.max(0,profileDrag.currentY-profileDrag.startY); profileDrag.active=false; sheet.classList.remove('dragging'); sheet.style.transform=''; if(delta>=120) closePlayerProfile();
-      },{passive:true});
-      sheet.addEventListener('touchcancel',()=>{profileDrag.active=false;sheet.classList.remove('dragging');sheet.style.transform='';},{passive:true});
-    }
-
-    function getAdminRedirectUrl() {
-      return window.location.origin + window.location.pathname;
-    }
-
-    function setAdminAuthError(message) {
-      const el = document.getElementById('adminAuthError');
-      if (!el) return;
-      el.textContent = message || '';
-    }
-
-    function openAdminAuthModal(message = '') {
-      const backdrop = document.getElementById('adminAuthBackdrop');
-      const sheet = document.getElementById('adminAuthSheet');
-      const msg = document.getElementById('adminAuthMessage');
-      if (!backdrop || !sheet) return;
-      if (msg && message) msg.textContent = message;
-      setAdminAuthError('');
-      backdrop.classList.add('show');
-      sheet.classList.add('show');
-      backdrop.setAttribute('aria-hidden', 'false');
-      sheet.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('profile-open');
-    }
-
-    function closeAdminAuthModal(clearPending = true) {
-      const backdrop = document.getElementById('adminAuthBackdrop');
-      const sheet = document.getElementById('adminAuthSheet');
-      if (!backdrop || !sheet) return;
-      backdrop.classList.remove('show');
-      sheet.classList.remove('show');
-      backdrop.setAttribute('aria-hidden', 'true');
-      sheet.setAttribute('aria-hidden', 'true');
-      if (clearPending) {
+        <section class="profile-section"><div class="profile-section-title">最佳 / 最差單局</div><div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div><div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div></section>`;
+}
+function openPlayerProfile(playerName) {
+    const token = ++profileRequestToken;
+    document.getElementById('profileName').textContent = playerName;
+    document.getElementById('profileSubtitle').textContent = `整理 ${activeYear} 戰績…`;
+    document.getElementById('profileBody').innerHTML = `<section class="profile-section"><div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div><div class="profile-grid">${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}</div></section>`;
+    document.body.classList.add('profile-open');
+    document.getElementById('profileBackdrop').classList.add('show');
+    document.getElementById('profileSheet').classList.add('show');
+    document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'false');
+    document.getElementById('profileSheet').setAttribute('aria-hidden', 'false');
+    if (token !== profileRequestToken)
+        return;
+    const stats = collectPlayerStats(playerName);
+    const currentRank = getOverallRank(playerName);
+    document.getElementById('profileSubtitle').textContent = `${stats.profileMonthName || activeYear + ' 年'} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
+    renderProfileStats(stats);
+}
+function closePlayerProfile() {
+    profileRequestToken++;
+    document.body.classList.remove('profile-open');
+    const backdrop = document.getElementById('profileBackdrop'), sheet = document.getElementById('profileSheet');
+    backdrop.classList.remove('show');
+    sheet.classList.remove('show');
+    backdrop.setAttribute('aria-hidden', 'true');
+    sheet.setAttribute('aria-hidden', 'true');
+}
+let profileDrag = { active: false, startY: 0, currentY: 0 };
+function setupProfileDrag() {
+    const sheet = document.getElementById('profileSheet'), body = document.getElementById('profileBody');
+    sheet.addEventListener('touchstart', e => {
+        if (window.innerWidth > 600 || !sheet.classList.contains('show') || e.touches.length !== 1)
+            return;
+        const touch = e.touches[0], target = e.target, fromHeader = !!target.closest('.profile-header') || !!target.closest('.profile-grabber'), bodyAtTop = body.scrollTop <= 0;
+        if (!fromHeader && !bodyAtTop)
+            return;
+        profileDrag.active = true;
+        profileDrag.startY = touch.clientY;
+        profileDrag.currentY = touch.clientY;
+        sheet.classList.add('dragging');
+    }, { passive: true });
+    sheet.addEventListener('touchmove', e => {
+        if (!profileDrag.active || window.innerWidth > 600 || e.touches.length !== 1)
+            return;
+        const y = e.touches[0].clientY, delta = Math.max(0, y - profileDrag.startY);
+        profileDrag.currentY = y;
+        if (delta > 0)
+            sheet.style.transform = `translateY(${delta}px)`;
+    }, { passive: true });
+    sheet.addEventListener('touchend', () => {
+        if (!profileDrag.active)
+            return;
+        const delta = Math.max(0, profileDrag.currentY - profileDrag.startY);
+        profileDrag.active = false;
+        sheet.classList.remove('dragging');
+        sheet.style.transform = '';
+        if (delta >= 120)
+            closePlayerProfile();
+    }, { passive: true });
+    sheet.addEventListener('touchcancel', () => { profileDrag.active = false; sheet.classList.remove('dragging'); sheet.style.transform = ''; }, { passive: true });
+}
+function getAdminRedirectUrl() {
+    return window.location.origin + window.location.pathname;
+}
+function setAdminAuthError(message) {
+    const el = document.getElementById('adminAuthError');
+    if (!el)
+        return;
+    el.textContent = message || '';
+}
+function openAdminAuthModal(message = '') {
+    const backdrop = document.getElementById('adminAuthBackdrop');
+    const sheet = document.getElementById('adminAuthSheet');
+    const msg = document.getElementById('adminAuthMessage');
+    if (!backdrop || !sheet)
+        return;
+    if (msg && message)
+        msg.textContent = message;
+    setAdminAuthError('');
+    backdrop.classList.add('show');
+    sheet.classList.add('show');
+    backdrop.setAttribute('aria-hidden', 'false');
+    sheet.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('profile-open');
+}
+function closeAdminAuthModal(clearPending = true) {
+    const backdrop = document.getElementById('adminAuthBackdrop');
+    const sheet = document.getElementById('adminAuthSheet');
+    if (!backdrop || !sheet)
+        return;
+    backdrop.classList.remove('show');
+    sheet.classList.remove('show');
+    backdrop.setAttribute('aria-hidden', 'true');
+    sheet.setAttribute('aria-hidden', 'true');
+    if (clearPending) {
         pendingAdminAction = '';
         sessionStorage.removeItem('lamnei_admin_pending');
-      }
-      if (!document.getElementById('addGameDrawer').classList.contains('show') && !document.getElementById('profileSheet').classList.contains('show')) {
+    }
+    if (!document.getElementById('addGameDrawer').classList.contains('show') && !document.getElementById('profileSheet').classList.contains('show')) {
         document.body.classList.remove('profile-open');
-      }
     }
-
-    async function refreshAdminAccess() {
-      if (!supabaseClient) return false;
-
-      if (adminAuthCheckPromise) return adminAuthCheckPromise;
-
-      adminAuthChecking = true;
-      adminAuthCheckPromise = (async () => {
+}
+async function refreshAdminAccess() {
+    if (!supabaseClient)
+        return false;
+    if (adminAuthCheckPromise)
+        return adminAuthCheckPromise;
+    adminAuthChecking = true;
+    adminAuthCheckPromise = (async () => {
         try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          adminSession = session || null;
-          if (!session) {
-            isAdminUser = false;
-            return false;
-          }
-
-          const { data, error } = await supabaseClient.rpc('is_current_user_admin');
-          if (error) throw error;
-          isAdminUser = data === true;
-          return isAdminUser;
-        } catch (err) {
-          isAdminUser = false;
-          console.error('Admin auth check failed:', err);
-          return false;
-        } finally {
-          adminAuthChecking = false;
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            adminSession = session || null;
+            if (!session) {
+                isAdminUser = false;
+                return false;
+            }
+            const { data, error } = await supabaseClient.rpc('is_current_user_admin');
+            if (error)
+                throw error;
+            isAdminUser = data === true;
+            return isAdminUser;
         }
-      })();
-
-      try {
+        catch (err) {
+            isAdminUser = false;
+            console.error('Admin auth check failed:', err);
+            return false;
+        }
+        finally {
+            adminAuthChecking = false;
+        }
+    })();
+    try {
         return await adminAuthCheckPromise;
-      } finally {
-        adminAuthCheckPromise = null;
-      }
     }
-
-    async function requireAdminAccess(action, onSuccess) {
-      if (!supabaseClient) {
+    finally {
+        adminAuthCheckPromise = null;
+    }
+}
+async function requireAdminAccess(action, onSuccess) {
+    if (!supabaseClient) {
         openAdminAuthModal('目前無法連線至登入服務。');
         setAdminAuthError('Supabase 尚未初始化。');
         return false;
-      }
-
-      const allowed = await refreshAdminAccess();
-      if (allowed) {
-        if (typeof onSuccess === 'function') await onSuccess();
+    }
+    const allowed = await refreshAdminAccess();
+    if (allowed) {
+        if (typeof onSuccess === 'function')
+            await onSuccess();
         return true;
-      }
-
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
+    }
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
         pendingAdminAction = action || 'add';
         sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
         openAdminAuthModal('新增及修改牌局只限管理員使用。');
         return false;
-      }
-
-      await supabaseClient.auth.signOut();
-      adminSession = null;
-      isAdminUser = false;
-      pendingAdminAction = '';
-      sessionStorage.removeItem('lamnei_admin_pending');
-      openAdminAuthModal('新增及修改牌局只限管理員使用。');
-      return false;
     }
-
-    async function verifyAdminBeforeSave() {
-      const allowed = await refreshAdminAccess();
-      if (!allowed) {
+    await supabaseClient.auth.signOut();
+    adminSession = null;
+    isAdminUser = false;
+    pendingAdminAction = '';
+    sessionStorage.removeItem('lamnei_admin_pending');
+    openAdminAuthModal('新增及修改牌局只限管理員使用。');
+    return false;
+}
+async function verifyAdminBeforeSave() {
+    const allowed = await refreshAdminAccess();
+    if (!allowed) {
         showAddGameError('管理權限已失效，請重新使用 Google 登入。');
         closeAddGameDrawer(true);
         pendingAdminAction = addGameMode === 'edit' ? 'edit' : 'add';
         sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
         openAdminAuthModal('請重新使用管理員 Google 帳戶登入。');
         return false;
-      }
-      return true;
     }
-
-    async function handleGoogleLogin() {
-      if (!supabaseClient) return;
-      const button = document.getElementById('adminGoogleLogin');
-      const action = pendingAdminAction || 'add';
-      pendingAdminAction = action;
-      sessionStorage.setItem('lamnei_admin_pending', action);
-      setAdminAuthError('');
-      if (button) {
+    return true;
+}
+async function handleGoogleLogin() {
+    if (!supabaseClient)
+        return;
+    const button = document.getElementById('adminGoogleLogin');
+    const action = pendingAdminAction || 'add';
+    pendingAdminAction = action;
+    sessionStorage.setItem('lamnei_admin_pending', action);
+    setAdminAuthError('');
+    if (button) {
         button.disabled = true;
         button.querySelector('span').textContent = '正在連線 Google…';
-      }
-
-      try {
+    }
+    try {
         const { error } = await supabaseClient.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: getAdminRedirectUrl(),
-            queryParams: { prompt: 'select_account' }
-          }
+            provider: 'google',
+            options: {
+                redirectTo: getAdminRedirectUrl(),
+                queryParams: { prompt: 'select_account' }
+            }
         });
-        if (error) throw error;
-      } catch (err) {
+        if (error)
+            throw error;
+    }
+    catch (err) {
         setAdminAuthError(err.message || 'Google 登入失敗。');
         if (button) {
-          button.disabled = false;
-          button.querySelector('span').textContent = '使用 Google 登入';
+            button.disabled = false;
+            button.querySelector('span').textContent = '使用 Google 登入';
         }
-      }
     }
-
-    async function initAdminAuth() {
-      if (!supabaseClient) return;
-
-      supabaseClient.auth.onAuthStateChange((event, session) => {
+}
+async function initAdminAuth() {
+    if (!supabaseClient)
+        return;
+    supabaseClient.auth.onAuthStateChange((event, session) => {
         adminSession = session || null;
         if (!session) {
-          isAdminUser = false;
-          return;
+            isAdminUser = false;
+            return;
         }
         setTimeout(async () => {
-          const allowed = await refreshAdminAccess();
-          if (!allowed) {
-            if (pendingAdminAction) {
-              await supabaseClient.auth.signOut();
-              adminSession = null;
-              isAdminUser = false;
-              openAdminAuthModal('新增及修改牌局只限管理員使用。');
-              setAdminAuthError('請重新使用管理員 Google 帳戶登入。');
+            const allowed = await refreshAdminAccess();
+            if (!allowed) {
+                if (pendingAdminAction) {
+                    await supabaseClient.auth.signOut();
+                    adminSession = null;
+                    isAdminUser = false;
+                    openAdminAuthModal('新增及修改牌局只限管理員使用。');
+                    setAdminAuthError('請重新使用管理員 Google 帳戶登入。');
+                }
+                return;
             }
-            return;
-          }
-
-          if (pendingAdminAction === 'add') {
-            pendingAdminAction = '';
-            sessionStorage.removeItem('lamnei_admin_pending');
-            closeAdminAuthModal(false);
-            openAddGameDrawerUnlocked();
-          } else if (pendingAdminAction === 'edit') {
-            pendingAdminAction = '';
-            sessionStorage.removeItem('lamnei_admin_pending');
-            closeAdminAuthModal(false);
-            await openEditGameDrawerUnlocked();
-          }
+            if (pendingAdminAction === 'add') {
+                pendingAdminAction = '';
+                sessionStorage.removeItem('lamnei_admin_pending');
+                closeAdminAuthModal(false);
+                openAddGameDrawerUnlocked();
+            }
+            else if (pendingAdminAction === 'edit') {
+                pendingAdminAction = '';
+                sessionStorage.removeItem('lamnei_admin_pending');
+                closeAdminAuthModal(false);
+                await openEditGameDrawerUnlocked();
+            }
         }, 0);
-      });
-
-      const allowed = await refreshAdminAccess();
-      if (!allowed && pendingAdminAction && adminSession) {
+    });
+    const allowed = await refreshAdminAccess();
+    if (!allowed && pendingAdminAction && adminSession) {
         await supabaseClient.auth.signOut();
         adminSession = null;
         isAdminUser = false;
-      }
     }
-
-    function createAddGameRow(removable=false) {
-
-      return { id: ++addGameRowSeq, removable, playerId:'', mode:'select', playerName:'', sign:1, score:'' };
-    }
-
-    function setAddGameMode(mode) {
-      addGameMode = mode === 'edit' ? 'edit' : 'add';
-      editingGameId = null;
-      editingGameIsDeleted = false;
-      const title = document.getElementById('addGameTitle');
-      const toggle = document.getElementById('addGameModeToggle');
-      const submit = document.getElementById('saveGameButton');
-      const deleteBtn = document.getElementById('editGameDeleteToggle');
-      const picker = document.getElementById('editGamePicker');
-      const empty = document.getElementById('editGameEmpty');
-      if (addGameMode === 'edit') {
+}
+function createAddGameRow(removable = false) {
+    return { id: ++addGameRowSeq, removable, playerId: '', mode: 'select', playerName: '', sign: 1, score: '' };
+}
+function setAddGameMode(mode) {
+    addGameMode = mode === 'edit' ? 'edit' : 'add';
+    editingGameId = null;
+    editingGameIsDeleted = false;
+    const title = document.getElementById('addGameTitle');
+    const toggle = document.getElementById('addGameModeToggle');
+    const submit = document.getElementById('saveGameButton');
+    const deleteBtn = document.getElementById('editGameDeleteToggle');
+    const picker = document.getElementById('editGamePicker');
+    const empty = document.getElementById('editGameEmpty');
+    if (addGameMode === 'edit') {
         title.textContent = '修改牌局';
         toggle.setAttribute('aria-label', '返回新增牌局');
         toggle.setAttribute('title', '返回新增牌局');
@@ -2472,8 +2512,10 @@
           <path d="M4.5 12H20.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>`;
         submit.textContent = '儲存修改';
-        if (deleteBtn) deleteBtn.hidden = true;
-      } else {
+        if (deleteBtn)
+            deleteBtn.hidden = true;
+    }
+    else {
         title.textContent = '新增牌局';
         toggle.setAttribute('aria-label', '修改牌局');
         toggle.setAttribute('title', '修改牌局');
@@ -2482,42 +2524,41 @@
           <path d="M14.4 6.8L17.2 9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>`;
         submit.textContent = '新增牌局';
-        if (deleteBtn) deleteBtn.hidden = true;
-      }
-      picker.classList.remove('show');
-      empty.classList.remove('show');
+        if (deleteBtn)
+            deleteBtn.hidden = true;
     }
-
-    function resetEditSelection() {
-      editingGameId = null;
-      editingGameIsDeleted = false;
-      const deleteBtn = document.getElementById('editGameDeleteToggle');
-      if (deleteBtn) deleteBtn.hidden = true;
-      const picker = document.getElementById('editGamePicker');
-      const empty = document.getElementById('editGameEmpty');
-      const select = document.getElementById('editGameSelect');
-      picker.classList.remove('show');
-      empty.classList.remove('show');
-      select.innerHTML = '<option value="" disabled selected>選擇牌局</option>';
-      select.value = '';
-      resetAddGameRows();
-      renderAddGameRows();
-    }
-
-    function getGamesForDate(dateStr) {
-      return rawGames
+    picker.classList.remove('show');
+    empty.classList.remove('show');
+}
+function resetEditSelection() {
+    editingGameId = null;
+    editingGameIsDeleted = false;
+    const deleteBtn = document.getElementById('editGameDeleteToggle');
+    if (deleteBtn)
+        deleteBtn.hidden = true;
+    const picker = document.getElementById('editGamePicker');
+    const empty = document.getElementById('editGameEmpty');
+    const select = document.getElementById('editGameSelect');
+    picker.classList.remove('show');
+    empty.classList.remove('show');
+    select.innerHTML = '<option value="" disabled selected>選擇牌局</option>';
+    select.value = '';
+    resetAddGameRows();
+    renderAddGameRows();
+}
+function getGamesForDate(dateStr) {
+    return rawGames
         .filter(g => String(g.played_on) === String(dateStr))
-        .sort((a,b) => a.id - b.id);
-    }
-
-    function populateEditGamesForDate(dateStr) {
-      const picker = document.getElementById('editGamePicker');
-      const empty = document.getElementById('editGameEmpty');
-      const select = document.getElementById('editGameSelect');
-      editingGameId = null;
-      editingGameIsDeleted = false;
-      updateEditGameDeleteButton();
-      if (!dateStr) {
+        .sort((a, b) => a.id - b.id);
+}
+function populateEditGamesForDate(dateStr) {
+    const picker = document.getElementById('editGamePicker');
+    const empty = document.getElementById('editGameEmpty');
+    const select = document.getElementById('editGameSelect');
+    editingGameId = null;
+    editingGameIsDeleted = false;
+    updateEditGameDeleteButton();
+    if (!dateStr) {
         picker.classList.remove('show');
         empty.classList.remove('show');
         select.innerHTML = '<option value="" disabled selected>選擇牌局</option>';
@@ -2525,51 +2566,50 @@
         resetAddGameRows();
         renderAddGameRows();
         return;
-      }
-      const games = getGamesForDate(dateStr);
-      select.innerHTML = '<option value="" disabled>選擇牌局</option>' + games.map(g => `<option value="${g.id}">${g.is_deleted ? `牌局 #${g.id}（已刪除）` : `牌局 #${g.id}`}</option>`).join('');
-      if (!games.length) {
+    }
+    const games = getGamesForDate(dateStr);
+    select.innerHTML = '<option value="" disabled>選擇牌局</option>' + games.map(g => `<option value="${g.id}">${g.is_deleted ? `牌局 #${g.id}（已刪除）` : `牌局 #${g.id}`}</option>`).join('');
+    if (!games.length) {
         picker.classList.remove('show');
         empty.classList.add('show');
         resetAddGameRows();
         renderAddGameRows();
         return;
-      }
-      empty.classList.remove('show');
-      if (games.length === 1) {
+    }
+    empty.classList.remove('show');
+    if (games.length === 1) {
         picker.classList.remove('show');
         select.value = String(games[0].id);
         loadGameIntoForm(games[0].id);
-      } else {
+    }
+    else {
         picker.classList.add('show');
         select.value = '';
         resetAddGameRows();
         renderAddGameRows();
-      }
     }
-
-    function loadGameIntoForm(gameId) {
-      const game = rawGames.find(g => Number(g.id) === Number(gameId));
-      if (!game) {
+}
+function loadGameIntoForm(gameId) {
+    const game = rawGames.find(g => Number(g.id) === Number(gameId));
+    if (!game) {
         editingGameId = null;
         editingGameIsDeleted = false;
         updateEditGameDeleteButton();
         resetAddGameRows();
         renderAddGameRows();
         return;
-      }
-      editingGameId = Number(game.id);
-      editingGameIsDeleted = Boolean(game.is_deleted);
-      updateEditGameDeleteButton();
-      const dateInput = document.getElementById('gameDateInput');
-      const dateDisplay = document.getElementById('gameDateDisplay');
-      const dateText = document.getElementById('gameDateText');
-      dateInput.value = String(game.played_on);
-      dateText.textContent = formatDateDisplay(game.played_on);
-      dateDisplay.classList.remove('placeholder');
-
-      const results = [...(game.results || [])].slice(0,8);
-      addGameRows = results.map((r, index) => ({
+    }
+    editingGameId = Number(game.id);
+    editingGameIsDeleted = Boolean(game.is_deleted);
+    updateEditGameDeleteButton();
+    const dateInput = document.getElementById('gameDateInput');
+    const dateDisplay = document.getElementById('gameDateDisplay');
+    const dateText = document.getElementById('gameDateText');
+    dateInput.value = String(game.played_on);
+    dateText.textContent = formatDateDisplay(game.played_on);
+    dateDisplay.classList.remove('placeholder');
+    const results = [...(game.results || [])].slice(0, 8);
+    addGameRows = results.map((r, index) => ({
         id: ++addGameRowSeq,
         removable: index >= 4,
         playerId: String(r.playerId),
@@ -2577,20 +2617,21 @@
         playerName: '',
         sign: Number(r.score) < 0 ? -1 : 1,
         score: Number(r.score) || 0
-      }));
-      while (addGameRows.length < 4) addGameRows.push(createAddGameRow(false));
-      renderAddGameRows();
-    }
-
-    function updateEditGameDeleteButton() {
-      const btn = document.getElementById('editGameDeleteToggle');
-      const icon = document.getElementById('editGameDeleteIcon');
-      if (!btn || !icon) return;
-      const isAvailable = addGameMode === 'edit' && !!editingGameId;
-      btn.hidden = !isAvailable;
-      if (!isAvailable) return;
-
-      if (editingGameIsDeleted) {
+    }));
+    while (addGameRows.length < 4)
+        addGameRows.push(createAddGameRow(false));
+    renderAddGameRows();
+}
+function updateEditGameDeleteButton() {
+    const btn = document.getElementById('editGameDeleteToggle');
+    const icon = document.getElementById('editGameDeleteIcon');
+    if (!btn || !icon)
+        return;
+    const isAvailable = addGameMode === 'edit' && !!editingGameId;
+    btn.hidden = !isAvailable;
+    if (!isAvailable)
+        return;
+    if (editingGameIsDeleted) {
         btn.classList.add('restore-mode');
         btn.setAttribute('aria-label', '復原牌局');
         btn.setAttribute('title', '復原牌局');
@@ -2600,7 +2641,8 @@
           <path d="M10 10.25L13.5 13.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M13.5 10.25L10 13.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         `;
-      } else {
+    }
+    else {
         btn.classList.remove('restore-mode');
         btn.setAttribute('aria-label', '刪除牌局');
         btn.setAttribute('title', '刪除牌局');
@@ -2610,473 +2652,527 @@
           <path d="M7 7.25L7.75 19.25C7.82 20.38 8.76 21.25 9.89 21.25H14.11C15.24 21.25 16.18 20.38 16.25 19.25L17 7.25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
           <path d="M10 10.5V17.5M14 10.5V17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         `;
-      }
     }
-
-    async function toggleEditGameDeleted() {
-      if (addGameSaving || addGameMode !== 'edit' || !editingGameId) return;
-      if (!(await verifyAdminBeforeSave())) return;
-
-      const deleting = !editingGameIsDeleted;
-      const message = deleting
+}
+async function toggleEditGameDeleted() {
+    if (addGameSaving ||
+        addGameMode !== 'edit' ||
+        !editingGameId) {
+        return;
+    }
+    if (!(await verifyAdminBeforeSave()))
+        return;
+    const deleting = !editingGameIsDeleted;
+    const actionName = deleting
+        ? '刪除'
+        : '復原';
+    const message = deleting
         ? `確定要刪除牌局 #${editingGameId}？\n\n牌局會從月份表格及統計中隱藏，但仍可在修改牌局中復原。`
         : `確定要復原牌局 #${editingGameId}？`;
-      if (!window.confirm(message)) return;
-
-      const btn = document.getElementById('editGameDeleteToggle');
-      if (btn) btn.disabled = true;
-      addGameSaving = true;
-      showAddGameError('');
-      try {
+    if (!window.confirm(message))
+        return;
+    let databaseWriteSucceeded = false;
+    const targetId = Number(editingGameId);
+    const btn = document.getElementById('editGameDeleteToggle');
+    if (btn)
+        btn.disabled = true;
+    addGameSaving = true;
+    showAddGameError('');
+    try {
         const { data, error } = await supabaseClient.rpc('admin_set_game_deleted', {
-          p_game_id: Number(editingGameId),
-          p_is_deleted: deleting
+            p_game_id: targetId,
+            p_is_deleted: deleting
         });
-        if (error) throw error;
-        if (data !== true) throw new Error(deleting ? '刪除牌局失敗。' : '復原牌局失敗。');
-
-        const targetId = Number(editingGameId);
-        await fetchData();
+        if (error)
+            throw error;
+        if (data !== true) {
+            throw new Error(deleting
+                ? '刪除牌局失敗。'
+                : '復原牌局失敗。');
+        }
+        databaseWriteSucceeded = true;
+        const refreshSucceeded = await fetchData();
+        if (!refreshSucceeded) {
+            editingGameIsDeleted = deleting;
+            updateEditGameDeleteButton();
+            closeAddGameDrawer(true);
+            showToast(deleting
+                ? '已刪除；畫面更新失敗，請重新載入。'
+                : '已復原；畫面更新失敗，請重新載入。', 'warning');
+            return;
+        }
         const targetGame = rawGames.find(g => Number(g.id) === targetId);
-        if (!targetGame) throw new Error('找不到更新後的牌局。');
-
+        if (!targetGame) {
+            closeAddGameDrawer(true);
+            showToast(`已${actionName}；但無法確認最新資料，請重新載入。`, 'warning');
+            return;
+        }
         editingGameIsDeleted = Boolean(targetGame.is_deleted);
         loadGameIntoForm(targetId);
         updateEditGameDeleteButton();
-        showToast(editingGameIsDeleted ? '已刪除牌局' : '已復原牌局');
-      } catch (err) {
-        showAddGameError(`${deleting ? '刪除失敗' : '復原失敗'}：${escapeHtml(err.message || String(err))}`);
-      } finally {
+        showToast(editingGameIsDeleted
+            ? '已刪除牌局'
+            : '已復原牌局');
+    }
+    catch (err) {
+        if (databaseWriteSucceeded) {
+            console.error('資料庫操作已成功，但畫面更新失敗：', err);
+            editingGameIsDeleted = deleting;
+            updateEditGameDeleteButton();
+            closeAddGameDrawer(true);
+            showToast(`已${actionName}；畫面更新失敗，請重新載入。`, 'warning');
+        }
+        else {
+            showAddGameError(`${actionName}失敗：${escapeHtml(err.message || String(err))}`);
+        }
+    }
+    finally {
         addGameSaving = false;
-        if (btn) btn.disabled = false;
-      }
+        if (btn)
+            btn.disabled = false;
     }
-
-    function resetAddGameRows() {
-      addGameRows = [createAddGameRow(false),createAddGameRow(false),createAddGameRow(false),createAddGameRow(false)];
-    }
-
-    function getSelectedIds(exceptRowId=null) {
-      return new Set(addGameRows.filter(r=>r.id!==exceptRowId && r.mode==='select' && r.playerId).map(r=>String(r.playerId)));
-    }
-
-    function renderAddGameRows() {
-      const host=document.getElementById('playerRows');
-      if(!host) return;
-      host.innerHTML=addGameRows.map(row=>{
-        const selectedElsewhere=getSelectedIds(row.id);
-        const entryClass=row.removable?'player-entry':'player-entry required';
-        const nameControl = row.mode==='input'
-          ? `<div class="inline-player-wrap"><input class="inline-player-input" data-row-id="${row.id}" value="${escapeHtml(row.playerName)}" placeholder="玩家名稱" autocomplete="off" enterkeyhint="done"><button type="button" class="inline-player-back" data-row-back="${row.id}">返回</button></div>`
-          : `<select class="player-select" data-row-select="${row.id}"><option value="" disabled ${row.playerId ? "" : "selected"}>玩家</option>${rawPlayers.map(p=>`<option value="${p.id}" ${String(p.id)===String(row.playerId)?'selected':''} ${selectedElsewhere.has(String(p.id))?'disabled':''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
-        const scoreAbs = row.score === '' ? '' : Math.abs(Number(row.score)||0);
-        const scoreClass = row.score==='' ? 'zero' : (row.sign<0 && Number(scoreAbs)>0 ? 'lose' : (row.sign>0 && Number(scoreAbs)>0 ? 'win' : 'zero'));
+}
+function resetAddGameRows() {
+    addGameRows = [createAddGameRow(false), createAddGameRow(false), createAddGameRow(false), createAddGameRow(false)];
+}
+function getSelectedIds(exceptRowId = null) {
+    return new Set(addGameRows.filter(r => r.id !== exceptRowId && r.mode === 'select' && r.playerId).map(r => String(r.playerId)));
+}
+function renderAddGameRows() {
+    const host = document.getElementById('playerRows');
+    if (!host)
+        return;
+    host.innerHTML = addGameRows.map(row => {
+        const selectedElsewhere = getSelectedIds(row.id);
+        const entryClass = row.removable ? 'player-entry' : 'player-entry required';
+        const nameControl = row.mode === 'input'
+            ? `<div class="inline-player-wrap"><input class="inline-player-input" data-row-id="${row.id}" value="${escapeHtml(row.playerName)}" placeholder="玩家名稱" autocomplete="off" enterkeyhint="done"><button type="button" class="inline-player-back" data-row-back="${row.id}">返回</button></div>`
+            : `<select class="player-select" data-row-select="${row.id}"><option value="" disabled ${row.playerId ? "" : "selected"}>玩家</option>${rawPlayers.map(p => `<option value="${p.id}" ${String(p.id) === String(row.playerId) ? 'selected' : ''} ${selectedElsewhere.has(String(p.id)) ? 'disabled' : ''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
+        const scoreAbs = row.score === '' ? '' : Math.abs(Number(row.score) || 0);
+        const scoreClass = row.score === '' ? 'zero' : (row.sign < 0 && Number(scoreAbs) > 0 ? 'lose' : (row.sign > 0 && Number(scoreAbs) > 0 ? 'win' : 'zero'));
         const removeHtml = row.removable
-          ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>`
-          : `<span class="player-remove-placeholder" aria-hidden="true"></span>`;
-        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign<0?'negative':'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign<0?'−':'+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
-      }).join('');
-
-      host.querySelectorAll('[data-row-select]').forEach(select=>select.addEventListener('change',e=>{
-        const row=addGameRows.find(r=>String(r.id)===String(e.currentTarget.dataset.rowSelect));
-        if(!row) return;
-        if(e.currentTarget.value==='__NEW__'){ row.mode='input'; row.playerId=''; row.playerName=''; renderAddGameRows(); const input=host.querySelector(`[data-row-id="${row.id}"]`); if(input) { input.focus(); input.select(); } }
-        else { row.mode='select'; row.playerId=e.currentTarget.value; row.playerName=''; renderAddGameRows(); }
-      }));
-      host.querySelectorAll('[data-row-sign]').forEach(btn=>btn.addEventListener('click',()=>{
-        const row=addGameRows.find(r=>String(r.id)===String(btn.dataset.rowSign));
-        if(!row) return; row.sign*=-1; renderAddGameRows(); const input=host.querySelector(`[data-row-score="${row.id}"]`); if(input) { input.focus(); input.setSelectionRange(input.value.length,input.value.length); }
-      }));
-      host.querySelectorAll('[data-row-score]').forEach(input=>input.addEventListener('input',e=>{
-        const row=addGameRows.find(r=>String(r.id)===String(e.currentTarget.dataset.rowScore));
-        if(!row) return;
-        let val=e.currentTarget.value.replace(/[^0-9]/g,'');
-        if(val.length>1) val=val.replace(/^0+(?=\d)/,'');
-        e.currentTarget.value=val;
-        row.score=val===''?'':Number(val)*row.sign;
-        e.currentTarget.classList.toggle('win', row.score>0); e.currentTarget.classList.toggle('lose', row.score<0); e.currentTarget.classList.toggle('zero', row.score===0 || row.score==='');
-      }));
-      host.querySelectorAll('[data-row-remove]').forEach(btn=>btn.addEventListener('click',()=>{
-        addGameRows=addGameRows.filter(r=>String(r.id)!==String(btn.dataset.rowRemove));
+            ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>`
+            : `<span class="player-remove-placeholder" aria-hidden="true"></span>`;
+        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign < 0 ? 'negative' : 'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign < 0 ? '−' : '+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
+    }).join('');
+    host.querySelectorAll('[data-row-select]').forEach(select => select.addEventListener('change', e => {
+        const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowSelect));
+        if (!row)
+            return;
+        if (e.currentTarget.value === '__NEW__') {
+            row.mode = 'input';
+            row.playerId = '';
+            row.playerName = '';
+            renderAddGameRows();
+            const input = host.querySelector(`[data-row-id="${row.id}"]`);
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }
+        else {
+            row.mode = 'select';
+            row.playerId = e.currentTarget.value;
+            row.playerName = '';
+            renderAddGameRows();
+        }
+    }));
+    host.querySelectorAll('[data-row-sign]').forEach(btn => btn.addEventListener('click', () => {
+        const row = addGameRows.find(r => String(r.id) === String(btn.dataset.rowSign));
+        if (!row)
+            return;
+        row.sign *= -1;
         renderAddGameRows();
-      }));
-      host.querySelectorAll('[data-row-id]').forEach(input=>input.addEventListener('input',e=>{
-        const row=addGameRows.find(r=>String(r.id)===String(e.currentTarget.dataset.rowId)); if(row) row.playerName=e.currentTarget.value;
-      }));
-      host.querySelectorAll('[data-row-id]').forEach(input=>input.addEventListener('keydown',e=>{
-        if(e.key==='Enter'){ e.preventDefault(); input.blur(); }
-      }));
-      host.querySelectorAll('[data-row-back]').forEach(btn=>btn.addEventListener('click',()=>{
-        const row=addGameRows.find(r=>String(r.id)===String(btn.dataset.rowBack)); if(!row) return;
-        row.mode='select'; row.playerName=''; row.playerId=''; renderAddGameRows();
-      }));
-
-      updateAddPlayerButtonState();
-    }
-
-    function updateAddPlayerButtonState() {
-      const btn = document.getElementById('addPlayerRow');
-      if (!btn) return;
-      const maxReached = addGameRows.length >= 8;
-      btn.disabled = maxReached;
-      btn.style.opacity = maxReached ? '0.45' : '';
-      btn.style.cursor = maxReached ? 'default' : '';
-    }
-
-    function openAddGameDrawerUnlocked() {
-      if(addGameSaving) return;
-      setAddGameMode('add');
-      resetAddGameRows();
-      showAddGameError('');
-      const input=document.getElementById('gameDateInput');
-      const display=document.getElementById('gameDateDisplay');
-      const text=document.getElementById('gameDateText');
-      input.value='';
-      text.textContent='日期'; display.classList.add('placeholder');
-      resetEditSelection();
-      renderAddGameRows();
-      document.getElementById('addGameBackdrop').classList.add('show');
-      document.getElementById('addGameDrawer').classList.add('show');
-      document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
-      document.getElementById('addGameDrawer').setAttribute('aria-hidden','false');
-      document.body.classList.add('profile-open');
-    }
-
-    async function openEditGameDrawerUnlocked() {
-      if(addGameSaving) return;
-      setAddGameMode('edit');
-      resetAddGameRows();
-      showAddGameError('');
-      const input=document.getElementById('gameDateInput');
-      const display=document.getElementById('gameDateDisplay');
-      const text=document.getElementById('gameDateText');
-      input.value='';
-      text.textContent='日期'; display.classList.add('placeholder');
-      resetEditSelection();
-      renderAddGameRows();
-      document.getElementById('addGameBackdrop').classList.add('show');
-      document.getElementById('addGameDrawer').classList.add('show');
-      document.getElementById('addGameBackdrop').setAttribute('aria-hidden','false');
-      document.getElementById('addGameDrawer').setAttribute('aria-hidden','false');
-      document.body.classList.add('profile-open');
-    }
-
-    async function openAddGameDrawer() {
-      if (addGameSaving) return;
-      await requireAdminAccess('add', openAddGameDrawerUnlocked);
-    }
-
-    async function openEditGameDrawer() {
-      if (addGameSaving) return;
-      await requireAdminAccess('edit', openEditGameDrawerUnlocked);
-    }
-
-    function closeAddGameDrawer(force = false) {
-      if(addGameSaving && !force) return;
-      document.getElementById('addGameBackdrop').classList.remove('show');
-      document.getElementById('addGameDrawer').classList.remove('show');
-      document.getElementById('addGameBackdrop').setAttribute('aria-hidden','true');
-      document.getElementById('addGameDrawer').setAttribute('aria-hidden','true');
-      if(!document.getElementById('profileSheet').classList.contains('show')) document.body.classList.remove('profile-open');
-    }
-
-    async function ensurePlayerForAddGameRow(row) {
-      if(row.mode==='select') {
-        if(!row.playerId) throw new Error('請選擇所有玩家。');
+        const input = host.querySelector(`[data-row-score="${row.id}"]`);
+        if (input) {
+            input.focus();
+            input.setSelectionRange(input.value.length, input.value.length);
+        }
+    }));
+    host.querySelectorAll('[data-row-score]').forEach(input => input.addEventListener('input', e => {
+        const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowScore));
+        if (!row)
+            return;
+        let val = e.currentTarget.value.replace(/[^0-9]/g, '');
+        if (val.length > 1)
+            val = val.replace(/^0+(?=\d)/, '');
+        e.currentTarget.value = val;
+        row.score = val === '' ? '' : Number(val) * row.sign;
+        e.currentTarget.classList.toggle('win', row.score > 0);
+        e.currentTarget.classList.toggle('lose', row.score < 0);
+        e.currentTarget.classList.toggle('zero', row.score === 0 || row.score === '');
+    }));
+    host.querySelectorAll('[data-row-remove]').forEach(btn => btn.addEventListener('click', () => {
+        addGameRows = addGameRows.filter(r => String(r.id) !== String(btn.dataset.rowRemove));
+        renderAddGameRows();
+    }));
+    host.querySelectorAll('[data-row-id]').forEach(input => input.addEventListener('input', e => {
+        const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowId));
+        if (row)
+            row.playerName = e.currentTarget.value;
+    }));
+    host.querySelectorAll('[data-row-id]').forEach(input => input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            input.blur();
+        }
+    }));
+    host.querySelectorAll('[data-row-back]').forEach(btn => btn.addEventListener('click', () => {
+        const row = addGameRows.find(r => String(r.id) === String(btn.dataset.rowBack));
+        if (!row)
+            return;
+        row.mode = 'select';
+        row.playerName = '';
+        row.playerId = '';
+        renderAddGameRows();
+    }));
+    updateAddPlayerButtonState();
+}
+function updateAddPlayerButtonState() {
+    const btn = document.getElementById('addPlayerRow');
+    if (!btn)
+        return;
+    const maxReached = addGameRows.length >= 8;
+    btn.disabled = maxReached;
+    btn.style.opacity = maxReached ? '0.45' : '';
+    btn.style.cursor = maxReached ? 'default' : '';
+}
+function openAddGameDrawerUnlocked() {
+    if (addGameSaving)
+        return;
+    setAddGameMode('add');
+    resetAddGameRows();
+    showAddGameError('');
+    const input = document.getElementById('gameDateInput');
+    const display = document.getElementById('gameDateDisplay');
+    const text = document.getElementById('gameDateText');
+    input.value = '';
+    text.textContent = '日期';
+    display.classList.add('placeholder');
+    resetEditSelection();
+    renderAddGameRows();
+    document.getElementById('addGameBackdrop').classList.add('show');
+    document.getElementById('addGameDrawer').classList.add('show');
+    document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'false');
+    document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'false');
+    document.body.classList.add('profile-open');
+}
+async function openEditGameDrawerUnlocked() {
+    if (addGameSaving)
+        return;
+    setAddGameMode('edit');
+    resetAddGameRows();
+    showAddGameError('');
+    const input = document.getElementById('gameDateInput');
+    const display = document.getElementById('gameDateDisplay');
+    const text = document.getElementById('gameDateText');
+    input.value = '';
+    text.textContent = '日期';
+    display.classList.add('placeholder');
+    resetEditSelection();
+    renderAddGameRows();
+    document.getElementById('addGameBackdrop').classList.add('show');
+    document.getElementById('addGameDrawer').classList.add('show');
+    document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'false');
+    document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'false');
+    document.body.classList.add('profile-open');
+}
+async function openAddGameDrawer() {
+    if (addGameSaving)
+        return;
+    await requireAdminAccess('add', openAddGameDrawerUnlocked);
+}
+async function openEditGameDrawer() {
+    if (addGameSaving)
+        return;
+    await requireAdminAccess('edit', openEditGameDrawerUnlocked);
+}
+function closeAddGameDrawer(force = false) {
+    if (addGameSaving && !force)
+        return;
+    document.getElementById('addGameBackdrop').classList.remove('show');
+    document.getElementById('addGameDrawer').classList.remove('show');
+    document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'true');
+    document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'true');
+    if (!document.getElementById('profileSheet').classList.contains('show'))
+        document.body.classList.remove('profile-open');
+}
+async function ensurePlayerForAddGameRow(row) {
+    if (row.mode === 'select') {
+        if (!row.playerId)
+            throw new Error('請選擇所有玩家。');
         return Number(row.playerId);
-      }
-      const name=String(row.playerName||'').trim();
-      if(!name) throw new Error('請輸入玩家名稱。');
-      const existing=rawPlayers.find(p=>String(p.name).trim()===name);
-      if(existing) return Number(existing.id);
-      const {data,error}=await supabaseClient.from('players').insert({name,is_active:true}).select('id,name,is_active').single();
-      if(error) throw error;
-      const player={...data,id:Number(data.id)};
-      rawPlayers.push(player);
-      return player.id;
     }
-
-    function collectCurrentGameResults() {
-      const chosen=[];
-      for(const row of addGameRows){
-        if(row.mode==='select' && !row.playerId) throw new Error('請選擇所有玩家。');
-        if(row.mode==='input' && !String(row.playerName||'').trim()) throw new Error('請輸入玩家名稱。');
-        const abs = row.score==='' ? null : Math.abs(Number(row.score));
-        if(abs===null || !Number.isFinite(abs)) throw new Error('請輸入所有分數。');
-        chosen.push({row, abs});
-      }
-      return chosen;
-    }
-
-    function collectNewGameRpcResults() {
-
-    const results = [];
-
+    const name = String(row.playerName || '').trim();
+    if (!name)
+        throw new Error('請輸入玩家名稱。');
+    const existing = rawPlayers.find(p => String(p.name).trim() === name);
+    if (existing)
+        return Number(existing.id);
+    const { data, error } = await supabaseClient.from('players').insert({ name, is_active: true }).select('id,name,is_active').single();
+    if (error)
+        throw error;
+    const player = { ...data, id: Number(data.id) };
+    rawPlayers.push(player);
+    return player.id;
+}
+function collectCurrentGameResults() {
+    const chosen = [];
     for (const row of addGameRows) {
-
-        // 確認分數已輸入
-
-        if (
-            row.score === '' ||
+        if (row.mode === 'select' && !row.playerId)
+            throw new Error('請選擇所有玩家。');
+        if (row.mode === 'input' && !String(row.playerName || '').trim())
+            throw new Error('請輸入玩家名稱。');
+        const abs = row.score === '' ? null : Math.abs(Number(row.score));
+        if (abs === null || !Number.isFinite(abs))
+            throw new Error('請輸入所有分數。');
+        chosen.push({ row, abs });
+    }
+    return chosen;
+}
+function collectNewGameRpcResults() {
+    const results = [];
+    for (const row of addGameRows) {
+        if (row.score === '' ||
             row.score === null ||
-            row.score === undefined
-        ) {
+            row.score === undefined) {
             throw new Error('請輸入所有分數。');
         }
-
         const score = Number(row.score);
-
-        // PostgreSQL integer 範圍驗證
-
-        if (
-            !Number.isSafeInteger(score) ||
-            score < -2147483648 ||
-            score > 2147483647
-        ) {
+        const signedScore = row.sign < 0 ? -Math.abs(score) : Math.abs(score);
+        if (!Number.isSafeInteger(signedScore) ||
+            signedScore < -2147483648 ||
+            signedScore > 2147483647) {
             throw new Error('分數必須為有效整數。');
         }
-
-
-        // 現有玩家
-
         if (row.mode === 'select') {
-
             if (!row.playerId) {
                 throw new Error('請選擇所有玩家。');
             }
-
             const playerId = Number(row.playerId);
-
-            if (
-                !Number.isSafeInteger(playerId) ||
-                playerId <= 0
-            ) {
+            if (!Number.isSafeInteger(playerId) ||
+                playerId <= 0) {
                 throw new Error('玩家資料不正確。');
             }
-
             results.push({
                 player_id: playerId,
-                score: score
+                score: signedScore
             });
-
         }
-
-
-        // 新玩家
-
         else {
-
-            const playerName = String(
-                row.playerName || ''
-            ).trim();
-
+            const playerName = String(row.playerName || '').trim();
             if (!playerName) {
                 throw new Error('請輸入玩家名稱。');
             }
-
             results.push({
                 player_name: playerName,
-                score: score
+                score: signedScore
             });
-
         }
-
     }
-
-
     if (results.length < 4 || results.length > 8) {
         throw new Error('玩家人數必須為 4 至 8 人。');
     }
-
     return results;
-
 }
-
-    async function resolveCurrentRows() {
-      const selected = collectCurrentGameResults();
-      const chosen=[];
-      for(const item of selected){
-        const playerId=await ensurePlayerForAddGameRow(item.row);
-        if(chosen.some(x=>x.playerId===playerId)) throw new Error('同一位玩家不能重複。');
-        chosen.push({playerId,score:item.row.sign<0?-item.abs:item.abs});
-      }
-      if(chosen.length<1) throw new Error('請至少新增一位玩家。');
-      return chosen;
+async function resolveCurrentRows() {
+    const selected = collectCurrentGameResults();
+    const chosen = [];
+    for (const item of selected) {
+        const playerId = await ensurePlayerForAddGameRow(item.row);
+        if (chosen.some(x => x.playerId === playerId))
+            throw new Error('同一位玩家不能重複。');
+        chosen.push({ playerId, score: item.row.sign < 0 ? -item.abs : item.abs });
     }
-
-    async function saveAddGame() {
-      if(addGameSaving) return;
-      showAddGameError('');
-      if (!(await verifyAdminBeforeSave())) return;
-      const date=document.getElementById('gameDateInput').value;
-      if(!date) { showAddGameError('請先選擇日期。'); return; }
-
-      const saveBtn=document.getElementById('saveGameButton');
-      addGameSaving=true;
-      saveBtn.disabled=true;
-      saveBtn.textContent=addGameMode==='edit'?'儲存中…':'新增中…';
-      try {
-        const chosen=await resolveCurrentRows();
-let targetGameId = null;
-
-
-// ==========================================
-// 修改牌局：保留原有處理
-// ==========================================
-
-if (addGameMode === 'edit') {
-
-    const chosen = await resolveCurrentRows();
-
-    if (!editingGameId) {
-        throw new Error('請選擇要修改的牌局。');
-    }
-
-    targetGameId = Number(editingGameId);
-
-    const { error } = await supabaseClient.rpc(
-        'admin_update_game',
-        {
-            p_game_id: targetGameId,
-            p_played_on: date,
-            p_results: chosen.map(x => ({
-                player_id: x.playerId,
-                score: x.score
-            }))
-        }
-    );
-
-    if (error) throw error;
-
+    if (chosen.length < 1)
+        throw new Error('請至少新增一位玩家。');
+    return chosen;
 }
-
-
-// ==========================================
-// 新增牌局：使用新的 PostgreSQL RPC
-// ==========================================
-
-else {
-
-    const payload = collectNewGameRpcResults();
-
-    const { data, error } = await supabaseClient.rpc(
-        'admin_create_game',
-        {
-            p_played_on: date,
-            p_results: payload
-        }
-    );
-
-    if (error) throw error;
-
-    targetGameId = Number(data);
-
-    if (
-        !Number.isSafeInteger(targetGameId) ||
-        targetGameId <= 0
-    ) {
-        throw new Error('資料庫沒有返回有效的牌局編號。');
+async function saveAddGame() {
+    if (addGameSaving)
+        return;
+    showAddGameError('');
+    if (!(await verifyAdminBeforeSave()))
+        return;
+    const date = document.getElementById('gameDateInput').value;
+    if (!date) {
+        showAddGameError('請先選擇日期。');
+        return;
     }
-
-}
-
-        const toastMessage=addGameMode==='edit'?'已修改牌局':'已新增牌局';
-        await fetchData();
-        const targetGame=rawGames.find(g=>Number(g.id)===Number(targetGameId));
-        if(targetGame) {
-          editingGameIsDeleted = Boolean(targetGame.is_deleted);
-          if (addGameMode === 'edit') updateEditGameDeleteButton();
-          activeSheetName=monthName(targetGame.monthNo);
-          focusedDateCol=getGameColumnIndex(activeSheetName,targetGame.id);
-          currentSortCol=focusedDateCol!==null?focusedDateCol:'total';
-          sortAscending=false;
-          renderControls();
-          renderContent();
+    let databaseWriteSucceeded = false;
+    let targetGameId = null;
+    const isEdit = addGameMode === 'edit';
+    const actionName = isEdit
+        ? '修改牌局'
+        : '新增牌局';
+    const saveBtn = document.getElementById('saveGameButton');
+    addGameSaving = true;
+    saveBtn.disabled = true;
+    saveBtn.textContent = isEdit
+        ? '儲存中…'
+        : '新增中…';
+    try {
+        if (isEdit) {
+            const chosen = await resolveCurrentRows();
+            if (!editingGameId) {
+                throw new Error('請選擇要修改的牌局。');
+            }
+            targetGameId = Number(editingGameId);
+            const { error } = await supabaseClient.rpc('admin_update_game', {
+                p_game_id: targetGameId,
+                p_played_on: date,
+                p_results: chosen.map(x => ({
+                    player_id: x.playerId,
+                    score: x.score
+                }))
+            });
+            if (error)
+                throw error;
+            databaseWriteSucceeded = true;
         }
+        else {
+            const payload = collectNewGameRpcResults();
+            const { data, error } = await supabaseClient.rpc('admin_create_game', {
+                p_played_on: date,
+                p_results: payload
+            });
+            if (error)
+                throw error;
+            databaseWriteSucceeded = true;
+            targetGameId = Number(data);
+            if (!Number.isSafeInteger(targetGameId) ||
+                targetGameId <= 0) {
+                throw new Error('資料庫沒有返回有效的牌局編號。');
+            }
+        }
+        const refreshSucceeded = await fetchData();
+        if (!refreshSucceeded) {
+            closeAddGameDrawer(true);
+            showToast('已儲存；畫面更新失敗，請重新載入。', 'warning');
+            return;
+        }
+        const targetGame = rawGames.find(g => Number(g.id) === Number(targetGameId));
+        if (!targetGame) {
+            closeAddGameDrawer(true);
+            showToast('已儲存，但找不到最新牌局，請重新載入。', 'warning');
+            return;
+        }
+        editingGameIsDeleted = Boolean(targetGame.is_deleted);
+        if (isEdit) {
+            updateEditGameDeleteButton();
+        }
+        activeSheetName = monthName(targetGame.monthNo);
+        focusedDateCol = getGameColumnIndex(activeSheetName, targetGame.id);
+        currentSortCol = focusedDateCol !== null
+            ? focusedDateCol
+            : 'total';
+        sortAscending = false;
+        renderControls();
+        renderContent();
         closeAddGameDrawer(true);
-        showToast(toastMessage);
-      } catch(err) {
-        showAddGameError(`${addGameMode==='edit'?'修改失敗':'新增失敗'}：${escapeHtml(err.message || String(err))}`);
-      } finally {
-        addGameSaving=false;
-        saveBtn.disabled=false;
-        saveBtn.textContent=addGameMode==='edit'?'儲存修改':'新增牌局';
-      }
+        showToast(isEdit
+            ? '已修改牌局'
+            : '已新增牌局');
     }
-
-    function setupAddGameDrawer() {
-      document.getElementById('addGameTrigger').addEventListener('click',openAddGameDrawer);
-      document.getElementById('adminGoogleLogin').addEventListener('click',handleGoogleLogin);
-      document.getElementById('adminAuthClose').addEventListener('click',()=>closeAdminAuthModal(true));
-      document.getElementById('adminAuthBackdrop').addEventListener('click',()=>closeAdminAuthModal(true));
-      document.getElementById('addGameModeToggle').addEventListener('click',()=>{
-        if(addGameSaving) return;
-        if(addGameMode==='edit') openAddGameDrawer();
-        else openEditGameDrawer();
-      });
-      document.getElementById('editGameDeleteToggle').addEventListener('click',toggleEditGameDeleted);
-      document.getElementById('addGameClose').addEventListener('click',closeAddGameDrawer);
-      document.getElementById('addGameBackdrop').addEventListener('click',closeAddGameDrawer);
-      document.getElementById('saveGameButton').addEventListener('click',saveAddGame);
-      document.getElementById('addPlayerRow').addEventListener('click',()=>{
-        if(addGameRows.length>=8) return;
+    catch (err) {
+        if (databaseWriteSucceeded) {
+            console.error('資料已儲存，但畫面更新失敗：', err);
+            closeAddGameDrawer(true);
+            showToast('已儲存；畫面更新失敗，請重新載入。', 'warning');
+        }
+        else {
+            showAddGameError(`${actionName}失敗：${escapeHtml(err.message || String(err))}`);
+        }
+    }
+    finally {
+        addGameSaving = false;
+        saveBtn.disabled = false;
+        saveBtn.textContent = isEdit
+            ? '儲存修改'
+            : '新增牌局';
+    }
+}
+function setupAddGameDrawer() {
+    document.getElementById('addGameTrigger').addEventListener('click', openAddGameDrawer);
+    document.getElementById('adminGoogleLogin').addEventListener('click', handleGoogleLogin);
+    document.getElementById('adminAuthClose').addEventListener('click', () => closeAdminAuthModal(true));
+    document.getElementById('adminAuthBackdrop').addEventListener('click', () => closeAdminAuthModal(true));
+    document.getElementById('addGameModeToggle').addEventListener('click', () => {
+        if (addGameSaving)
+            return;
+        if (addGameMode === 'edit')
+            openAddGameDrawer();
+        else
+            openEditGameDrawer();
+    });
+    document.getElementById('editGameDeleteToggle').addEventListener('click', toggleEditGameDeleted);
+    document.getElementById('addGameClose').addEventListener('click', closeAddGameDrawer);
+    document.getElementById('addGameBackdrop').addEventListener('click', closeAddGameDrawer);
+    document.getElementById('saveGameButton').addEventListener('click', saveAddGame);
+    document.getElementById('addPlayerRow').addEventListener('click', () => {
+        if (addGameRows.length >= 8)
+            return;
         addGameRows.push(createAddGameRow(true));
         renderAddGameRows();
-        const drawer=document.getElementById('addGameBody');
-        requestAnimationFrame(()=>{ drawer.scrollTop=drawer.scrollHeight; });
-      });
-
-      const dateInput=document.getElementById('gameDateInput');
-      const dateDisplay=document.getElementById('gameDateDisplay');
-      const dateText=document.getElementById('gameDateText');
-      dateInput.addEventListener('change',()=>{
-        dateText.textContent=formatDateDisplay(dateInput.value);
-        dateDisplay.classList.toggle('placeholder',!dateInput.value);
-        showAddGameError('');
-        if(addGameMode==='edit') populateEditGamesForDate(dateInput.value);
-      });
-
-      document.getElementById('editGameSelect').addEventListener('change',e=>{
-        showAddGameError('');
-        if(!e.currentTarget.value){ editingGameId=null; editingGameIsDeleted=false; updateEditGameDeleteButton(); resetAddGameRows(); renderAddGameRows(); return; }
-        loadGameIntoForm(Number(e.currentTarget.value));
-      });
-
-      document.addEventListener('keydown',e=>{
-        if(e.key==='Escape') {
-          const authSheet=document.getElementById('adminAuthSheet');
-          if(authSheet.classList.contains('show')) {
-            closeAdminAuthModal(true);
-            return;
-          }
-          const drawer=document.getElementById('addGameDrawer');
-          if(drawer.classList.contains('show')) closeAddGameDrawer();
-        }
-      });
-    }
-
-    document.addEventListener('click',e=>{
-      const menu=document.getElementById('monthSelectorMenu'), container=document.getElementById('dropdownContainer');
-      if(menu && container && !container.contains(e.target)) menu.classList.remove('show');
+        const drawer = document.getElementById('addGameBody');
+        requestAnimationFrame(() => { drawer.scrollTop = drawer.scrollHeight; });
     });
-
-    let scrollTimers={table:null,profile:null,addGame:null};
-    document.addEventListener('scroll',e=>{
-      const cls=e.target.classList;
-      if(cls && (cls.contains('table-container')||cls.contains('profile-body')||cls.contains('add-game-body'))){
+    const dateInput = document.getElementById('gameDateInput');
+    const dateDisplay = document.getElementById('gameDateDisplay');
+    const dateText = document.getElementById('gameDateText');
+    dateInput.addEventListener('change', () => {
+        dateText.textContent = formatDateDisplay(dateInput.value);
+        dateDisplay.classList.toggle('placeholder', !dateInput.value);
+        showAddGameError('');
+        if (addGameMode === 'edit')
+            populateEditGamesForDate(dateInput.value);
+    });
+    document.getElementById('editGameSelect').addEventListener('change', e => {
+        showAddGameError('');
+        if (!e.currentTarget.value) {
+            editingGameId = null;
+            editingGameIsDeleted = false;
+            updateEditGameDeleteButton();
+            resetAddGameRows();
+            renderAddGameRows();
+            return;
+        }
+        loadGameIntoForm(Number(e.currentTarget.value));
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            const authSheet = document.getElementById('adminAuthSheet');
+            if (authSheet.classList.contains('show')) {
+                closeAdminAuthModal(true);
+                return;
+            }
+            const drawer = document.getElementById('addGameDrawer');
+            if (drawer.classList.contains('show'))
+                closeAddGameDrawer();
+        }
+    });
+}
+document.addEventListener('click', e => {
+    const menu = document.getElementById('monthSelectorMenu'), container = document.getElementById('dropdownContainer');
+    if (menu && container && !container.contains(e.target))
+        menu.classList.remove('show');
+});
+let scrollTimers = { table: null, profile: null, addGame: null };
+document.addEventListener('scroll', e => {
+    const cls = e.target.classList;
+    if (cls && (cls.contains('table-container') || cls.contains('profile-body') || cls.contains('add-game-body'))) {
         e.target.classList.add('scrolling');
-        const key=cls.contains('table-container')?'table':(cls.contains('profile-body')?'profile':'addGame');
-        clearTimeout(scrollTimers[key]); scrollTimers[key]=setTimeout(()=>e.target.classList.remove('scrolling'),1000);
-      }
-    },true);
-
-    document.getElementById('profileBackdrop').addEventListener('click',closePlayerProfile);
-    document.getElementById('profileClose').addEventListener('click',closePlayerProfile);
-
-    setupProfileDrag();
-    setupAddGameDrawer();
-    initAdminAuth();
-    fetchData();
-  </script>
+        const key = cls.contains('table-container') ? 'table' : (cls.contains('profile-body') ? 'profile' : 'addGame');
+        clearTimeout(scrollTimers[key]);
+        scrollTimers[key] = setTimeout(() => e.target.classList.remove('scrolling'), 1000);
+    }
+}, true);
+document.getElementById('profileBackdrop').addEventListener('click', closePlayerProfile);
+document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
+setupProfileDrag();
+setupAddGameDrawer();
+initAdminAuth();
+fetchData();
+</script>
 </body>
 </html>
