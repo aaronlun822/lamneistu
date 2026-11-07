@@ -95,68 +95,171 @@
       overflow: hidden; 
     }
     
-    .table-controls { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 20px 20px 16px 20px; 
-      background: #FFFFFF; 
+    .table-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 18px 20px 14px;
+      background: #FFFFFF;
     }
 
-    .control-actions {
+    .control-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .period-selectors {
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 0;
+      flex: 0 1 auto;
+    }
+
+    .custom-dropdown-container {
+      position: relative;
+      display: inline-block;
       flex: 0 0 auto;
     }
 
-    .month-dropdown { 
-      font-size: 22px; 
-      font-weight: 700; 
-      border: none; 
-      background-color: transparent; 
-      color: #1C1C1E; 
-      outline: none; 
-      cursor: pointer; 
-      appearance: none; 
-      padding: 8px 36px 8px 12px; 
-      margin-left: -12px; 
-      border-radius: 12px; 
-      background-image: url('data:image/svg+xml;utf8,<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L8 8L14 2" stroke="%238E8E93" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'); 
-      background-repeat: no-repeat; 
-      background-position: right 12px center; 
-      font-family: inherit; 
-      transition: background-color 0.2s ease; 
-    }
-    
-    .month-dropdown:hover { 
-      background-color: #F2F2F7; 
-    }
-    
-    .month-dropdown:active, 
-    .month-dropdown:focus { 
-      background-color: #E5E5EA; 
+    .custom-dropdown-container[hidden] {
+      display: none;
     }
 
-    .custom-dropdown-container { 
-      position: relative; 
-      display: inline-block; 
+    .dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 9px;
+      box-sizing: border-box;
+      height: 44px;
+      min-height: 44px;
+      padding: 0 13px;
+      border: 1px solid #E5E5EA;
+      border-radius: 12px;
+      background: #F2F2F7;
+      color: #1C1C1E;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 650;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
+      -webkit-tap-highlight-color: transparent;
     }
-    
-    .custom-dropdown-menu { 
-      position: absolute; 
-      top: calc(100% + 4px); 
-      left: 0; 
-      background: #FFFFFF; 
-      border-radius: 14px; 
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.1); 
-      min-width: 160px; 
-      z-index: var(--z-modal); 
-      overflow: hidden; 
-      display: none; 
-      opacity: 0; 
-      transform: translateY(-5px); 
-      transition: opacity 0.2s ease, transform 0.2s ease; 
+
+    .dropdown-trigger::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      flex: 0 0 auto;
+      margin: -3px 1px 0 5px;
+      border-right: 1.8px solid #8E8E93;
+      border-bottom: 1.8px solid #8E8E93;
+      transform: rotate(45deg);
+      transition: transform .18s ease, border-color .18s ease;
+    }
+
+    .dropdown-trigger:hover {
+      background: #EAEAEE;
+      border-color: #D1D1D6;
+    }
+
+    .dropdown-trigger[aria-expanded="true"] {
+      background: #E5E5EA;
+      border-color: #D1D1D6;
+    }
+
+    .dropdown-trigger[aria-expanded="true"]::after {
+      margin-top: 4px;
+      transform: rotate(225deg);
+      border-color: #636366;
+    }
+
+    .dropdown-trigger:focus-visible {
+      outline: 2px solid rgba(0, 122, 255, .28);
+      outline-offset: 2px;
+    }
+
+    .dropdown-trigger:disabled {
+      color: #8E8E93;
+      cursor: default;
+      opacity: .6;
+    }
+
+    .year-dropdown {
+      min-width: 94px;
+      max-width: 108px;
+    }
+
+    .month-dropdown {
+      min-width: 108px;
+      max-width: 124px;
+    }
+
+    .view-segment {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      flex: 0 0 auto;
+      border-radius: 11px;
+      background: #F2F2F7;
+    }
+
+    .view-segment-btn {
+      min-height: 32px;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #636366;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .view-segment-btn.active {
+      background: #FFFFFF;
+      color: #1C1C1E;
+      box-shadow: 0 1px 3px rgba(0,0,0,.10), 0 0 1px rgba(0,0,0,.08);
+    }
+
+    .view-segment-btn:disabled {
+      opacity: .42;
+      cursor: default;
+    }
+
+    .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      z-index: var(--z-modal);
+      min-width: 100%;
+      width: max-content;
+      max-width: min(240px, calc(100vw - 40px));
+      max-height: min(320px, 55vh);
+      overflow-x: hidden;
+      overflow-y: auto;
+      box-sizing: border-box;
+      background: #FFFFFF;
+      border: 1px solid rgba(60, 60, 67, .08);
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .12), 0 0 1px rgba(0, 0, 0, .1);
+      display: none;
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: opacity .2s ease, transform .2s ease;
     }
     
     .custom-dropdown-menu.show { 
@@ -171,57 +274,58 @@
       } 
     }
 
-    .custom-dropdown-item { 
-      padding: 12px 16px; 
-      font-size: 16px; 
-      color: #1C1C1E; 
-      cursor: pointer; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      background: #FFFFFF; 
-      transition: background-color 0.15s ease; 
-      border-bottom: 1px solid #E5E5EA; 
-    }
-    
-    .custom-dropdown-item:last-child { 
-      border-bottom: none; 
-    }
-    
-    @media (hover: hover) { 
-      .custom-dropdown-item:hover { 
-        background: #F2F2F7; 
-      } 
-    }
-    
-    .custom-dropdown-item:active { 
-      background: #E5E5EA; 
-    }
-    
-    .custom-dropdown-item.selected { 
-      color: #007AFF; 
-      font-weight: 600; 
+    .custom-dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: 100%;
+      min-height: 44px;
+      box-sizing: border-box;
+      padding: 0 14px;
+      border: 0;
+      border-bottom: 1px solid #F0F0F3;
+      background: #FFFFFF;
+      color: #1C1C1E;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.2;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color .15s ease, color .15s ease;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .overall-btn { 
-      padding: 0 16px; 
-      height: 36px; 
-      border-radius: 18px; 
-      background-color: #E5E5EA; 
-      color: #1C1C1E; 
-      border: none; 
-      font-size: 15px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      transition: all 0.2s ease; 
-      flex-shrink: 0; 
+    .custom-dropdown-item:last-child { border-bottom: none; }
+
+    @media (hover: hover) {
+      .custom-dropdown-item:hover { background: #F2F2F7; }
     }
-    
-    .overall-btn.active { 
-      background-color: #007AFF; 
-      color: #FFFFFF; 
-      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3); 
+
+    .custom-dropdown-item:active { background: #E5E5EA; }
+
+    .custom-dropdown-item.selected {
+      background: #F0F7FF;
+      color: #007AFF;
+      font-weight: 650;
     }
+
+    .custom-dropdown-item:focus-visible {
+      position: relative;
+      z-index: 1;
+      outline: 2px solid rgba(0, 122, 255, .3);
+      outline-offset: -2px;
+    }
+
+    .dropdown-item-check {
+      color: #007AFF;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
     
     .table-container { 
       width: 100%; 
@@ -480,6 +584,40 @@
       animation: sk-pulse 1.5s infinite ease-in-out; 
       margin-bottom: 12px; 
     }
+
+    .sk-control-dropdown {
+      display: block;
+      flex: 0 0 auto;
+      height: 44px;
+      margin: 0;
+      border-radius: 12px;
+    }
+
+    .sk-control-year { width: 94px; }
+    .sk-control-month { width: 108px; }
+
+    .sk-control-segment {
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 2px;
+      box-sizing: border-box;
+      width: 144px;
+      height: 38px;
+      padding: 3px;
+      border-radius: 11px;
+      background: #F2F2F7;
+    }
+
+    .sk-control-segment-item {
+      flex: 0 0 auto;
+      height: 32px;
+      margin: 0;
+      border-radius: 8px;
+    }
+
+    .sk-control-segment-month { width: 54px; }
+    .sk-control-segment-year { width: 82px; }
     
     @keyframes sk-pulse { 
       0%, 100% { 
@@ -515,20 +653,47 @@
 
     @media (max-width: 600px) {
       .table-controls {
-        padding: 14px 14px 12px;
+        padding: 13px 14px 11px;
+        gap: 6px;
+      }
+      .control-main-row {
+        align-items: center;
+        gap: 8px;
+      }
+      .period-selectors {
         gap: 7px;
+        flex: 0 1 auto;
       }
-      .control-actions { gap: 6px; }
+      .dropdown-trigger {
+        height: 44px;
+        min-height: 44px;
+        padding: 0 11px;
+        font-size: 15px;
+      }
+      .year-dropdown {
+        min-width: 92px;
+        max-width: 104px;
+      }
       .month-dropdown {
-        max-width: 132px;
-        font-size: 19px;
-        padding: 8px 27px 8px 8px;
-        margin-left: -8px;
+        min-width: 106px;
+        max-width: 120px;
       }
-      .overall-btn {
+      .sk-control-year { width: 92px; }
+      .sk-control-month { width: 106px; }
+      .sk-control-segment {
+        width: 113px;
         height: 34px;
-        padding: 0 10px;
-        font-size: 13px;
+        gap: 1px;
+        padding: 2px;
+      }
+      .sk-control-segment-item { height: 30px; }
+      .sk-control-segment-month { width: 42px; }
+      .sk-control-segment-year { width: 66px; }
+      .view-segment { gap: 1px; padding: 2px; }
+      .view-segment-btn {
+        min-height: 30px;
+        padding: 0 9px;
+        font-size: 12px;
       }
       th, td { 
         padding: 8px 4px; 
@@ -1609,6 +1774,11 @@ let rawPlayers = [];
 let rawGames = [];
 let rawResults = [];
 let activeYear = new Date().getFullYear();
+let availableYears = [];
+let activeMonthNo = null;
+let preferredMonthNo = null;
+let activeViewMode = 'month';
+let hasInitializedYear = false;
 let tableScrollArrowResizeHandler = null;
 let addGameRows = [];
 let addGameRowSeq = 0;
@@ -1630,9 +1800,12 @@ function escapeHtml(value) {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
 }
-function monthName(monthNo) {
+function monthShortName(monthNo) {
     const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${names[monthNo - 1]} ${activeYear}`;
+    return names[monthNo - 1] || '';
+}
+function monthName(monthNo) {
+    return `${monthShortName(monthNo)} ${activeYear}`;
 }
 function formatDateDisplay(dateStr) {
     if (!dateStr)
@@ -1667,8 +1840,16 @@ function showToast(message, type = 'success') {
 function renderSkeleton(isFirstLoad = true) {
     if (isFirstLoad) {
         document.getElementById('controlsArea').innerHTML = `
-          <div class="sk-box" style="height: 28px; width: 120px; margin: 0;"></div>
-          <div class="sk-box" style="height: 36px; width: 80px; border-radius: 18px; margin: 0;"></div>`;
+          <div class="control-main-row">
+            <div class="period-selectors">
+              <div class="sk-box sk-control-dropdown sk-control-year"></div>
+              <div class="sk-box sk-control-dropdown sk-control-month"></div>
+            </div>
+            <div class="sk-control-segment" aria-hidden="true">
+              <div class="sk-box sk-control-segment-item sk-control-segment-month"></div>
+              <div class="sk-box sk-control-segment-item sk-control-segment-year"></div>
+            </div>
+          </div>`;
     }
     const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
     const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
@@ -1750,16 +1931,41 @@ function aggregateDatabaseData() {
     });
     rawGames = games;
     const displayGames = games.filter(g => !g.is_deleted);
-    activeYear = displayGames.length ? displayGames[displayGames.length - 1].year : new Date().getFullYear();
-    const currentYearGames = displayGames.filter(g => g.year === activeYear);
+    availableYears = [...new Set(displayGames.map(g => g.year))].sort((a, b) => b - a);
+    if (availableYears.length) {
+        if (!hasInitializedYear || !availableYears.includes(Number(activeYear))) {
+            activeYear = availableYears[0];
+        }
+        hasInitializedYear = true;
+    }
+    else {
+        activeYear = new Date().getFullYear();
+        activeViewMode = 'year';
+        hasInitializedYear = false;
+    }
+    const currentYearGames = displayGames.filter(g => g.year === Number(activeYear));
     const monthNos = [...new Set(currentYearGames.map(g => g.monthNo).filter(Boolean))].sort((a, b) => a - b);
+    if (monthNos.length) {
+        if (preferredMonthNo !== null && monthNos.includes(Number(preferredMonthNo))) {
+            activeMonthNo = Number(preferredMonthNo);
+        }
+        else {
+            activeMonthNo = monthNos[monthNos.length - 1];
+            if (preferredMonthNo === null) {
+                preferredMonthNo = activeMonthNo;
+            }
+        }
+    }
+    else {
+        activeMonthNo = null;
+    }
     allSheetNames = monthNos.map(monthName);
-    allSheetNames.push('總排名');
+    allSheetNames.push('年度排名');
     globalData = {};
     gameColumnMeta = {};
     monthNos.forEach(monthNo => {
         const monthGames = displayGames
-            .filter(g => g.monthNo === monthNo && g.year === activeYear)
+            .filter(g => g.monthNo === monthNo && g.year === Number(activeYear))
             .sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
         const columns = monthGames.map(g => g.id);
         const MIN_DATE_COLUMNS = 9;
@@ -1790,17 +1996,20 @@ function aggregateDatabaseData() {
     const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
     const overallRows = rawPlayers.map(p => {
         const monthlyTotals = monthNos.map(monthNo => displayGames
-            .filter(g => g.monthNo === monthNo && g.year === activeYear)
+            .filter(g => g.monthNo === monthNo && g.year === Number(activeYear))
             .flatMap(g => g.results)
             .filter(r => r.playerId === Number(p.id))
             .reduce((sum, r) => sum + r.score, 0));
         const total = monthlyTotals.reduce((sum, v) => sum + v, 0);
         return [p.name, total, ...monthlyTotals.map(v => v === 0 ? '' : v)];
     });
-    globalData['總排名'] = [[String(activeYear)], overallHeader, ...overallRows];
-    const availableMonths = allSheetNames.filter(n => n !== '總排名');
-    if (!activeSheetName || !allSheetNames.includes(activeSheetName)) {
-        activeSheetName = availableMonths.length ? availableMonths[availableMonths.length - 1] : '總排名';
+    globalData['年度排名'] = [[String(activeYear)], overallHeader, ...overallRows];
+    if (activeViewMode === 'year' || activeMonthNo === null) {
+        activeSheetName = '年度排名';
+    }
+    else {
+        activeViewMode = 'month';
+        activeSheetName = monthName(activeMonthNo);
     }
 }
 const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
@@ -1927,42 +2136,125 @@ async function fetchData() {
         return false;
     }
 }
-function renderControls() {
-    const isOverall = activeSheetName === '總排名';
-    const menuHtml = allSheetNames.filter(n => n !== '總排名').map(m => `
-        <div class="custom-dropdown-item ${m === activeSheetName ? 'selected' : ''}" data-value="${escapeHtml(m)}">
-          <span>${escapeHtml(m)}</span>${m === activeSheetName ? '<span style="font-size:14px; font-weight:bold;">✓</span>' : ''}
-        </div>`).join('');
-    document.getElementById('controlsArea').innerHTML = `
-        <div class="custom-dropdown-container" id="dropdownContainer">
-          <button id="monthSelectorTrigger" class="month-dropdown">${escapeHtml(activeSheetName)}</button>
-          <div id="monthSelectorMenu" class="custom-dropdown-menu">${menuHtml}</div>
-        </div>
-        <div class="control-actions">
-          <button id="overallBtn" class="overall-btn ${isOverall ? 'active' : ''}">總排名</button>
-        </div>`;
-    const menu = document.getElementById('monthSelectorMenu');
-    document.getElementById('monthSelectorTrigger').addEventListener('click', e => { menu.classList.toggle('show'); e.stopPropagation(); });
+function closeControlDropdownMenus() {
+    document.querySelectorAll('.custom-dropdown-menu.show').forEach(menu => {
+        menu.classList.remove('show');
+        const trigger = menu.parentElement?.querySelector('.dropdown-trigger');
+        if (trigger)
+            trigger.setAttribute('aria-expanded', 'false');
+    });
+}
+function setupControlDropdown(triggerId, menuId, dataAttribute, onSelect) {
+    const trigger = document.getElementById(triggerId);
+    const menu = document.getElementById(menuId);
+    if (!trigger || !menu)
+        return;
+    trigger.addEventListener('click', event => {
+        event.stopPropagation();
+        const wasOpen = menu.classList.contains('show');
+        closeControlDropdownMenus();
+        if (!wasOpen) {
+            menu.classList.add('show');
+            trigger.setAttribute('aria-expanded', 'true');
+        }
+    });
     menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
-        item.addEventListener('click', e => {
-            menu.classList.remove('show');
-            switchSheet(e.currentTarget.getAttribute('data-value'));
+        item.addEventListener('click', event => {
+            event.stopPropagation();
+            const value = event.currentTarget.getAttribute(`data-${dataAttribute}`);
+            closeControlDropdownMenus();
+            if (value !== null)
+                onSelect(value);
         });
     });
-    document.getElementById('overallBtn').addEventListener('click', () => switchSheet('總排名'));
+}
+function renderControls() {
+    const monthNames = allSheetNames.filter(name => name !== '年度排名');
+    const hasMonths = monthNames.length > 0;
+    const yearMenuHtml = availableYears.map(year => {
+        const selected = Number(year) === Number(activeYear);
+        return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-year="${year}" role="menuitemradio" aria-checked="${selected}">
+          <span>${year}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
+        </button>`;
+    }).join('');
+    const monthMenuHtml = monthNames.map(name => {
+        const monthNo = Number(globalData[name]?.[0]?.[0]);
+        const selected = monthNo === Number(activeMonthNo);
+        return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-month-no="${monthNo}" role="menuitemradio" aria-checked="${selected}">
+          <span>${escapeHtml(monthShortName(monthNo))}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
+        </button>`;
+    }).join('');
+    const isMonthView = activeViewMode === 'month';
+    const yearLabel = availableYears.length ? String(activeYear) : '沒有年份';
+    const monthLabel = activeMonthNo !== null ? monthShortName(activeMonthNo) : '沒有牌局';
+    document.getElementById('controlsArea').innerHTML = `
+        <div class="control-main-row">
+          <div class="period-selectors">
+            <div class="custom-dropdown-container" id="yearDropdownContainer">
+              <button id="yearSelector" class="dropdown-trigger year-dropdown" type="button" aria-label="選擇年份" aria-haspopup="menu" aria-expanded="false" aria-controls="yearSelectorMenu" ${availableYears.length ? '' : 'disabled'}>${escapeHtml(yearLabel)}</button>
+              <div id="yearSelectorMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇年份">${yearMenuHtml}</div>
+            </div>
+            <div class="custom-dropdown-container" id="monthDropdownContainer" ${isMonthView ? '' : 'hidden'}>
+              <button id="monthSelectorTrigger" class="dropdown-trigger month-dropdown" type="button" aria-label="選擇月份" aria-haspopup="menu" aria-expanded="false" aria-controls="monthSelectorMenu" ${hasMonths ? '' : 'disabled'}>${escapeHtml(monthLabel)}</button>
+              <div id="monthSelectorMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇月份">${monthMenuHtml}</div>
+            </div>
+          </div>
+          <div class="view-segment" role="group" aria-label="資料檢視模式">
+            <button type="button" class="view-segment-btn ${isMonthView ? 'active' : ''}" data-view-mode="month" aria-pressed="${isMonthView}" ${hasMonths ? '' : 'disabled'}>月份</button>
+            <button type="button" class="view-segment-btn ${!isMonthView ? 'active' : ''}" data-view-mode="year" aria-pressed="${!isMonthView}">年度排名</button>
+          </div>
+        </div>`;
+    setupControlDropdown('yearSelector', 'yearSelectorMenu', 'year', switchYear);
+    setupControlDropdown('monthSelectorTrigger', 'monthSelectorMenu', 'month-no', switchMonth);
+    document.querySelectorAll('.view-segment-btn').forEach(button => {
+        button.addEventListener('click', () => switchViewMode(button.dataset.viewMode));
+    });
+}
+function resetTableViewState() {
+    currentSortCol = 'total';
+    sortAscending = false;
+    focusedDateCol = null;
+}
+function switchYear(yearValue) {
+    const nextYear = Number(yearValue);
+    if (!availableYears.includes(nextYear) || nextYear === Number(activeYear))
+        return;
+    activeYear = nextYear;
+    aggregateDatabaseData();
+    resetTableViewState();
+    renderControls();
+    renderContent();
+}
+function switchViewMode(mode) {
+    if (mode !== 'month' && mode !== 'year')
+        return;
+    if (mode === 'month' && activeMonthNo === null)
+        return;
+    activeViewMode = mode;
+    activeSheetName = mode === 'year' ? '年度排名' : monthName(activeMonthNo);
+    resetTableViewState();
+    renderControls();
+    renderContent();
+}
+function switchMonth(monthNoValue) {
+    const monthNo = Number(monthNoValue);
+    if (!Number.isInteger(monthNo) || monthNo < 1 || monthNo > 12)
+        return;
+    const sheetName = monthName(monthNo);
+    if (!globalData[sheetName])
+        return;
+    activeMonthNo = monthNo;
+    preferredMonthNo = monthNo;
+    activeViewMode = 'month';
+    activeSheetName = sheetName;
+    resetTableViewState();
+    renderControls();
+    renderContent();
 }
 function getGameColumnIndex(sheetName, gameId) {
     const meta = gameColumnMeta[sheetName] || [];
     const found = meta.find(item => Number(item.gameId) === Number(gameId));
     return found ? found.colIndex : null;
-}
-function switchSheet(sheetName) {
-    activeSheetName = sheetName;
-    currentSortCol = 'total';
-    sortAscending = false;
-    focusedDateCol = null;
-    renderControls();
-    renderContent();
 }
 function renderContent() {
     renderTableLayout();
@@ -2012,7 +2304,7 @@ function renderTableLayout() {
     const data = globalData[activeSheetName];
     if (!data)
         return;
-    const isOverall = activeSheetName === '總排名';
+    const isOverall = activeSheetName === '年度排名';
     const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
     const headHtml = colIndices.map(j => {
         const val = data[1][j];
@@ -2083,7 +2375,7 @@ function renderTableBody() {
     if (!tbody)
         return;
     const data = globalData[activeSheetName];
-    const isOverall = activeSheetName === '總排名';
+    const isOverall = activeSheetName === '年度排名';
     const colLimit = getColLimit(data);
     const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
     let rows = data.slice(2).filter(r => r[0]).map(row => {
@@ -2103,13 +2395,27 @@ function renderTableBody() {
         r.rank = displayRank;
         rank++;
     });
-    rows.sort((a, b) => {
-        if (!a.hasPart || !b.hasPart)
-            return b.hasPart - a.hasPart;
-        const vA = currentSortCol === 'total' ? a.total : (Number(a.data[currentSortCol]) || -Infinity);
-        const vB = currentSortCol === 'total' ? b.total : (Number(b.data[currentSortCol]) || -Infinity);
-        return sortAscending ? vA - vB : vB - vA;
-    });
+const getSortValue = row => {
+    if (currentSortCol === 'total') return row.total;
+    const value = row.data[currentSortCol];
+    if (
+        value === undefined ||
+        value === null ||
+        String(value).trim() === '' ||
+        String(value).trim() === '-'
+    ) {
+        return -Infinity;
+    }
+    const number = Number(value);
+    return Number.isFinite(number) ? number : -Infinity;
+};
+rows.sort((a, b) => {
+    if (!a.hasPart || !b.hasPart)
+        return b.hasPart - a.hasPart;
+    const vA = getSortValue(a);
+    const vB = getSortValue(b);
+    return sortAscending ? vA - vB : vB - vA;
+});
     tbody.innerHTML = rows.map(r => {
         const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
         const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
@@ -2144,8 +2450,11 @@ function collectPlayerStats(playerName) {
         opponents: {}
     };
     let profileMonthName = activeSheetName;
-    if (profileMonthName === '總排名') {
-        profileMonthName = allSheetNames.filter(n => n !== '總排名').slice(-1)[0] || '';
+    if (profileMonthName === '年度排名') {
+        const selectedMonthName = activeMonthNo !== null ? monthName(activeMonthNo) : '';
+        profileMonthName = globalData[selectedMonthName]
+            ? selectedMonthName
+            : allSheetNames.filter(n => n !== '年度排名').slice(-1)[0] || '';
     }
     stats.profileMonthName = profileMonthName;
     stats.month.sheetName = profileMonthName;
@@ -2255,7 +2564,7 @@ function openPlayerProfile(playerName) {
         return;
     const stats = collectPlayerStats(playerName);
     const currentRank = getOverallRank(playerName);
-    document.getElementById('profileSubtitle').textContent = `${stats.profileMonthName || activeYear + ' 年'} · ${currentRank ? `目前總排名 ${currentRank}` : '玩家資料'}`;
+    document.getElementById('profileSubtitle').textContent = `${stats.profileMonthName || activeYear + ' 年'} · ${currentRank ? `歷年總排名 ${currentRank}` : '玩家資料'}`;
     renderProfileStats(stats);
 }
 function closePlayerProfile() {
@@ -3061,6 +3370,11 @@ async function saveAddGame() {
         if (isEdit) {
             updateEditGameDeleteButton();
         }
+        activeYear = targetGame.year;
+        activeMonthNo = targetGame.monthNo;
+        preferredMonthNo = targetGame.monthNo;
+        activeViewMode = 'month';
+        aggregateDatabaseData();
         activeSheetName = monthName(targetGame.monthNo);
         focusedDateCol = getGameColumnIndex(activeSheetName, targetGame.id);
         currentSortCol = focusedDateCol !== null
@@ -3153,9 +3467,18 @@ function setupAddGameDrawer() {
     });
 }
 document.addEventListener('click', e => {
-    const menu = document.getElementById('monthSelectorMenu'), container = document.getElementById('dropdownContainer');
-    if (menu && container && !container.contains(e.target))
-        menu.classList.remove('show');
+    if (!e.target.closest('.custom-dropdown-container'))
+        closeControlDropdownMenus();
+});
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape')
+        return;
+    const openMenu = document.querySelector('.custom-dropdown-menu.show');
+    if (!openMenu)
+        return;
+    const trigger = openMenu.parentElement?.querySelector('.dropdown-trigger');
+    closeControlDropdownMenus();
+    trigger?.focus();
 });
 let scrollTimers = { table: null, profile: null, addGame: null };
 document.addEventListener('scroll', e => {
