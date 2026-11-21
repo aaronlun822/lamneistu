@@ -153,15 +153,15 @@
     }
     .admin-account {
       position: absolute;
-      top: 0;
+      top: 50%;
       left: 0;
       right: auto;
       z-index: calc(var(--z-modal) + 10);
       display: flex;
       align-items: center;
       gap: 9px;
-      max-width: min(340px, calc(100% - 104px));
-      transform: none;
+      max-width: min(340px, calc(100% - 48px));
+      transform: translateY(-50%);
     }
     .admin-account[hidden] { display: none; }
     .header-wrapper.admin-active {
@@ -409,6 +409,7 @@
     
     .header-wrapper { 
       position: relative; 
+      min-height: 40px;
       margin-bottom: 24px; 
       display: flex; 
       justify-content: center; 
@@ -2063,7 +2064,6 @@
 
   <div class="container">
     <div class="header-wrapper">
-      <h1>Lam Nei Studio</h1>
       <div class="admin-account" id="adminAccount" hidden aria-label="管理員帳戶">
         <div class="admin-account-identity">
           <span class="admin-account-avatar" aria-hidden="true">
