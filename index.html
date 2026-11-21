@@ -29,6 +29,9 @@
   <style>
     :root {
       color-scheme: light;
+      --z-sticky: 10;
+      --z-header: 20;
+      --z-modal: 1000;
       --bg-main: #F2F2F7;
       --bg-muted: #F2F2F7;
       --bg-hover: #EAEAEE;
@@ -201,12 +204,15 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .main-menu-item {
+      appearance: none;
+      -webkit-appearance: none;
       display: flex;
       align-items: center;
       gap: 12px;
       width: 100%;
       min-height: 46px;
       box-sizing: border-box;
+      margin: 0;
       padding: 0 11px;
       border: 0;
       border-radius: 10px;
@@ -241,12 +247,6 @@
     .main-menu-item-label {
       min-width: 0;
       flex: 1 1 auto;
-    }
-    .main-menu-item-state {
-      flex: 0 0 auto;
-      color: var(--text-tertiary);
-      font-size: 12px;
-      font-weight: 550;
     }
     .main-menu-divider {
       height: 1px;
@@ -306,91 +306,45 @@
       -webkit-user-select: text;
       user-select: text;
     }
-    
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-      background-color: var(--bg-main); 
-      margin: 0; 
-      padding: 20px 16px; 
-      color: var(--text-primary); 
-    }
-    
-    .container { 
-      max-width: 900px; 
-      margin: 0 auto; 
-    }
-    
-    .header-wrapper { 
-      position: relative; 
-      margin-bottom: 24px; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-    } 
-    
-    h1 { 
-      font-size: 28px; 
-      font-weight: 700; 
-      text-align: center; 
-      margin: 0; 
-      padding: 0 40px; 
-    }
-    
-    :root { 
-      --z-sticky: 10; 
-      --z-header: 20; 
-      --z-modal: 1000; 
-    }
-    
-    .sheet-link-icon { 
-      position: absolute; 
-      top: 50%; 
-      right: 0; 
-      transform: translateY(-50%); 
-      text-decoration: none; 
-      cursor: pointer; 
-    }
-    
-    .sheet-link-icon[style*="left: 0"] { 
-      left: 0; 
-      right: auto; 
-    }
-    
-    .logo-container { 
-      width: 36px; 
-      height: 36px; 
-      background-color: transparent; 
-      border-radius: 50%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      transition: all 0.2s ease; 
-      overflow: hidden; 
-      position: relative; 
-    }
-    
-    .doc-logo svg {
-      width: 27px;
-      height: 27px;
-      display: block;
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-main);
+      margin: 0;
+      padding: 20px 16px;
       color: var(--text-primary);
-      transition: all 0.2s ease;
-    }
-    
-    .sheet-link-icon:hover .logo-container { 
-      background-color: var(--hover-tint); 
-      transform: scale(1.05); 
     }
 
-    .card { 
-      background: var(--surface); 
-      border-radius: 16px; 
-      padding: 0 0 20px 0; 
-      margin-bottom: 24px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-      overflow: hidden; 
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
     }
-    
+
+    .header-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      margin: 0;
+      padding: 0 40px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 0 0 20px 0;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      overflow: hidden;
+    }
+
     .table-controls {
       display: flex;
       flex-direction: column;
@@ -503,6 +457,9 @@
       display: inline-flex;
       align-items: center;
       gap: 2px;
+      width: max-content;
+      height: 44px;
+      box-sizing: border-box;
       padding: 3px;
       flex: 0 0 auto;
       border-radius: 11px;
@@ -510,7 +467,9 @@
     }
 
     .view-segment-btn {
-      min-height: 32px;
+      height: 38px;
+      min-height: 38px;
+      box-sizing: border-box;
       padding: 0 13px;
       border: 0;
       border-radius: 8px;
@@ -519,6 +478,7 @@
       font: inherit;
       font-size: 14px;
       font-weight: 600;
+      line-height: 1;
       white-space: nowrap;
       cursor: pointer;
       transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
@@ -557,10 +517,10 @@
       transform: translateY(-5px);
       transition: opacity .2s ease, transform .2s ease;
     }
-    
-    .custom-dropdown-menu.show { 
-      display: block; 
-      animation: fadeInDown 0.2s forwards; 
+
+    .custom-dropdown-menu.show {
+      display: block;
+      animation: fadeInDown 0.2s forwards;
     }
 
     @media (min-width: 601px) {
@@ -574,12 +534,12 @@
         height: 0;
       }
     }
-    
-    @keyframes fadeInDown { 
-      to { 
-        opacity: 1; 
-        transform: translateY(0); 
-      } 
+
+    @keyframes fadeInDown {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .custom-dropdown-item {
@@ -634,12 +594,11 @@
       line-height: 1;
     }
 
-    
-    .table-container { 
-      width: 100%; 
-      max-height: 70vh; 
-      overflow: auto; 
-      -webkit-overflow-scrolling: touch; 
+    .table-container {
+      width: 100%;
+      max-height: 70vh;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: transparent transparent;
       transition: scrollbar-color 0.3s ease;
@@ -724,173 +683,171 @@
         visibility: hidden;
       }
     }
-    
-    table { 
-      width: 0; 
-      border-collapse: separate; 
-      border-spacing: 0; 
-      white-space: nowrap; 
-      table-layout: fixed; 
-    }
-    
-    th, td { 
-      padding: 12px 8px; 
-      text-align: center; 
-      border-bottom: 1px solid var(--border); 
-      width: 70px; 
-      min-width: 70px; 
-      max-width: 70px; 
-      overflow: hidden; 
-      box-sizing: border-box; 
-      background-color: var(--surface); 
-      transition: background-color 0.1s ease; 
-      height: 48px; 
-      vertical-align: middle; 
-      line-height: 1.2; 
-    }
-    
-    th { 
-      color: var(--text-tertiary); 
-      font-weight: 500; 
-      font-size: 14px; 
-      position: sticky; 
-      top: 0; 
-      z-index: var(--z-header); 
-      box-shadow: 0 1px 0 var(--border); 
-      cursor: pointer; 
-    }
-    
-    @media (hover: hover) { 
-      th:hover { 
-        background-color: var(--bg-muted); 
-      } 
-    }
-    
-    td:nth-child(1), 
-    th:nth-child(1) { 
-      position: sticky; 
-      left: 0; 
-      width: 60px; 
-      min-width: 60px; 
-      max-width: 60px; 
-      z-index: var(--z-sticky); 
-      border-right: 1px solid var(--bg-muted); 
-    }
-    
-    td:nth-child(2), 
-    th:nth-child(2) { 
-      position: sticky; 
-      left: 60px; 
-      width: 100px; 
-      min-width: 100px; 
-      max-width: 100px; 
-      text-align: left; 
-      font-weight: 600; 
-      z-index: var(--z-sticky); 
-    }
-    
-    td:nth-child(3), 
-    th:nth-child(3) { 
-      position: sticky; 
-      left: 160px; 
-      width: 85px; 
-      min-width: 85px; 
-      max-width: 85px; 
-      z-index: var(--z-sticky); 
-      border-right: 1px solid var(--border); 
-    }
-    
-    th:nth-child(1), 
-    th:nth-child(2), 
-    th:nth-child(3) { 
-      z-index: calc(var(--z-header) + 1); 
+
+    table {
+      width: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+      white-space: nowrap;
+      table-layout: fixed;
     }
 
-    td.focused-sticky, 
-    th.focused-sticky { 
-      position: sticky; 
-      left: 245px; 
-      box-shadow: 1px 0 0 var(--border); 
+    th, td {
+      padding: 12px 8px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      width: 70px;
+      min-width: 70px;
+      max-width: 70px;
+      overflow: hidden;
+      box-sizing: border-box;
+      background-color: var(--surface);
+      transition: background-color 0.1s ease;
+      height: 48px;
+      vertical-align: middle;
+      line-height: 1.2;
     }
-    
-    td.focused-sticky { 
-      z-index: calc(var(--z-sticky) + 1); 
-      background-color: var(--accent-soft-2); 
-      border-bottom: 1px solid var(--border) !important; 
-    }
-    
-    th.focused-sticky { 
-      z-index: calc(var(--z-header) + 2); 
-      background-color: var(--accent-header); 
-      color: var(--accent); 
-      font-weight: 700; 
-      box-shadow: 1px 0 0 var(--border), 0 1px 0 var(--border); 
+
+    th {
+      color: var(--text-tertiary);
+      font-weight: 500;
+      font-size: 14px;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-header);
+      box-shadow: 0 1px 0 var(--border);
+      cursor: pointer;
     }
 
     @media (hover: hover) {
-      tr:hover td { 
-        background-color: var(--bg-muted) !important; 
-      }
-      tr:hover td.focused-sticky { 
-        background-color: var(--accent-hover-surface) !important; 
+      th:hover {
+        background-color: var(--bg-muted);
       }
     }
 
-    .total-no-shadow { 
-      border-right: 1px solid var(--border); 
-    }
-    
-    .rank-circle { 
-      display: inline-flex; 
-      align-items: center; 
-      justify-content: center; 
-      width: 26px; 
-      height: 26px; 
-      border-radius: 50%; 
-      font-size: 13px; 
-      font-weight: bold; 
-    }
-    
-    .rank-1 { 
-      background-color: var(--rank-gold); 
-      color: var(--text-on-solid); 
-    }
-    
-    .rank-2 { 
-      background-color: var(--rank-silver); 
-      color: var(--text-on-solid); 
-    }
-    
-    .rank-3 { 
-      background-color: var(--rank-bronze); 
-      color: var(--text-on-solid); 
-    }
-    
-    .rank-other { 
-      color: var(--text-tertiary); 
-      font-weight: normal; 
+    td:nth-child(1),
+    th:nth-child(1) {
+      position: sticky;
+      left: 0;
+      width: 60px;
+      min-width: 60px;
+      max-width: 60px;
+      z-index: var(--z-sticky);
+      border-right: 1px solid var(--bg-muted);
     }
 
-    .win { 
-      color: var(--positive); 
-      font-weight: bold; 
-    }
-    
-    .lose { 
-      color: var(--negative); 
-      font-weight: bold; 
-    }
-    
-    .sort-icon { 
-      font-size: 10px; 
-      margin-left: 2px; 
+    td:nth-child(2),
+    th:nth-child(2) {
+      position: sticky;
+      left: 60px;
+      width: 100px;
+      min-width: 100px;
+      max-width: 100px;
+      text-align: left;
+      font-weight: 600;
+      z-index: var(--z-sticky);
     }
 
-    .sk-box { 
-      background: var(--border); 
-      border-radius: 8px; 
-      animation: sk-pulse 1.5s infinite ease-in-out; 
-      margin-bottom: 12px; 
+    td:nth-child(3),
+    th:nth-child(3) {
+      position: sticky;
+      left: 160px;
+      width: 85px;
+      min-width: 85px;
+      max-width: 85px;
+      z-index: var(--z-sticky);
+      border-right: 1px solid var(--border);
+    }
+
+    th:nth-child(1),
+    th:nth-child(2),
+    th:nth-child(3) {
+      z-index: calc(var(--z-header) + 1);
+    }
+
+    td.focused-sticky,
+    th.focused-sticky {
+      position: sticky;
+      left: 245px;
+      box-shadow: 1px 0 0 var(--border);
+    }
+
+    td.focused-sticky {
+      z-index: calc(var(--z-sticky) + 1);
+      background-color: var(--accent-soft-2);
+      border-bottom: 1px solid var(--border) !important;
+    }
+
+    th.focused-sticky {
+      z-index: calc(var(--z-header) + 2);
+      background-color: var(--accent-header);
+      color: var(--accent);
+      font-weight: 700;
+      box-shadow: 1px 0 0 var(--border), 0 1px 0 var(--border);
+    }
+
+    @media (hover: hover) {
+      tr:hover td {
+        background-color: var(--bg-muted) !important;
+      }
+      tr:hover td.focused-sticky {
+        background-color: var(--accent-hover-surface) !important;
+      }
+    }
+
+    .total-no-shadow {
+      border-right: 1px solid var(--border);
+    }
+
+    .rank-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--text-on-solid);
+    }
+
+    .rank-1 {
+      background-color: var(--rank-gold);
+    }
+
+    .rank-2 {
+      background-color: var(--rank-silver);
+    }
+
+    .rank-3 {
+      background-color: var(--rank-bronze);
+    }
+
+    .rank-other {
+      color: var(--text-tertiary);
+      font-weight: normal;
+    }
+
+    .win {
+      color: var(--positive);
+      font-weight: bold;
+    }
+
+    .lose {
+      color: var(--negative);
+      font-weight: bold;
+    }
+
+    .sort-icon {
+      font-size: 10px;
+      margin-left: 2px;
+    }
+
+    .sk-box {
+      background: var(--skeleton);
+      border-radius: 8px;
+      animation: sk-pulse 1.5s infinite ease-in-out;
+      margin-bottom: 12px;
     }
 
     .sk-control-dropdown {
@@ -911,7 +868,7 @@
       gap: 2px;
       box-sizing: border-box;
       width: 116px;
-      height: 38px;
+      height: 44px;
       padding: 3px;
       border-radius: 11px;
       background: var(--bg-muted);
@@ -919,44 +876,44 @@
 
     .sk-control-segment-item {
       flex: 0 0 auto;
-      height: 32px;
+      height: 38px;
       margin: 0;
       border-radius: 8px;
     }
 
     .sk-control-segment-month { width: 54px; }
     .sk-control-segment-year { width: 54px; }
-    
-    @keyframes sk-pulse { 
-      0%, 100% { 
-        opacity: 0.5; 
-      } 
-      50% { 
-        opacity: 1; 
-      } 
+
+    @keyframes sk-pulse {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
     }
-    
-    .error-container { 
-      text-align: center; 
-      padding: 40px; 
-      color: var(--text-tertiary); 
+
+    .error-container {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-tertiary);
     }
-    
-    .retry-btn { 
-      margin-top: 16px; 
-      padding: 0 20px; 
-      height: 38px; 
-      border-radius: 20px; 
-      background-color: var(--accent); 
-      color: var(--text-on-solid); 
-      border: none; 
-      font-size: 15px; 
-      font-weight: 600; 
-      cursor: pointer; 
+
+    .retry-btn {
+      margin-top: 16px;
+      padding: 0 20px;
+      height: 38px;
+      border-radius: 20px;
+      background-color: var(--accent);
+      color: var(--text-on-solid);
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
     }
-    
-    .retry-btn:hover { 
-      background-color: var(--accent-strong); 
+
+    .retry-btn:hover {
+      background-color: var(--accent-strong);
     }
 
     @media (max-width: 600px) {
@@ -990,60 +947,62 @@
       .sk-control-month { width: 106px; }
       .sk-control-segment {
         width: 89px;
-        height: 34px;
+        height: 44px;
         gap: 1px;
-        padding: 2px;
+        padding: 3px;
       }
-      .sk-control-segment-item { height: 30px; }
+      .sk-control-segment-item { height: 38px; }
       .sk-control-segment-month { width: 42px; }
       .sk-control-segment-year { width: 42px; }
-      .view-segment { gap: 1px; padding: 2px; }
+      .view-segment {
+        gap: 1px;
+        padding: 3px;
+      }
       .view-segment-btn {
-        min-height: 30px;
         padding: 0 9px;
-        font-size: 12px;
+        font-size: 14px;
       }
-      th, td { 
-        padding: 8px 4px; 
-        font-size: 13px; 
-        height: 40px; 
+      th, td {
+        padding: 8px 4px;
+        font-size: 13px;
+        height: 40px;
       }
-      
-      th { 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: clip; 
-      } 
-      
-      .rank-circle { 
-        width: 22px; 
-        height: 22px; 
-        font-size: 11px; 
+
+      th {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
       }
-      
-      td:nth-child(1), th:nth-child(1) { 
-        width: 46px !important; 
-        min-width: 46px !important; 
-        max-width: 46px !important; 
+
+      .rank-circle {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
       }
-      
-      td:nth-child(2), th:nth-child(2) { 
-        left: 46px !important; 
-        width: 75px !important; 
-        min-width: 75px !important; 
-        max-width: 75px !important; 
-        padding-left: 8px !important; 
+
+      td:nth-child(1), th:nth-child(1) {
+        width: 46px !important;
+        min-width: 46px !important;
+        max-width: 46px !important;
       }
-      
-      td:nth-child(3), th:nth-child(3) { 
-        left: 121px !important; 
-        width: 65px !important; 
-        min-width: 65px !important; 
-        max-width: 65px !important; 
+
+      td:nth-child(2), th:nth-child(2) {
+        left: 46px !important;
+        width: 75px !important;
+        min-width: 75px !important;
+        max-width: 75px !important;
+        padding-left: 8px !important;
       }
-      
-      td.focused-sticky, th.focused-sticky { 
-        left: 186px !important; 
+
+      td:nth-child(3), th:nth-child(3) {
+        left: 121px !important;
+        width: 65px !important;
+        min-width: 65px !important;
+        max-width: 65px !important;
+      }
+
+      td.focused-sticky, th.focused-sticky {
+        left: 186px !important;
       }
     }
 
@@ -1238,12 +1197,36 @@
       gap: 7px;
     }
     .recent-game {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 40px;
+      box-sizing: border-box;
+      border: 0;
       border-radius: 11px;
-      padding: 9px 4px;
+      padding: 8px 4px;
       text-align: center;
       background: var(--bg-muted);
+      color: var(--text-primary);
+      font-family: inherit;
       font-weight: 700;
       font-size: 14px;
+      line-height: 1.2;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (hover: hover) {
+      .recent-game:hover {
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+      }
+    }
+    .recent-game:active { opacity: .78; }
+    .recent-game:focus-visible {
+      outline: 2px solid rgba(var(--accent-rgb), .42);
+      outline-offset: 2px;
     }
     .recent-game.win {
       background: var(--positive-bg);
@@ -1349,31 +1332,6 @@
       .profile-name { font-size: 21px; }
     }
 
-    #addGameTrigger {
-      appearance: none;
-      -webkit-appearance: none;
-      border: none;
-      outline: none;
-      padding: 0 11px;
-      margin: 0;
-      background: transparent;
-      box-shadow: none;
-      color: var(--text-primary);
-    }
-    #addGameTrigger:focus {
-      outline: none;
-      box-shadow: none;
-    }
-    #addGameTrigger:hover,
-    #addGameTrigger:active {
-      background: var(--bg-muted);
-    }
-    #addGameTrigger:focus-visible {
-      outline: 2px solid rgba(var(--accent-rgb), .42);
-      outline-offset: 2px;
-      box-shadow: none;
-    }
-
     .add-game-backdrop {
       position: fixed;
       inset: 0;
@@ -1411,6 +1369,9 @@
       opacity: 1;
       transform: translate(-50%, 0) scale(1);
       pointer-events: auto;
+    }
+    .add-game-drawer.dragging {
+      transition: none;
     }
     .add-game-header {
       position: relative;
@@ -1561,12 +1522,6 @@
       box-shadow: 0 1px 0 rgba(0,0,0,.03);
     }
     .add-game-section:last-child { margin-bottom: 0; }
-    .add-game-section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      margin: 0 0 10px;
-    }
     .date-picker-wrap {
       position: relative;
       width: 100%;
@@ -1607,7 +1562,7 @@
       height: 100%;
       display: block;
     }
-    
+
     .date-picker-native {
       position: absolute;
       inset: 0;
@@ -1630,10 +1585,7 @@
     .add-game-drawer:not(.show) .date-picker-native {
       pointer-events: none;
     }
-    .add-game-drawer.show .date-picker-native {
-      pointer-events: auto;
-    }
-    
+
     .date-picker-native::-webkit-calendar-picker-indicator {
       position: absolute;
       inset: 0;
@@ -1650,10 +1602,6 @@
       grid-template-columns: minmax(0, 1fr) 54px minmax(105px, 0.72fr) 34px;
       gap: 8px;
       align-items: center;
-    }
-    
-    .player-entry.required {
-      grid-template-columns: minmax(0, 1fr) 54px minmax(105px, 0.72fr) 34px;
     }
     .player-select,
     .inline-player-input,
@@ -1763,13 +1711,16 @@
       height: 46px;
       border: none;
       border-radius: 13px;
-      background: var(--accent);
-      color: var(--text-on-solid);
+      background-color: #0068D7;
+      color: #FFFFFF;
       font: inherit;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 4px 14px rgba(0,122,255,.18);
+    }
+    .add-game-submit:hover:not(:disabled) {
+      background-color: #0056B3;
     }
     .add-game-submit:disabled { opacity: .55; cursor: default; }
     .add-game-toast {
@@ -1780,7 +1731,7 @@
       transform: translate(-50%, 12px);
       opacity: 0;
       pointer-events: none;
-      background: rgba(28,28,30,.92);
+      background: rgba(28, 28, 30, .94);
       color: var(--text-on-solid);
       border-radius: 999px;
       padding: 10px 15px;
@@ -1790,16 +1741,14 @@
       white-space: nowrap;
     }
     .add-game-toast.show { opacity: 1; transform: translate(-50%,0); }
-
-    .add-game-toast.warning {
-    background: rgba(138, 91, 0, 0.96);
-}
+    .add-game-toast.warning { background: rgba(138, 91, 0, 0.96); }
+    html[data-theme="dark"] .add-game-toast.warning { background: #684A16; color: #FFE0A3; }
 
     .admin-auth-backdrop {
       position: fixed;
       inset: 0;
       z-index: calc(var(--z-modal) + 40);
-      background: rgba(0,0,0,.28);
+      background: var(--overlay);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       opacity: 0;
@@ -1893,6 +1842,7 @@
     }
     .google-login-btn svg { width: 20px; height: 20px; flex: 0 0 auto; }
     .google-login-btn:active { transform: scale(.99); background: #F8F8FA; }
+    html[data-theme="dark"] .google-login-btn:active { background: #252B35; }
     .google-login-btn:disabled { opacity: .55; cursor: default; }
     .admin-auth-error {
       min-height: 18px;
@@ -1925,8 +1875,7 @@
       .add-game-header::before {
         top: 8px;
       }
-      .player-entry,
-      .player-entry.required {
+      .player-entry {
         grid-template-columns: minmax(0, 1fr) 50px minmax(90px, .65fr) 32px;
         gap: 7px;
       }
@@ -1936,31 +1885,6 @@
       .score-input { font-size: 16px; }
       .player-select, .inline-player-input { font-size: 14px; }
     }
-
-    .rank-1, .rank-2, .rank-3,
-    .retry-btn, .add-game-submit, .add-game-toast {
-      color: var(--text-on-solid);
-    }
-    .rank-1 { background-color: var(--rank-gold); }
-    .rank-2 { background-color: var(--rank-silver); }
-    .rank-3 { background-color: var(--rank-bronze); }
-    .retry-btn { background-color: var(--accent); }
-    .retry-btn:hover { background-color: var(--accent-strong); }
-    .add-game-submit {
-      background-color: #0068D7;
-      color: #FFFFFF;
-    }
-    .add-game-submit:hover:not(:disabled) {
-      background-color: #0056B3;
-    }
-    .add-game-footer { background: var(--footer-surface); }
-    .table-scroll-arrow { background: var(--surface-glass); }
-    .profile-backdrop, .add-game-backdrop, .admin-auth-backdrop { background: var(--overlay); }
-    .sk-box { background: var(--skeleton); }
-    .add-game-toast { background: rgba(28, 28, 30, .94); }
-    html[data-theme="dark"] .add-game-toast.warning { background: #684A16; color: #FFE0A3; }
-    html[data-theme="dark"] .google-login-btn:active { background: #252B35; }
-
   </style>
 </head>
 <body>
@@ -2113,18 +2037,31 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>const SUPABASE_URL = 'https://zpmoqpysipsexsgrlknr.supabase.co';
+  <script>
+const SUPABASE_URL = 'https://zpmoqpysipsexsgrlknr.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ihlscYsOOZJ2_GM4QdrQRA_MtMk1xNf';
-const supabaseClient = (window.supabase &&
+
+function hasValidSupabaseConfig() {
+  return Boolean(
+    window.supabase &&
+    SUPABASE_URL &&
     SUPABASE_URL !== 'YOUR_SUPABASE_URL' &&
-    SUPABASE_PUBLISHABLE_KEY !== 'YOUR_SUPABASE_PUBLISHABLE_KEY') ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: {
+    SUPABASE_PUBLISHABLE_KEY &&
+    SUPABASE_PUBLISHABLE_KEY !== 'YOUR_SUPABASE_PUBLISHABLE_KEY'
+  );
+}
+
+const supabaseClient = hasValidSupabaseConfig()
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
         persistSession: true,
         autoRefreshToken: true,
         detectSessionInUrl: true,
         flowType: 'pkce'
-    }
-}) : null;
+      }
+    })
+  : null;
+
 let globalData = {};
 let gameColumnMeta = {};
 let allSheetNames = [];
@@ -2152,1727 +2089,1798 @@ let editingGameId = null;
 let editingGameIsDeleted = false;
 let adminSession = null;
 let isAdminUser = false;
-let adminAuthChecking = false;
 let adminAuthCheckPromise = null;
 let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
+
 function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
+
 function monthShortName(monthNo) {
-    const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return names[monthNo - 1] || '';
+  const names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return names[monthNo - 1] || '';
 }
-function monthName(monthNo) {
-    return `${monthShortName(monthNo)} ${activeYear}`;
+
+function monthName(monthNo, year = activeYear) {
+  return `${monthShortName(monthNo)} ${year}`;
 }
+
 function formatDateDisplay(dateStr) {
-    if (!dateStr)
-        return '選擇日期';
-    const [y, m, d] = String(dateStr).split('-').map(Number);
-    if (!y || !m || !d)
-        return dateStr;
-    return `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+  if (!dateStr) return '選擇日期';
+  const [y, m, d] = String(dateStr).split('-').map(Number);
+  if (!y || !m || !d) return dateStr;
+  return `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
 }
+
 function showAddGameError(message) {
-    const el = document.getElementById('addGameError');
-    if (!el)
-        return;
-    el.textContent = message || '';
-    el.classList.toggle('show', !!message);
+  const el = document.getElementById('addGameError');
+  if (!el) return;
+  el.textContent = message || '';
+  el.classList.toggle('show', Boolean(message));
 }
+
 function showToast(message, type = 'success') {
-    const toast = document.getElementById('addGameToast');
-    if (!toast)
-        return;
-    toast.textContent = message;
-    toast.classList.toggle('warning', type === 'warning');
-    toast.classList.add('show');
-    clearTimeout(addGameToastTimer);
-    const duration = type === 'warning'
-        ? 4000
-        : 1700;
-    addGameToastTimer = setTimeout(() => {
-        toast.classList.remove('show', 'warning');
-    }, duration);
+  const toast = document.getElementById('addGameToast');
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.toggle('warning', type === 'warning');
+  toast.classList.add('show');
+  clearTimeout(addGameToastTimer);
+  const duration = type === 'warning' ? 4000 : 1700;
+  addGameToastTimer = setTimeout(() => {
+    toast.classList.remove('show', 'warning');
+  }, duration);
 }
+
 function renderSkeleton(isFirstLoad = true) {
-    if (isFirstLoad) {
-        document.getElementById('controlsArea').innerHTML = `
-          <div class="control-main-row">
-            <div class="period-selectors">
-              <div class="sk-box sk-control-dropdown sk-control-year"></div>
-              <div class="sk-box sk-control-dropdown sk-control-month"></div>
-            </div>
-            <div class="sk-control-segment" aria-hidden="true">
-              <div class="sk-box sk-control-segment-item sk-control-segment-month"></div>
-              <div class="sk-box sk-control-segment-item sk-control-segment-year"></div>
-            </div>
-          </div>`;
-    }
-    const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
-    const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
-    const emptyRows = Array(8).fill(`<tr>
-        <td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>
-        <td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>
-        <td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>
-        ${emptyTd}
-      </tr>`).join('');
-    document.getElementById('contentArea').innerHTML = `
-        <div class="table-scroll-shell">
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-right" aria-label="向右移動" title="向右移動">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="table-container">
-          <table>
-            <thead id="tableHead"><tr>
-              <th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>
-              <th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>
-              <th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>
-              ${emptyTh}
-            </tr></thead>
-            <tbody>${emptyRows}</tbody>
-          </table>
-          </div>
-        </div>`;
-}
-async function selectAllRows(table, columns, orderColumns) {
-    const pageSize = 1000;
-    const rows = [];
-    let from = 0;
-    while (true) {
-        let query = supabaseClient.from(table).select(columns);
-        const orders = Array.isArray(orderColumns) ? orderColumns : [orderColumns];
-        orders.forEach(column => { query = query.order(column, { ascending: true }); });
-        const { data, error } = await query.range(from, from + pageSize - 1);
-        if (error)
-            throw error;
-        rows.push(...(data || []));
-        if (!data || data.length < pageSize)
-            break;
-        from += pageSize;
-    }
-    return rows;
-}
-function aggregateDatabaseData() {
-    const playerById = new Map(rawPlayers.map(p => [Number(p.id), p]));
-    const games = (rawGames || []).map(g => {
-        const date = String(g.played_on);
-        const dt = new Date(`${date}T00:00:00`);
-        return {
-            id: Number(g.id),
-            played_on: date,
-            is_deleted: Boolean(g.is_deleted),
-            monthNo: dt.getMonth() + 1,
-            year: dt.getFullYear(),
-            day: dt.getDate(),
-            results: []
-        };
-    }).sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
-    const gamesById = new Map(games.map(g => [g.id, g]));
-    (rawResults || []).forEach(r => {
-        const game = gamesById.get(Number(r.game_id));
-        const player = playerById.get(Number(r.player_id));
-        if (!game || !player)
-            return;
-        game.results.push({
-            playerId: Number(r.player_id),
-            playerName: player.name,
-            score: Number(r.score) || 0
-        });
-    });
-    rawGames = games;
-    const displayGames = games.filter(g => !g.is_deleted);
-    availableYears = [...new Set(displayGames.map(g => g.year))].sort((a, b) => b - a);
-    if (availableYears.length) {
-        if (!hasInitializedYear || !availableYears.includes(Number(activeYear))) {
-            activeYear = availableYears[0];
-        }
-        hasInitializedYear = true;
-    }
-    else {
-        activeYear = new Date().getFullYear();
-        activeViewMode = 'year';
-        hasInitializedYear = false;
-    }
-    const currentYearGames = displayGames.filter(g => g.year === Number(activeYear));
-    const monthNos = [...new Set(currentYearGames.map(g => g.monthNo).filter(Boolean))].sort((a, b) => a - b);
-    if (monthNos.length) {
-        if (preferredMonthNo !== null && monthNos.includes(Number(preferredMonthNo))) {
-            activeMonthNo = Number(preferredMonthNo);
-        }
-        else {
-            activeMonthNo = monthNos[monthNos.length - 1];
-            if (preferredMonthNo === null) {
-                preferredMonthNo = activeMonthNo;
-            }
-        }
-    }
-    else {
-        activeMonthNo = null;
-    }
-    allSheetNames = monthNos.map(monthName);
-    allSheetNames.push('年度排名');
-    globalData = {};
-    gameColumnMeta = {};
-    monthNos.forEach(monthNo => {
-        const monthGames = displayGames
-            .filter(g => g.monthNo === monthNo && g.year === Number(activeYear))
-            .sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
-        const columns = monthGames.map(g => g.id);
-        const MIN_DATE_COLUMNS = 9;
-        const dateColumnCount = Math.max(MIN_DATE_COLUMNS, monthGames.length);
-        const paddedDates = monthGames.map(g => g.day);
-        while (paddedDates.length < dateColumnCount)
-            paddedDates.push('');
-        const header = [null, 'Total', ...paddedDates];
-        const rows = rawPlayers.map(p => {
-            const gameScores = monthGames.map(game => {
-                const result = game.results.find(r => r.playerId === Number(p.id));
-                return result ? result.score : '';
-            });
-            while (gameScores.length < dateColumnCount)
-                gameScores.push('');
-            const total = gameScores.reduce((sum, v) => sum + (Number(v) || 0), 0);
-            return [p.name, total, ...gameScores];
-        });
-        const sheetName = monthName(monthNo);
-        gameColumnMeta[sheetName] = columns.map((gameId, index) => ({
-            gameId,
-            colIndex: index + 2,
-            playedOn: monthGames[index].played_on,
-            day: monthGames[index].day
-        }));
-        globalData[sheetName] = [[String(monthNo)], header, ...rows];
-    });
-    const overallHeader = [null, 'Total', ...monthNos.map(m => monthName(m).split(' ')[0])];
-    const overallRows = rawPlayers.map(p => {
-        const monthlyTotals = monthNos.map(monthNo => displayGames
-            .filter(g => g.monthNo === monthNo && g.year === Number(activeYear))
-            .flatMap(g => g.results)
-            .filter(r => r.playerId === Number(p.id))
-            .reduce((sum, r) => sum + r.score, 0));
-        const total = monthlyTotals.reduce((sum, v) => sum + v, 0);
-        return [p.name, total, ...monthlyTotals.map(v => v === 0 ? '' : v)];
-    });
-    globalData['年度排名'] = [[String(activeYear)], overallHeader, ...overallRows];
-    if (activeViewMode === 'year' || activeMonthNo === null) {
-        activeSheetName = '年度排名';
-    }
-    else {
-        activeViewMode = 'month';
-        activeSheetName = monthName(activeMonthNo);
-    }
-}
-const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
-function isPgrst303Error(err) {
-    const code = String(err?.code || '').toUpperCase();
-    const message = [err?.message, err?.details, err?.hint, err?.error_description]
-        .filter(Boolean)
-        .map(String)
-        .join(' ');
-    return code === 'PGRST303' || /PGRST303|JWT\s+issued\s+at\s+future/i.test(message);
-}
-function waitForRetry(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-function showPgrst303RetryStatus(retryNumber, maxRetries) {
-    const contentArea = document.getElementById('contentArea');
-    if (!contentArea)
-        return;
-    let status = document.getElementById('pgrst303RetryStatus');
-    if (!status) {
-        status = document.createElement('div');
-        status.id = 'pgrst303RetryStatus';
-        status.setAttribute('role', 'status');
-        status.setAttribute('aria-live', 'polite');
-        status.className = 'retry-status';
-        contentArea.prepend(status);
-    }
-    status.textContent = `資料載入遇到暫時性 JWT 時間驗證問題，正在自動重試（${retryNumber}/${maxRetries}）…`;
-}
-async function loadSupabaseTablesWithPgrst303Retry(onRetry) {
-    let retryCount = 0;
-    while (true) {
-        try {
-            return await Promise.all([
-                selectAllRows('players', 'id,name,is_active', ['id']),
-                selectAllRows('games', 'id,played_on,is_deleted', ['played_on', 'id']),
-                selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
-            ]);
-        }
-        catch (err) {
-            if (!isPgrst303Error(err) || retryCount >= PGRST303_RETRY_DELAYS_MS.length) {
-                throw err;
-            }
-            retryCount += 1;
-            if (typeof onRetry === 'function')
-                onRetry(retryCount, PGRST303_RETRY_DELAYS_MS.length);
-            await waitForRetry(PGRST303_RETRY_DELAYS_MS[retryCount - 1]);
-        }
-    }
-}
-async function fetchData() {
-    renderSkeleton(true);
-    if (SUPABASE_URL === 'YOUR_SUPABASE_URL' ||
-        SUPABASE_PUBLISHABLE_KEY === 'YOUR_SUPABASE_PUBLISHABLE_KEY') {
-        document.getElementById('controlsArea').innerHTML = '';
-        document.getElementById('contentArea').innerHTML = `
-            <div class="error-container">
-                <div>請先填入 Supabase 設定。</div>
-            </div>
-        `;
-        return false;
-    }
-    let automaticPgrst303Retries = 0;
-    try {
-        const [players, games, results] = await loadSupabaseTablesWithPgrst303Retry((retryNumber, maxRetries) => {
-            automaticPgrst303Retries = retryNumber;
-            showPgrst303RetryStatus(retryNumber, maxRetries);
-        });
-        rawPlayers = (players || [])
-            .filter(p => p && p.name)
-            .map(p => ({
-            ...p,
-            id: Number(p.id)
-        }));
-        rawGames = games || [];
-        rawResults = results || [];
-        if (!rawPlayers.length) {
-            throw new Error('players 表沒有資料。');
-        }
-        aggregateDatabaseData();
-        renderControls();
-        renderContent();
-        const retryStatus = document.getElementById('pgrst303RetryStatus');
-        if (retryStatus) {
-            retryStatus.remove();
-        }
-        return true;
-    }
-    catch (err) {
-        document.getElementById('controlsArea').innerHTML = '';
-        const errorText = escapeHtml(err.message || String(err));
-        const pgrst303Message = isPgrst303Error(err) && automaticPgrst303Retries > 0
-            ? `
-                    Supabase 載入失敗：JWT 時間驗證錯誤，
-                    已自動重試 ${automaticPgrst303Retries} 次仍未成功。
-                    請稍後再試。
-
-                    <div style="
-                        margin-top:8px;
-                        font-size:12px;
-                        opacity:.8;
-                    ">
-                        詳細錯誤：${errorText}
-                    </div>
-                `
-            : `Supabase 載入失敗：${errorText}`;
-        document.getElementById('contentArea').innerHTML = `
-
-            <div class="error-container">
-
-                <div>${pgrst303Message}</div>
-
-                <button
-                    class="retry-btn"
-                    type="button"
-                    onclick="fetchData()"
-                >
-                    重新載入
-                </button>
-
-            </div>
-
-        `;
-        return false;
-    }
-}
-function closeControlDropdownMenus() {
-    document.querySelectorAll('.custom-dropdown-menu.show').forEach(menu => {
-        menu.classList.remove('show');
-        const trigger = menu.parentElement?.querySelector('.dropdown-trigger');
-        if (trigger)
-            trigger.setAttribute('aria-expanded', 'false');
-    });
-}
-function setupControlDropdown(triggerId, menuId, dataAttribute, onSelect) {
-    const trigger = document.getElementById(triggerId);
-    const menu = document.getElementById(menuId);
-    if (!trigger || !menu)
-        return;
-    trigger.addEventListener('click', event => {
-        event.stopPropagation();
-        const wasOpen = menu.classList.contains('show');
-        closeControlDropdownMenus();
-        if (!wasOpen) {
-            menu.classList.add('show');
-            trigger.setAttribute('aria-expanded', 'true');
-        }
-    });
-    menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
-        item.addEventListener('click', event => {
-            event.stopPropagation();
-            const value = event.currentTarget.getAttribute(`data-${dataAttribute}`);
-            closeControlDropdownMenus();
-            if (value !== null)
-                onSelect(value);
-        });
-    });
-}
-function renderControls() {
-    const monthNames = allSheetNames.filter(name => name !== '年度排名');
-    const hasMonths = monthNames.length > 0;
-    const yearMenuHtml = availableYears.map(year => {
-        const selected = Number(year) === Number(activeYear);
-        return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-year="${year}" role="menuitemradio" aria-checked="${selected}">
-          <span>${year}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
-        </button>`;
-    }).join('');
-    const monthMenuHtml = monthNames.map(name => {
-        const monthNo = Number(globalData[name]?.[0]?.[0]);
-        const selected = monthNo === Number(activeMonthNo);
-        return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-month-no="${monthNo}" role="menuitemradio" aria-checked="${selected}">
-          <span>${escapeHtml(monthShortName(monthNo))}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
-        </button>`;
-    }).join('');
-    const isMonthView = activeViewMode === 'month';
-    const yearLabel = availableYears.length ? String(activeYear) : '沒有年份';
-    const monthLabel = activeMonthNo !== null ? monthShortName(activeMonthNo) : '沒有牌局';
+  if (isFirstLoad) {
     document.getElementById('controlsArea').innerHTML = `
-        <div class="control-main-row">
-          <div class="period-selectors">
-            <div class="custom-dropdown-container" id="yearDropdownContainer">
-              <button id="yearSelector" class="dropdown-trigger year-dropdown" type="button" aria-label="選擇年份" aria-haspopup="menu" aria-expanded="false" aria-controls="yearSelectorMenu" ${availableYears.length ? '' : 'disabled'}>${escapeHtml(yearLabel)}</button>
-              <div id="yearSelectorMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇年份">${yearMenuHtml}</div>
-            </div>
-            <div class="custom-dropdown-container" id="monthDropdownContainer" ${isMonthView ? '' : 'hidden'}>
-              <button id="monthSelectorTrigger" class="dropdown-trigger month-dropdown" type="button" aria-label="選擇月份" aria-haspopup="menu" aria-expanded="false" aria-controls="monthSelectorMenu" ${hasMonths ? '' : 'disabled'}>${escapeHtml(monthLabel)}</button>
-              <div id="monthSelectorMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇月份">${monthMenuHtml}</div>
-            </div>
-          </div>
-          <div class="view-segment" role="group" aria-label="資料檢視模式">
-            <button type="button" class="view-segment-btn ${isMonthView ? 'active' : ''}" data-view-mode="month" aria-pressed="${isMonthView}" ${hasMonths ? '' : 'disabled'}>月份</button>
-            <button type="button" class="view-segment-btn ${!isMonthView ? 'active' : ''}" data-view-mode="year" aria-pressed="${!isMonthView}">全年</button>
-          </div>
-        </div>`;
-    setupControlDropdown('yearSelector', 'yearSelectorMenu', 'year', switchYear);
-    setupControlDropdown('monthSelectorTrigger', 'monthSelectorMenu', 'month-no', switchMonth);
-    document.querySelectorAll('.view-segment-btn').forEach(button => {
-        button.addEventListener('click', () => switchViewMode(button.dataset.viewMode));
+      <div class="control-main-row">
+        <div class="period-selectors">
+          <div class="sk-box sk-control-dropdown sk-control-year"></div>
+          <div class="sk-box sk-control-dropdown sk-control-month"></div>
+        </div>
+        <div class="sk-control-segment" aria-hidden="true">
+          <div class="sk-box sk-control-segment-item sk-control-segment-month"></div>
+          <div class="sk-box sk-control-segment-item sk-control-segment-year"></div>
+        </div>
+      </div>`;
+  }
+  const emptyTh = Array(9).fill('<th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>').join('');
+  const emptyTd = Array(9).fill('<td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>').join('');
+  const emptyRows = Array(8).fill(`<tr>
+    <td><div class="sk-box" style="height: 26px; width: 26px; border-radius: 50%; margin: 0 auto;"></div></td>
+    <td><div class="sk-box" style="height: 16px; margin: 0; width: 90%;"></div></td>
+    <td><div class="sk-box" style="height: 16px; margin: 0 auto; width: 50%;"></div></td>
+    ${emptyTd}
+  </tr>`).join('');
+  document.getElementById('contentArea').innerHTML = `
+    <div class="table-scroll-shell">
+      <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button type="button" class="table-scroll-arrow table-scroll-arrow-right" aria-label="向右移動" title="向右移動">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="table-container">
+      <table>
+        <thead id="tableHead"><tr>
+          <th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>
+          <th><div class="sk-box" style="height: 16px; margin: 0; width: 80%;"></div></th>
+          <th><div class="sk-box" style="height: 16px; margin: 0 auto; width: 60%;"></div></th>
+          ${emptyTh}
+        </tr></thead>
+        <tbody>${emptyRows}</tbody>
+      </table>
+      </div>
+    </div>`;
+}
+
+async function selectAllRows(table, columns, orderColumns) {
+  const pageSize = 1000;
+  const rows = [];
+  let from = 0;
+  while (true) {
+    let query = supabaseClient.from(table).select(columns);
+    const orders = Array.isArray(orderColumns) ? orderColumns : [orderColumns];
+    orders.forEach(column => { query = query.order(column, { ascending: true }); });
+    const { data, error } = await query.range(from, from + pageSize - 1);
+    if (error) throw error;
+    rows.push(...(data || []));
+    if (!data || data.length < pageSize) break;
+    from += pageSize;
+  }
+  return rows;
+}
+
+function aggregateDatabaseData() {
+  const playerById = new Map(rawPlayers.map(p => [Number(p.id), p]));
+  const games = (rawGames || []).map(g => {
+    const date = String(g.played_on);
+    const dt = new Date(`${date}T00:00:00`);
+    return {
+      id: Number(g.id),
+      played_on: date,
+      is_deleted: Boolean(g.is_deleted),
+      monthNo: dt.getMonth() + 1,
+      year: dt.getFullYear(),
+      day: dt.getDate(),
+      results: []
+    };
+  }).sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+
+  const gamesById = new Map(games.map(g => [g.id, g]));
+  (rawResults || []).forEach(r => {
+    const game = gamesById.get(Number(r.game_id));
+    const player = playerById.get(Number(r.player_id));
+    if (!game || !player) return;
+    game.results.push({
+      playerId: Number(r.player_id),
+      playerName: player.name,
+      score: Number(r.score) || 0
     });
-}
-function resetTableViewState() {
-    currentSortCol = 'total';
-    sortAscending = false;
-    focusedDateCol = null;
-}
-function focusGameInTable(targetGame) {
-    if (!targetGame)
-        return;
-    if (targetGame.is_deleted) {
-        hasInitializedYear = false;
-        preferredMonthNo = null;
-        activeMonthNo = null;
-        activeViewMode = 'month';
-        resetTableViewState();
-        aggregateDatabaseData();
-        renderControls();
-        renderContent();
-        return;
+  });
+
+  rawGames = games;
+  const displayGames = games.filter(g => !g.is_deleted);
+  availableYears = [...new Set(displayGames.map(g => g.year))].sort((a, b) => b - a);
+
+  if (availableYears.length) {
+    if (!hasInitializedYear || !availableYears.includes(Number(activeYear))) {
+      activeYear = availableYears[0];
     }
-    activeYear = targetGame.year;
-    activeMonthNo = targetGame.monthNo;
-    preferredMonthNo = targetGame.monthNo;
-    activeViewMode = 'month';
-    aggregateDatabaseData();
-    activeSheetName = monthName(targetGame.monthNo);
-    focusedDateCol = getGameColumnIndex(activeSheetName, targetGame.id);
-    currentSortCol = focusedDateCol !== null
-        ? focusedDateCol
-        : 'total';
-    sortAscending = false;
-    renderControls();
-    renderContent();
-}
-function switchYear(yearValue) {
-    const nextYear = Number(yearValue);
-    if (!availableYears.includes(nextYear) || nextYear === Number(activeYear))
-        return;
-    activeYear = nextYear;
-    aggregateDatabaseData();
-    resetTableViewState();
-    renderControls();
-    renderContent();
-}
-function switchViewMode(mode) {
-    if (mode !== 'month' && mode !== 'year')
-        return;
-    if (mode === 'month' && activeMonthNo === null)
-        return;
-    activeViewMode = mode;
-    activeSheetName = mode === 'year' ? '年度排名' : monthName(activeMonthNo);
-    resetTableViewState();
-    renderControls();
-    renderContent();
-}
-function switchMonth(monthNoValue) {
-    const monthNo = Number(monthNoValue);
-    if (!Number.isInteger(monthNo) || monthNo < 1 || monthNo > 12)
-        return;
+    hasInitializedYear = true;
+  } else {
+    activeYear = new Date().getFullYear();
+    activeViewMode = 'year';
+    hasInitializedYear = false;
+  }
+
+  const currentYearGames = displayGames.filter(g => g.year === Number(activeYear));
+  const monthNos = [...new Set(currentYearGames.map(g => g.monthNo).filter(Boolean))].sort((a, b) => a - b);
+
+  if (monthNos.length) {
+    if (preferredMonthNo !== null && monthNos.includes(Number(preferredMonthNo))) {
+      activeMonthNo = Number(preferredMonthNo);
+    } else {
+      activeMonthNo = monthNos[monthNos.length - 1];
+      if (preferredMonthNo === null) {
+        preferredMonthNo = activeMonthNo;
+      }
+    }
+  } else {
+    activeMonthNo = null;
+  }
+
+  allSheetNames = monthNos.map(m => monthName(m));
+  allSheetNames.push('年度排名');
+  globalData = {};
+  gameColumnMeta = {};
+
+  monthNos.forEach(monthNo => {
+    const monthGames = currentYearGames
+      .filter(g => g.monthNo === monthNo)
+      .sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id);
+    const columns = monthGames.map(g => g.id);
+    const MIN_DATE_COLUMNS = 9;
+    const dateColumnCount = Math.max(MIN_DATE_COLUMNS, monthGames.length);
+    const paddedDates = monthGames.map(g => g.day);
+    while (paddedDates.length < dateColumnCount) paddedDates.push('');
+    const header = [null, 'Total', ...paddedDates];
+    const rows = rawPlayers.map(p => {
+      const gameScores = monthGames.map(game => {
+        const result = game.results.find(r => r.playerId === Number(p.id));
+        return result ? result.score : '';
+      });
+      while (gameScores.length < dateColumnCount) gameScores.push('');
+      const total = gameScores.reduce((sum, v) => sum + (Number(v) || 0), 0);
+      return [p.name, total, ...gameScores];
+    });
     const sheetName = monthName(monthNo);
-    if (!globalData[sheetName])
-        return;
-    activeMonthNo = monthNo;
-    preferredMonthNo = monthNo;
+    gameColumnMeta[sheetName] = columns.map((gameId, index) => ({
+      gameId,
+      colIndex: index + 2,
+      playedOn: monthGames[index].played_on,
+      day: monthGames[index].day
+    }));
+    globalData[sheetName] = [[String(monthNo)], header, ...rows];
+  });
+
+  const overallHeader = [null, 'Total', ...monthNos.map(m => monthShortName(m))];
+  const overallRows = rawPlayers.map(p => {
+    const pid = Number(p.id);
+    let total = 0;
+    const monthlyCells = monthNos.map(monthNo => {
+      const playerMonthResults = currentYearGames
+        .filter(g => g.monthNo === monthNo)
+        .flatMap(g => g.results)
+        .filter(r => r.playerId === pid);
+      if (!playerMonthResults.length) return '';
+      const monthSum = playerMonthResults.reduce((sum, r) => sum + r.score, 0);
+      total += monthSum;
+      return monthSum;
+    });
+    return [p.name, total, ...monthlyCells];
+  });
+  globalData['年度排名'] = [[String(activeYear)], overallHeader, ...overallRows];
+
+  if (activeViewMode === 'year' || activeMonthNo === null) {
+    activeSheetName = '年度排名';
+  } else {
     activeViewMode = 'month';
-    activeSheetName = sheetName;
-    resetTableViewState();
-    renderControls();
-    renderContent();
+    activeSheetName = monthName(activeMonthNo);
+  }
 }
-function getGameColumnIndex(sheetName, gameId) {
-    const meta = gameColumnMeta[sheetName] || [];
-    const found = meta.find(item => Number(item.gameId) === Number(gameId));
-    return found ? found.colIndex : null;
+
+const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
+
+function isPgrst303Error(err) {
+  const code = String(err?.code || '').toUpperCase();
+  const message = [err?.message, err?.details, err?.hint, err?.error_description]
+    .filter(Boolean)
+    .map(String)
+    .join(' ');
+  return code === 'PGRST303' || /PGRST303|JWT\s+issued\s+at\s+future/i.test(message);
 }
-function renderContent() {
-    renderTableLayout();
+
+function waitForRetry(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
-window.handleSort = function (colIndex) {
-    const prevFocused = focusedDateCol;
-    sortAscending = currentSortCol === colIndex ? !sortAscending : false;
-    currentSortCol = colIndex;
-    focusedDateCol = colIndex === 'total' ? null : colIndex;
-    (prevFocused !== focusedDateCol || focusedDateCol !== null) ? renderTableLayout() : (updateHeaderIcons(), renderTableBody());
-};
-const getSortIcon = (col) => currentSortCol === col ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>') : '';
-function updateHeaderIcons() {
-    document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
-        const col = th.dataset.col;
-        const icon = th.querySelector('.sort-icon-container');
-        if (icon)
-            icon.innerHTML = getSortIcon(col === 'total' ? 'total' : parseInt(col, 10));
-    });
+
+function showPgrst303RetryStatus(retryNumber, maxRetries) {
+  const contentArea = document.getElementById('contentArea');
+  if (!contentArea) return;
+  let status = document.getElementById('pgrst303RetryStatus');
+  if (!status) {
+    status = document.createElement('div');
+    status.id = 'pgrst303RetryStatus';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    status.className = 'retry-status';
+    contentArea.prepend(status);
+  }
+  status.textContent = `資料載入遇到暫時性 JWT 時間驗證問題，正在自動重試（${retryNumber}/${maxRetries}）…`;
 }
-function getColLimit(data) { return Array.isArray(data?.[1]) ? data[1].length : 2; }
-function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
-    let cols = Array.from({ length: Math.max(0, colLimit - 2) }, (_, i) => i + 2).filter(c => c !== focusedCol);
-    if (!isOverall) {
-        cols.sort((a, b) => {
-            const vA = data[1][a], vB = data[1][b];
-            const hasA = vA !== '' && vA !== undefined, hasB = vB !== '' && vB !== undefined;
-            if (hasA && !hasB)
-                return -1;
-            if (!hasA && hasB)
-                return 1;
-            if (hasA && hasB && !isNaN(Number(vA)) && !isNaN(Number(vB)))
-                return Number(vB) - Number(vA);
-            return 0;
-        });
+
+async function loadSupabaseTablesWithPgrst303Retry(onRetry) {
+  let retryCount = 0;
+  while (true) {
+    try {
+      return await Promise.all([
+        selectAllRows('players', 'id,name,is_active', ['id']),
+        selectAllRows('games', 'id,played_on,is_deleted', ['played_on', 'id']),
+        selectAllRows('game_result', 'id,game_id,player_id,score', ['id'])
+      ]);
+    } catch (err) {
+      if (!isPgrst303Error(err) || retryCount >= PGRST303_RETRY_DELAYS_MS.length) {
+        throw err;
+      }
+      retryCount += 1;
+      if (typeof onRetry === 'function') onRetry(retryCount, PGRST303_RETRY_DELAYS_MS.length);
+      await waitForRetry(PGRST303_RETRY_DELAYS_MS[retryCount - 1]);
     }
-    return focusedCol !== null ? [focusedCol, ...cols] : cols;
+  }
 }
-function formatHeaderDate(dayVal, data) {
-    if (isNaN(Number(dayVal)))
-        return dayVal;
-    const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth() + 1);
-    const base = `${dayVal}/${monthStr}`;
-    return base;
-}
-function renderTableLayout() {
-    const data = globalData[activeSheetName];
-    if (!data)
-        return;
-    const isOverall = activeSheetName === '年度排名';
-    const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
-    const headHtml = colIndices.map(j => {
-        const val = data[1][j];
-        const isF = j === focusedDateCol;
-        const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data)) : '-';
-        const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
-        return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
-    }).join('');
+
+async function fetchData() {
+  renderSkeleton(true);
+  if (!supabaseClient) {
+    document.getElementById('controlsArea').innerHTML = '';
     document.getElementById('contentArea').innerHTML = `
-        <div class="table-scroll-shell">
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <button type="button" class="table-scroll-arrow table-scroll-arrow-right" aria-label="向右移動" title="向右移動">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="table-container">
-          <table>
-            <thead id="tableHead"><tr>
-              <th>Rank</th><th>Name</th>
-              <th data-col="total" class="${focusedDateCol ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
-              ${headHtml}
-            </tr></thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-          </div>
-        </div>`;
-    renderTableBody();
-    setupTableScrollArrows();
-    document.querySelectorAll('#tableHead th[data-col]').forEach(th => th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col, 10))));
-}
-function setupTableScrollArrows() {
-    const shell = document.querySelector('.table-scroll-shell');
-    const container = shell?.querySelector('.table-container');
-    if (!shell || !container)
-        return;
-    const left = shell.querySelector('.table-scroll-arrow-left');
-    const right = shell.querySelector('.table-scroll-arrow-right');
-    if (!left || !right)
-        return;
-    if (tableScrollArrowResizeHandler) {
-        window.removeEventListener('resize', tableScrollArrowResizeHandler);
-    }
-    const refresh = () => {
-        const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
-        const scrollable = maxScroll > 2;
-        shell.classList.toggle('has-horizontal-scroll', scrollable);
-        left.classList.toggle('can-move', scrollable && container.scrollLeft > 2);
-        right.classList.toggle('can-move', scrollable && container.scrollLeft < maxScroll - 2);
-    };
-    const move = direction => {
-        const amount = Math.max(240, Math.floor(container.clientWidth * 0.7));
-        container.scrollBy({ left: direction * amount, behavior: 'smooth' });
-    };
-    left.addEventListener('click', () => move(-1));
-    right.addEventListener('click', () => move(1));
-    container.addEventListener('scroll', refresh, { passive: true });
-    tableScrollArrowResizeHandler = refresh;
-    window.addEventListener('resize', tableScrollArrowResizeHandler);
-    requestAnimationFrame(() => requestAnimationFrame(refresh));
-}
-function renderTableBody() {
-    const tbody = document.getElementById('tableBody');
-    if (!tbody)
-        return;
-    const data = globalData[activeSheetName];
-    const isOverall = activeSheetName === '年度排名';
-    const colLimit = getColLimit(data);
-    const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
-    let rows = data.slice(2).filter(r => r[0]).map(row => {
-        const hasPart = row.slice(2, colLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
-        return { data: row, total: Number(row[1]) || 0, hasPart };
-    }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total);
-    let rank = 1, displayRank = 1, prev = null;
-    rows.forEach(r => {
-        if (!r.hasPart) {
-            r.rank = '-';
-            return;
-        }
-        if (r.total !== prev) {
-            displayRank = rank;
-            prev = r.total;
-        }
-        r.rank = displayRank;
-        rank++;
+      <div class="error-container">
+        <div>請先填入 Supabase 設定。</div>
+      </div>
+    `;
+    return false;
+  }
+  let automaticPgrst303Retries = 0;
+  try {
+    const [players, games, results] = await loadSupabaseTablesWithPgrst303Retry((retryNumber, maxRetries) => {
+      automaticPgrst303Retries = retryNumber;
+      showPgrst303RetryStatus(retryNumber, maxRetries);
     });
-const getSortValue = row => {
+    rawPlayers = (players || [])
+      .filter(p => p && p.name)
+      .map(p => ({ ...p, id: Number(p.id) }));
+    rawGames = games || [];
+    rawResults = results || [];
+    if (!rawPlayers.length) {
+      throw new Error('players 表沒有資料。');
+    }
+    aggregateDatabaseData();
+    renderControls();
+    renderTableLayout();
+    const retryStatus = document.getElementById('pgrst303RetryStatus');
+    if (retryStatus) retryStatus.remove();
+    return true;
+  } catch (err) {
+    document.getElementById('controlsArea').innerHTML = '';
+    const errorText = escapeHtml(err.message || String(err));
+    const pgrst303Message = isPgrst303Error(err) && automaticPgrst303Retries > 0
+      ? `Supabase 載入失敗：JWT 時間驗證錯誤，已自動重試 ${automaticPgrst303Retries} 次仍未成功。請稍後再試。
+         <div style="margin-top:8px;font-size:12px;opacity:.8;">詳細錯誤：${errorText}</div>`
+      : `Supabase 載入失敗：${errorText}`;
+    document.getElementById('contentArea').innerHTML = `
+      <div class="error-container">
+        <div>${pgrst303Message}</div>
+        <button class="retry-btn" type="button" onclick="fetchData()">重新載入</button>
+      </div>
+    `;
+    return false;
+  }
+}
+
+function closeControlDropdownMenus() {
+  document.querySelectorAll('.custom-dropdown-menu.show').forEach(menu => {
+    menu.classList.remove('show');
+    const trigger = menu.parentElement?.querySelector('.dropdown-trigger');
+    if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  });
+}
+
+function setupControlDropdown(triggerId, menuId, dataAttribute, onSelect) {
+  const trigger = document.getElementById(triggerId);
+  const menu = document.getElementById(menuId);
+  if (!trigger || !menu) return;
+  trigger.addEventListener('click', event => {
+    event.stopPropagation();
+    const wasOpen = menu.classList.contains('show');
+    closeControlDropdownMenus();
+    if (!wasOpen) {
+      menu.classList.add('show');
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+  });
+  menu.querySelectorAll('.custom-dropdown-item').forEach(item => {
+    item.addEventListener('click', event => {
+      event.stopPropagation();
+      const value = event.currentTarget.getAttribute(`data-${dataAttribute}`);
+      closeControlDropdownMenus();
+      if (value !== null) onSelect(value);
+    });
+  });
+}
+
+function renderControls() {
+  const monthNames = allSheetNames.filter(name => name !== '年度排名');
+  const hasMonths = monthNames.length > 0;
+  const yearMenuHtml = availableYears.map(year => {
+    const selected = Number(year) === Number(activeYear);
+    return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-year="${year}" role="menuitemradio" aria-checked="${selected}">
+      <span>${year}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
+    </button>`;
+  }).join('');
+  const monthMenuHtml = monthNames.map(name => {
+    const monthNo = Number(globalData[name]?.[0]?.[0]);
+    const selected = monthNo === Number(activeMonthNo);
+    return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-month-no="${monthNo}" role="menuitemradio" aria-checked="${selected}">
+      <span>${escapeHtml(monthShortName(monthNo))}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
+    </button>`;
+  }).join('');
+  const isMonthView = activeViewMode === 'month';
+  const yearLabel = availableYears.length ? String(activeYear) : '沒有年份';
+  const monthLabel = activeMonthNo !== null ? monthShortName(activeMonthNo) : '沒有牌局';
+  document.getElementById('controlsArea').innerHTML = `
+    <div class="control-main-row">
+      <div class="period-selectors">
+        <div class="custom-dropdown-container" id="yearDropdownContainer">
+          <button id="yearSelector" class="dropdown-trigger year-dropdown" type="button" aria-label="選擇年份" aria-haspopup="menu" aria-expanded="false" aria-controls="yearSelectorMenu" ${availableYears.length ? '' : 'disabled'}>${escapeHtml(yearLabel)}</button>
+          <div id="yearSelectorMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇年份">${yearMenuHtml}</div>
+        </div>
+        <div class="custom-dropdown-container" id="monthDropdownContainer" ${isMonthView ? '' : 'hidden'}>
+          <button id="monthSelectorTrigger" class="dropdown-trigger month-dropdown" type="button" aria-label="選擇月份" aria-haspopup="menu" aria-expanded="false" aria-controls="monthSelectorMenu" ${hasMonths ? '' : 'disabled'}>${escapeHtml(monthLabel)}</button>
+          <div id="monthSelectorMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇月份">${monthMenuHtml}</div>
+        </div>
+      </div>
+      <div class="view-segment" role="group" aria-label="資料檢視模式">
+        <button type="button" class="view-segment-btn ${isMonthView ? 'active' : ''}" data-view-mode="month" aria-pressed="${isMonthView}" ${hasMonths ? '' : 'disabled'}>月份</button>
+        <button type="button" class="view-segment-btn ${!isMonthView ? 'active' : ''}" data-view-mode="year" aria-pressed="${!isMonthView}">全年</button>
+      </div>
+    </div>`;
+  setupControlDropdown('yearSelector', 'yearSelectorMenu', 'year', switchYear);
+  setupControlDropdown('monthSelectorTrigger', 'monthSelectorMenu', 'month-no', switchMonth);
+  document.querySelectorAll('.view-segment-btn').forEach(button => {
+    button.addEventListener('click', () => switchViewMode(button.dataset.viewMode));
+  });
+}
+
+function resetTableViewState() {
+  currentSortCol = 'total';
+  sortAscending = false;
+  focusedDateCol = null;
+}
+
+function focusGameInTable(targetGame) {
+  if (!targetGame) return;
+  if (targetGame.is_deleted) {
+    hasInitializedYear = false;
+    preferredMonthNo = null;
+    activeMonthNo = null;
+    activeViewMode = 'month';
+    resetTableViewState();
+    aggregateDatabaseData();
+    renderControls();
+    renderTableLayout();
+    return;
+  }
+  activeYear = targetGame.year;
+  activeMonthNo = targetGame.monthNo;
+  preferredMonthNo = targetGame.monthNo;
+  activeViewMode = 'month';
+  aggregateDatabaseData();
+  activeSheetName = monthName(targetGame.monthNo);
+  focusedDateCol = getGameColumnIndex(activeSheetName, targetGame.id);
+  currentSortCol = focusedDateCol !== null ? focusedDateCol : 'total';
+  sortAscending = false;
+  renderControls();
+  renderTableLayout();
+}
+
+function switchYear(yearValue) {
+  const nextYear = Number(yearValue);
+  if (!availableYears.includes(nextYear) || nextYear === Number(activeYear)) return;
+  activeYear = nextYear;
+  aggregateDatabaseData();
+  resetTableViewState();
+  renderControls();
+  renderTableLayout();
+}
+
+function switchViewMode(mode) {
+  if (mode !== 'month' && mode !== 'year') return;
+  if (mode === 'month' && activeMonthNo === null) return;
+  activeViewMode = mode;
+  activeSheetName = mode === 'year' ? '年度排名' : monthName(activeMonthNo);
+  resetTableViewState();
+  renderControls();
+  renderTableLayout();
+}
+
+function switchMonth(monthNoValue) {
+  const monthNo = Number(monthNoValue);
+  if (!Number.isInteger(monthNo) || monthNo < 1 || monthNo > 12) return;
+  const sheetName = monthName(monthNo);
+  if (!globalData[sheetName]) return;
+  activeMonthNo = monthNo;
+  preferredMonthNo = monthNo;
+  activeViewMode = 'month';
+  activeSheetName = sheetName;
+  resetTableViewState();
+  renderControls();
+  renderTableLayout();
+}
+
+function getGameColumnIndex(sheetName, gameId) {
+  const meta = gameColumnMeta[sheetName] || [];
+  const found = meta.find(item => Number(item.gameId) === Number(gameId));
+  return found ? found.colIndex : null;
+}
+
+function handleSort(colIndex) {
+  const prevFocused = focusedDateCol;
+  sortAscending = currentSortCol === colIndex ? !sortAscending : false;
+  currentSortCol = colIndex;
+  focusedDateCol = colIndex === 'total' ? null : colIndex;
+  if (prevFocused !== focusedDateCol || focusedDateCol !== null) {
+    renderTableLayout();
+  } else {
+    updateHeaderIcons();
+    renderTableBody();
+  }
+}
+
+const getSortIcon = col => currentSortCol === col
+  ? (sortAscending ? '<span class="sort-icon">▲</span>' : '<span class="sort-icon">▼</span>')
+  : '';
+
+function updateHeaderIcons() {
+  document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+    const col = th.dataset.col;
+    const icon = th.querySelector('.sort-icon-container');
+    if (icon) icon.innerHTML = getSortIcon(col === 'total' ? 'total' : parseInt(col, 10));
+  });
+}
+
+function getColLimit(data) {
+  return Array.isArray(data?.[1]) ? data[1].length : 2;
+}
+
+function getValidColumnsOrder(data, colLimit, focusedCol, isOverall) {
+  const cols = Array.from({ length: Math.max(0, colLimit - 2) }, (_, i) => i + 2).filter(c => c !== focusedCol);
+  if (!isOverall) {
+    cols.sort((a, b) => {
+      const vA = data[1][a], vB = data[1][b];
+      const hasA = vA !== '' && vA !== undefined, hasB = vB !== '' && vB !== undefined;
+      if (hasA && !hasB) return -1;
+      if (!hasA && hasB) return 1;
+      if (hasA && hasB && !isNaN(Number(vA)) && !isNaN(Number(vB))) return Number(vB) - Number(vA);
+      return 0;
+    });
+  }
+  return focusedCol !== null ? [focusedCol, ...cols] : cols;
+}
+
+function formatHeaderDate(dayVal, data) {
+  if (isNaN(Number(dayVal))) return dayVal;
+  const monthStr = String(data[0]?.[0] ?? '').trim() || String(new Date().getMonth() + 1);
+  return `${dayVal}/${monthStr}`;
+}
+
+function renderTableLayout() {
+  const data = globalData[activeSheetName];
+  if (!data) return;
+  const isOverall = activeSheetName === '年度排名';
+  const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
+  const headHtml = colIndices.map(j => {
+    const val = data[1][j];
+    const isF = j === focusedDateCol;
+    const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data)) : '-';
+    const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
+    return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
+  }).join('');
+  document.getElementById('contentArea').innerHTML = `
+    <div class="table-scroll-shell">
+      <button type="button" class="table-scroll-arrow table-scroll-arrow-left" aria-label="向左移動" title="向左移動">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14.5 5L7.5 12L14.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button type="button" class="table-scroll-arrow table-scroll-arrow-right" aria-label="向右移動" title="向右移動">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9.5 5L16.5 12L9.5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="table-container">
+      <table>
+        <thead id="tableHead"><tr>
+          <th>Rank</th><th>Name</th>
+          <th data-col="total" class="${focusedDateCol !== null ? 'total-no-shadow' : ''}">Total <span class="sort-icon-container">${getSortIcon('total')}</span></th>
+          ${headHtml}
+        </tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      </div>
+    </div>`;
+  renderTableBody();
+  setupTableScrollArrows();
+  document.querySelectorAll('#tableHead th[data-col]').forEach(th => {
+    th.addEventListener('click', () => handleSort(th.dataset.col === 'total' ? 'total' : parseInt(th.dataset.col, 10)));
+  });
+}
+
+function setupTableScrollArrows() {
+  const shell = document.querySelector('.table-scroll-shell');
+  const container = shell?.querySelector('.table-container');
+  if (!shell || !container) return;
+  const left = shell.querySelector('.table-scroll-arrow-left');
+  const right = shell.querySelector('.table-scroll-arrow-right');
+  if (!left || !right) return;
+  if (tableScrollArrowResizeHandler) {
+    window.removeEventListener('resize', tableScrollArrowResizeHandler);
+  }
+  const refresh = () => {
+    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+    const scrollable = maxScroll > 2;
+    shell.classList.toggle('has-horizontal-scroll', scrollable);
+    left.classList.toggle('can-move', scrollable && container.scrollLeft > 2);
+    right.classList.toggle('can-move', scrollable && container.scrollLeft < maxScroll - 2);
+  };
+  const move = direction => {
+    const amount = Math.max(240, Math.floor(container.clientWidth * 0.7));
+    container.scrollBy({ left: direction * amount, behavior: 'smooth' });
+  };
+  left.addEventListener('click', () => move(-1));
+  right.addEventListener('click', () => move(1));
+  container.addEventListener('scroll', refresh, { passive: true });
+  tableScrollArrowResizeHandler = refresh;
+  window.addEventListener('resize', tableScrollArrowResizeHandler);
+  requestAnimationFrame(() => requestAnimationFrame(refresh));
+}
+
+function renderTableBody() {
+  const tbody = document.getElementById('tableBody');
+  if (!tbody) return;
+  const data = globalData[activeSheetName];
+  const isOverall = activeSheetName === '年度排名';
+  const colLimit = getColLimit(data);
+  const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
+  const rows = data.slice(2).filter(r => r[0]).map(row => {
+    const hasPart = row.slice(2, colLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
+    return { data: row, total: Number(row[1]) || 0, hasPart };
+  }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total);
+
+  let rank = 1, displayRank = 1, prev = null;
+  rows.forEach(r => {
+    if (!r.hasPart) {
+      r.rank = '-';
+      return;
+    }
+    if (r.total !== prev) {
+      displayRank = rank;
+      prev = r.total;
+    }
+    r.rank = displayRank;
+    rank++;
+  });
+
+  const getSortValue = row => {
     if (currentSortCol === 'total') return row.total;
     const value = row.data[currentSortCol];
-    if (
-        value === undefined ||
-        value === null ||
-        String(value).trim() === '' ||
-        String(value).trim() === '-'
-    ) {
-        return -Infinity;
+    if (value === undefined || value === null || String(value).trim() === '' || String(value).trim() === '-') {
+      return -Infinity;
     }
     const number = Number(value);
     return Number.isFinite(number) ? number : -Infinity;
-};
-rows.sort((a, b) => {
-    if (!a.hasPart || !b.hasPart)
-        return b.hasPart - a.hasPart;
+  };
+
+  rows.sort((a, b) => {
+    if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
     const vA = getSortValue(a);
     const vB = getSortValue(b);
     return sortAscending ? vA - vB : vB - vA;
-});
-    tbody.innerHTML = rows.map(r => {
-        const rHtml = !r.hasPart ? `<span class="rank-other">-</span>` : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
-        const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
-        const colsHtml = colIndices.map(j => {
-            const v = r.data[j];
-            const hasV = v !== '' && v !== undefined;
-            const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
-            return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
-        }).join('');
-        const playerName = String(r.data[0] ?? '');
-        return `<tr><td>${rHtml}</td><td><button type="button" class="player-name-btn" data-player="${escapeHtml(playerName)}">${escapeHtml(playerName)}</button></td><td class="${tClass} ${focusedDateCol ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+  });
+
+  tbody.innerHTML = rows.map(r => {
+    const rHtml = !r.hasPart
+      ? `<span class="rank-other">-</span>`
+      : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
+    const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
+    const colsHtml = colIndices.map(j => {
+      const v = r.data[j];
+      const hasV = v !== '' && v !== undefined;
+      const cClass = hasV && v > 0 ? 'win' : (hasV && v < 0 ? 'lose' : '');
+      return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
     }).join('');
-    tbody.querySelectorAll('.player-name-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); openPlayerProfile(btn.dataset.player); }));
-}
-function addOutcome(record, score) {
-    record.games++;
-    record.total += score;
-    record.scores.push(score);
-    if (score > 0)
-        record.wins++;
-    else if (score < 0)
-        record.losses++;
-    else
-        record.draws++;
-}
-function collectPlayerStats(playerName) {
-    const stats = {
-        name: playerName,
-        month: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [], sheetName: '' },
-        year: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [] },
-        recent: [],
-        opponents: {}
-    };
-    let profileMonthName = activeSheetName;
-    if (profileMonthName === '年度排名') {
-        const selectedMonthName = activeMonthNo !== null ? monthName(activeMonthNo) : '';
-        profileMonthName = globalData[selectedMonthName]
-            ? selectedMonthName
-            : allSheetNames.filter(n => n !== '年度排名').slice(-1)[0] || '';
-    }
-    stats.profileMonthName = profileMonthName;
-    stats.month.sheetName = profileMonthName;
-    const targetMonthNo = profileMonthName ? Number(globalData[profileMonthName]?.[0]?.[0]) || 0 : 0;
-    [...rawGames].filter(game => !game.is_deleted && game.year === activeYear).sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id).forEach(game => {
-        const mine = game.results.find(r => r.playerName === playerName);
-        if (!mine)
-            return;
-        addOutcome(stats.year, mine.score);
-        if (game.monthNo === targetMonthNo && game.year === activeYear)
-            addOutcome(stats.month, mine.score);
-        stats.recent.push({ score: mine.score, sheet: monthName(game.monthNo), monthNo: game.monthNo, date: `${game.day}/${game.monthNo}`, gameId: game.id });
-        game.results.forEach(op => {
-            if (op.playerName === playerName)
-                return;
-            if (!stats.opponents[op.playerName])
-                stats.opponents[op.playerName] = { name: op.playerName, games: 0, wins: 0, losses: 0, draws: 0 };
-            const duel = stats.opponents[op.playerName];
-            duel.games++;
-            if (mine.score > 0 && op.score < 0)
-                duel.wins++;
-            else if (mine.score < 0 && op.score > 0)
-                duel.losses++;
-            else
-                duel.draws++;
-        });
+    const playerName = String(r.data[0] ?? '');
+    return `<tr><td>${rHtml}</td><td><button type="button" class="player-name-btn" data-player="${escapeHtml(playerName)}">${escapeHtml(playerName)}</button></td><td class="${tClass} ${focusedDateCol !== null ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.player-name-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openPlayerProfile(btn.dataset.player);
     });
-    stats.recent = stats.recent.slice(-10).reverse();
-    return stats;
+  });
 }
-function pct(wins, games) { return games ? `${((wins / games) * 100).toFixed(1)}%` : '-'; }
-function rateClass(wins, games) { if (!games)
-    return ''; const rate = wins / games; return rate > .5 ? 'win' : (rate < .5 ? 'lose' : ''); }
-function signedNumber(n) { if (!Number.isFinite(n))
-    return '-'; return n > 0 ? `+${n}` : String(n); }
-function signedClass(n) { if (!Number.isFinite(n) || n === 0)
-    return ''; return n > 0 ? 'win' : 'lose'; }
-function getOverallRank(playerName) {
-    const rows = rawPlayers.map(p => {
-        const displayGames = rawGames.filter(g => !g.is_deleted);
-        const total = displayGames.flatMap(g => g.results).filter(r => r.playerId === Number(p.id)).reduce((sum, r) => sum + r.score, 0);
-        const hasPart = displayGames.some(g => g.results.some(r => r.playerId === Number(p.id)));
-        return { name: p.name, total, hasPart };
-    }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total || a.name.localeCompare(b.name));
-    let rank = 1, displayRank = 1, prev = null;
-    for (const r of rows) {
-        if (!r.hasPart)
-            continue;
-        if (r.total !== prev) {
-            displayRank = rank;
-            prev = r.total;
+
+function addOutcome(record, score) {
+  record.games++;
+  record.total += score;
+  record.scores.push(score);
+  if (score > 0) record.wins++;
+  else if (score < 0) record.losses++;
+  else record.draws++;
+}
+
+function collectPlayerStats(playerName) {
+  const stats = {
+    name: playerName,
+    month: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [], sheetName: '' },
+    year: { games: 0, wins: 0, losses: 0, draws: 0, total: 0, scores: [] },
+    recent: [],
+    opponents: {}
+  };
+  let profileMonthName = activeSheetName;
+  if (profileMonthName === '年度排名') {
+    const selectedMonthName = activeMonthNo !== null ? monthName(activeMonthNo) : '';
+    profileMonthName = globalData[selectedMonthName]
+      ? selectedMonthName
+      : allSheetNames.filter(n => n !== '年度排名').slice(-1)[0] || '';
+  }
+  stats.profileMonthName = profileMonthName;
+  stats.month.sheetName = profileMonthName;
+  const targetMonthNo = profileMonthName ? Number(globalData[profileMonthName]?.[0]?.[0]) || 0 : 0;
+
+  [...rawGames]
+    .filter(game => !game.is_deleted && game.year === activeYear)
+    .sort((a, b) => a.played_on.localeCompare(b.played_on) || a.id - b.id)
+    .forEach(game => {
+      const mine = game.results.find(r => r.playerName === playerName);
+      if (!mine) return;
+      addOutcome(stats.year, mine.score);
+      if (game.monthNo === targetMonthNo && game.year === activeYear) {
+        addOutcome(stats.month, mine.score);
+      }
+      stats.recent.push({
+        score: mine.score,
+        sheet: monthName(game.monthNo, game.year),
+        monthNo: game.monthNo,
+        date: `${game.day}/${game.monthNo}`,
+        gameId: game.id
+      });
+      game.results.forEach(op => {
+        if (op.playerName === playerName) return;
+        if (!stats.opponents[op.playerName]) {
+          stats.opponents[op.playerName] = { name: op.playerName, games: 0, wins: 0, losses: 0, draws: 0 };
         }
-        if (r.name === playerName)
-            return displayRank;
-        rank++;
-    }
-    return null;
+        const duel = stats.opponents[op.playerName];
+        duel.games++;
+        if (mine.score > 0 && op.score < 0) duel.wins++;
+        else if (mine.score < 0 && op.score > 0) duel.losses++;
+        else duel.draws++;
+      });
+    });
+
+  stats.recent = stats.recent.slice(-10).reverse();
+  return stats;
 }
+
+function pct(wins, games) {
+  return games ? `${((wins / games) * 100).toFixed(1)}%` : '-';
+}
+
+function rateClass(wins, games) {
+  if (!games) return '';
+  const rate = wins / games;
+  return rate > .5 ? 'win' : (rate < .5 ? 'lose' : '');
+}
+
+function signedNumber(n) {
+  if (!Number.isFinite(n)) return '-';
+  return n > 0 ? `+${n}` : String(n);
+}
+
+function signedClass(n) {
+  if (!Number.isFinite(n) || n === 0) return '';
+  return n > 0 ? 'win' : 'lose';
+}
+
+function getOverallRank(playerName) {
+  const displayGames = rawGames.filter(g => !g.is_deleted);
+  const rows = rawPlayers.map(p => {
+    const pid = Number(p.id);
+    const playerResults = displayGames.flatMap(g => g.results).filter(r => r.playerId === pid);
+    const total = playerResults.reduce((sum, r) => sum + r.score, 0);
+    const hasPart = playerResults.length > 0;
+    return { name: p.name, total, hasPart };
+  }).sort((a, b) => b.hasPart - a.hasPart || b.total - a.total || a.name.localeCompare(b.name));
+
+  let rank = 1, displayRank = 1, prev = null;
+  for (const r of rows) {
+    if (!r.hasPart) continue;
+    if (r.total !== prev) {
+      displayRank = rank;
+      prev = r.total;
+    }
+    if (r.name === playerName) return displayRank;
+    rank++;
+  }
+  return null;
+}
+
 function renderProfileStats(stats) {
-    const m = stats.month, y = stats.year;
-    const recentHtml = stats.recent.length ? stats.recent.map(g => {
-        const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
-        return `<div class="recent-game ${cls}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}">${g.score > 0 ? '+' : ''}${g.score}</div>`;
-    }).join('') : `<div class="profile-empty">暫無參加紀錄</div>`;
-    const opponents = Object.values(stats.opponents).filter(o => o.games >= 3).map(o => ({ ...o, rate: o.games ? o.wins / o.games : 0 })).sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
-    const potentialNemesis = opponents[0] || null, nemesis = (potentialNemesis && potentialNemesis.rate < .5) ? potentialNemesis : null;
-    const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null, benefactor = (potentialBenefactor && potentialBenefactor.rate > .5) ? potentialBenefactor : null;
-    let best = null, worst = null;
-    if (y.scores.length) {
-        const max = Math.max(...y.scores), min = Math.min(...y.scores);
-        best = max > 0 ? max : null;
-        worst = min < 0 ? min : null;
-    }
-    const monthWinRateClass = rateClass(m.wins, m.games), yearWinRateClass = rateClass(y.wins, y.games);
-    const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null, yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
-    document.getElementById('profileBody').innerHTML = `
-        <section class="profile-section"><div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div><div class="profile-grid">
-          <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
-        </div></section>
-        <section class="profile-section"><div class="profile-section-title">${activeYear} 年度戰績</div><div class="profile-grid">
-          <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins, y.games)}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
-          <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
-        </div></section>
-        <section class="profile-section"><div class="profile-section-title">近期 10 場</div><div class="recent-grid">${recentHtml}</div><div class="recent-meta"><span>最新 → 最舊</span><span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span></div></section>
-        <section class="profile-section"><div class="profile-section-title">魔鬼 / 天使</div><div class="duel-grid">
-          <div class="duel-card"><div class="duel-label">😈 魔鬼</div>${nemesis ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
-          <div class="duel-card"><div class="duel-label">😇 天使</div>${benefactor ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
-        </div></section>
-        <section class="profile-section"><div class="profile-section-title">最佳 / 最差單局</div><div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div><div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div></section>`;
+  const m = stats.month, y = stats.year;
+  const recentHtml = stats.recent.length ? stats.recent.map(g => {
+    const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
+    const scoreText = `${g.score > 0 ? '+' : ''}${g.score}`;
+    const gameLabel = `${g.sheet} ${g.date}，分數 ${scoreText}，點擊查看牌局`;
+    return `<button type="button" class="recent-game ${cls}" data-game-id="${escapeHtml(String(g.gameId))}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}" aria-label="${escapeHtml(gameLabel)}">${scoreText}</button>`;
+  }).join('') : `<div class="profile-empty">暫無參加紀錄</div>`;
+
+  const opponents = Object.values(stats.opponents)
+    .filter(o => o.games >= 3)
+    .map(o => ({ ...o, rate: o.games ? o.wins / o.games : 0 }))
+    .sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
+  const potentialNemesis = opponents[0] || null;
+  const nemesis = (potentialNemesis && potentialNemesis.rate < .5) ? potentialNemesis : null;
+  const potentialBenefactor = opponents.length ? opponents[opponents.length - 1] : null;
+  const benefactor = (potentialBenefactor && potentialBenefactor.rate > .5) ? potentialBenefactor : null;
+
+  let best = null, worst = null;
+  if (y.scores.length) {
+    const max = Math.max(...y.scores), min = Math.min(...y.scores);
+    best = max > 0 ? max : null;
+    worst = min < 0 ? min : null;
+  }
+  const monthWinRateClass = rateClass(m.wins, m.games), yearWinRateClass = rateClass(y.wins, y.games);
+  const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null;
+  const yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
+
+  document.getElementById('profileBody').innerHTML = `
+    <section class="profile-section"><div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div><div class="profile-grid">
+      <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(monthAvg)}">${monthAvg === null ? '-' : signedNumber(monthAvg)}</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(m.total)}">${signedNumber(m.total)}</div></div>
+    </div></section>
+    <section class="profile-section"><div class="profile-section-title">${activeYear} 年度戰績</div><div class="profile-grid">
+      <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${y.games}</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${yearWinRateClass}">${pct(y.wins, y.games)}</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">平均每局</div><div class="profile-stat-value ${signedClass(yearAvg)}">${yearAvg === null ? '-' : signedNumber(yearAvg)}</div></div>
+      <div class="profile-stat"><div class="profile-stat-label">總分</div><div class="profile-stat-value ${signedClass(y.total)}">${signedNumber(y.total)}</div></div>
+    </div></section>
+    <section class="profile-section"><div class="profile-section-title">本年近期 10 場</div><div class="recent-grid">${recentHtml}</div><div class="recent-meta"><span>最新 → 最舊</span><span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span></div></section>
+    <section class="profile-section"><div class="profile-section-title">魔鬼 / 天使</div><div class="duel-grid">
+      <div class="duel-card"><div class="duel-label">😈 魔鬼</div>${nemesis ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
+      <div class="duel-card"><div class="duel-label">😇 天使</div>${benefactor ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
+    </div></section>
+    <section class="profile-section"><div class="profile-section-title">最佳 / 最差單局</div><div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div><div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div></section>`;
+
+  document.querySelectorAll('.recent-game[data-game-id]').forEach(button => {
+    button.addEventListener('click', () => {
+      const game = rawGames.find(item => Number(item.id) === Number(button.dataset.gameId));
+      if (!game) return;
+      closePlayerProfile();
+      focusGameInTable(game);
+      requestAnimationFrame(() => {
+        document.querySelector('.table-scroll-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  });
 }
+
 function openPlayerProfile(playerName) {
-    const token = ++profileRequestToken;
-    document.getElementById('profileName').textContent = playerName;
-    document.getElementById('profileSubtitle').textContent = `整理 ${activeYear} 戰績…`;
-    document.getElementById('profileBody').innerHTML = `<section class="profile-section"><div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div><div class="profile-grid">${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}</div></section>`;
-    document.body.classList.add('profile-open');
-    document.getElementById('profileBackdrop').classList.add('show');
-    document.getElementById('profileSheet').classList.add('show');
-    document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'false');
-    document.getElementById('profileSheet').setAttribute('aria-hidden', 'false');
-    if (token !== profileRequestToken)
-        return;
-    const stats = collectPlayerStats(playerName);
-    const currentRank = getOverallRank(playerName);
-    document.getElementById('profileSubtitle').textContent = `${stats.profileMonthName || activeYear + ' 年'} · ${currentRank ? `歷年總排名 ${currentRank}` : '玩家資料'}`;
-    renderProfileStats(stats);
+  const token = ++profileRequestToken;
+  document.getElementById('profileName').textContent = playerName;
+  document.getElementById('profileSubtitle').textContent = `整理 ${activeYear} 戰績…`;
+  document.getElementById('profileBody').innerHTML = `<section class="profile-section"><div class="sk-box" style="height:18px;width:35%;margin-bottom:12px;"></div><div class="profile-grid">${Array(4).fill('<div class="profile-stat"><div class="sk-box" style="height:12px;width:55%;margin-bottom:7px;"></div><div class="sk-box" style="height:20px;width:70%;"></div></div>').join('')}</div></section>`;
+  document.body.classList.add('profile-open');
+  document.getElementById('profileBackdrop').classList.add('show');
+  document.getElementById('profileSheet').classList.add('show');
+  document.getElementById('profileBackdrop').setAttribute('aria-hidden', 'false');
+  document.getElementById('profileSheet').setAttribute('aria-hidden', 'false');
+  if (token !== profileRequestToken) return;
+  const stats = collectPlayerStats(playerName);
+  const currentRank = getOverallRank(playerName);
+  document.getElementById('profileSubtitle').textContent = `${stats.profileMonthName || activeYear + ' 年'} · ${currentRank ? `歷年總排名 ${currentRank}` : '玩家資料'}`;
+  renderProfileStats(stats);
 }
+
 function closePlayerProfile() {
-    profileRequestToken++;
+  profileRequestToken++;
+  const backdrop = document.getElementById('profileBackdrop');
+  const sheet = document.getElementById('profileSheet');
+  backdrop.classList.remove('show');
+  sheet.classList.remove('show');
+  backdrop.setAttribute('aria-hidden', 'true');
+  sheet.setAttribute('aria-hidden', 'true');
+  if (!document.getElementById('addGameDrawer').classList.contains('show') &&
+      !document.getElementById('adminAuthSheet').classList.contains('show')) {
     document.body.classList.remove('profile-open');
-    const backdrop = document.getElementById('profileBackdrop'), sheet = document.getElementById('profileSheet');
-    backdrop.classList.remove('show');
-    sheet.classList.remove('show');
-    backdrop.setAttribute('aria-hidden', 'true');
-    sheet.setAttribute('aria-hidden', 'true');
+  }
 }
-let profileDrag = { active: false, startY: 0, currentY: 0 };
+
+const profileDrag = { active: false, startY: 0, currentY: 0 };
 function setupProfileDrag() {
-    const sheet = document.getElementById('profileSheet'), body = document.getElementById('profileBody');
-    sheet.addEventListener('touchstart', e => {
-        if (window.innerWidth > 600 || !sheet.classList.contains('show') || e.touches.length !== 1)
-            return;
-        const touch = e.touches[0], target = e.target, fromHeader = !!target.closest('.profile-header') || !!target.closest('.profile-grabber'), bodyAtTop = body.scrollTop <= 0;
-        if (!fromHeader && !bodyAtTop)
-            return;
-        profileDrag.active = true;
-        profileDrag.startY = touch.clientY;
-        profileDrag.currentY = touch.clientY;
-        sheet.classList.add('dragging');
-    }, { passive: true });
-    sheet.addEventListener('touchmove', e => {
-        if (!profileDrag.active || window.innerWidth > 600 || e.touches.length !== 1)
-            return;
-        const y = e.touches[0].clientY, delta = Math.max(0, y - profileDrag.startY);
-        profileDrag.currentY = y;
-        if (delta > 0)
-            sheet.style.transform = `translateY(${delta}px)`;
-    }, { passive: true });
-    sheet.addEventListener('touchend', () => {
-        if (!profileDrag.active)
-            return;
-        const delta = Math.max(0, profileDrag.currentY - profileDrag.startY);
-        profileDrag.active = false;
-        sheet.classList.remove('dragging');
-        sheet.style.transform = '';
-        if (delta >= 120)
-            closePlayerProfile();
-    }, { passive: true });
-    sheet.addEventListener('touchcancel', () => { profileDrag.active = false; sheet.classList.remove('dragging'); sheet.style.transform = ''; }, { passive: true });
+  const sheet = document.getElementById('profileSheet'), body = document.getElementById('profileBody');
+  sheet.addEventListener('touchstart', e => {
+    if (window.innerWidth > 600 || !sheet.classList.contains('show') || e.touches.length !== 1) return;
+    const touch = e.touches[0], target = e.target;
+    const fromHeader = Boolean(target.closest('.profile-header') || target.closest('.profile-grabber'));
+    const bodyAtTop = body.scrollTop <= 0;
+    if (!fromHeader && !bodyAtTop) return;
+    profileDrag.active = true;
+    profileDrag.startY = touch.clientY;
+    profileDrag.currentY = touch.clientY;
+    sheet.classList.add('dragging');
+  }, { passive: true });
+  sheet.addEventListener('touchmove', e => {
+    if (!profileDrag.active || window.innerWidth > 600 || e.touches.length !== 1) return;
+    const y = e.touches[0].clientY, delta = Math.max(0, y - profileDrag.startY);
+    profileDrag.currentY = y;
+    if (delta > 0) sheet.style.transform = `translateY(${delta}px)`;
+  }, { passive: true });
+  sheet.addEventListener('touchend', () => {
+    if (!profileDrag.active) return;
+    const delta = Math.max(0, profileDrag.currentY - profileDrag.startY);
+    profileDrag.active = false;
+    sheet.classList.remove('dragging');
+    sheet.style.transform = '';
+    if (delta >= 120) closePlayerProfile();
+  }, { passive: true });
+  sheet.addEventListener('touchcancel', () => {
+    profileDrag.active = false;
+    sheet.classList.remove('dragging');
+    sheet.style.transform = '';
+  }, { passive: true });
 }
+
+const addGameDrag = { active: false, startY: 0, startX: 0, currentY: 0, hasContent: false };
+function addGameFormHasContent() {
+  const dateValue = document.getElementById('gameDateInput')?.value || '';
+  return Boolean(dateValue || editingGameId || addGameRows.some(row => {
+    const hasPlayer = row.mode === 'select'
+      ? Boolean(row.playerId)
+      : Boolean(String(row.playerName || '').trim());
+    const hasScore = row.score !== '' && row.score !== null && row.score !== undefined;
+    return hasPlayer || hasScore;
+  }));
+}
+
+function resetAddGameDrag(drawer = document.getElementById('addGameDrawer')) {
+  addGameDrag.active = false;
+  addGameDrag.hasContent = false;
+  if (drawer) {
+    drawer.classList.remove('dragging');
+    drawer.style.transform = '';
+  }
+}
+
+function setupAddGameDrawerDrag() {
+  const drawer = document.getElementById('addGameDrawer');
+  const body = document.getElementById('addGameBody');
+  if (!drawer || !body) return;
+
+  drawer.addEventListener('touchstart', e => {
+    if (window.innerWidth > 600 || !drawer.classList.contains('show') || e.touches.length !== 1 || addGameSaving) return;
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target) return;
+    const fromHeader = Boolean(target.closest('.add-game-header'));
+    const interactive = Boolean(target.closest('button, input, select, textarea, a, [contenteditable="true"], .date-picker-wrap'));
+    const bodyAtTop = body.scrollTop <= 0 && !interactive;
+    if ((!fromHeader && !bodyAtTop) || (fromHeader && interactive)) return;
+
+    const touch = e.touches[0];
+    addGameDrag.active = true;
+    addGameDrag.startY = touch.clientY;
+    addGameDrag.startX = touch.clientX;
+    addGameDrag.currentY = touch.clientY;
+    addGameDrag.hasContent = addGameFormHasContent();
+    drawer.classList.add('dragging');
+  }, { passive: true });
+
+  drawer.addEventListener('touchmove', e => {
+    if (!addGameDrag.active || window.innerWidth > 600 || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - addGameDrag.startX;
+    const deltaY = touch.clientY - addGameDrag.startY;
+    if (Math.abs(deltaX) > Math.abs(deltaY) + 8) {
+      resetAddGameDrag(drawer);
+      return;
+    }
+    addGameDrag.currentY = touch.clientY;
+    drawer.style.transform = `translateY(${Math.max(0, deltaY)}px)`;
+  }, { passive: true });
+
+  drawer.addEventListener('touchend', () => {
+    if (!addGameDrag.active) return;
+    const delta = Math.max(0, addGameDrag.currentY - addGameDrag.startY);
+    const closeThreshold = addGameDrag.hasContent ? 180 : 120;
+    resetAddGameDrag(drawer);
+    if (delta >= closeThreshold) closeAddGameDrawer(false);
+  }, { passive: true });
+
+  drawer.addEventListener('touchcancel', () => resetAddGameDrag(drawer), { passive: true });
+}
+
 function getAdminRedirectUrl() {
-    return window.location.origin + window.location.pathname;
+  return window.location.origin + window.location.pathname;
 }
+
 function setAdminAuthError(message) {
-    const el = document.getElementById('adminAuthError');
-    if (!el)
-        return;
-    el.textContent = message || '';
+  const el = document.getElementById('adminAuthError');
+  if (el) el.textContent = message || '';
 }
+
 function openAdminAuthModal(message = '') {
-    const backdrop = document.getElementById('adminAuthBackdrop');
-    const sheet = document.getElementById('adminAuthSheet');
-    const msg = document.getElementById('adminAuthMessage');
-    if (!backdrop || !sheet)
-        return;
-    if (msg && message)
-        msg.textContent = message;
-    setAdminAuthError('');
-    backdrop.classList.add('show');
-    sheet.classList.add('show');
-    backdrop.setAttribute('aria-hidden', 'false');
-    sheet.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('profile-open');
+  const backdrop = document.getElementById('adminAuthBackdrop');
+  const sheet = document.getElementById('adminAuthSheet');
+  const msg = document.getElementById('adminAuthMessage');
+  if (!backdrop || !sheet) return;
+  if (msg && message) msg.textContent = message;
+  setAdminAuthError('');
+  backdrop.classList.add('show');
+  sheet.classList.add('show');
+  backdrop.setAttribute('aria-hidden', 'false');
+  sheet.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('profile-open');
 }
+
 function closeAdminAuthModal(clearPending = true) {
-    const backdrop = document.getElementById('adminAuthBackdrop');
-    const sheet = document.getElementById('adminAuthSheet');
-    if (!backdrop || !sheet)
+  const backdrop = document.getElementById('adminAuthBackdrop');
+  const sheet = document.getElementById('adminAuthSheet');
+  if (!backdrop || !sheet) return;
+  backdrop.classList.remove('show');
+  sheet.classList.remove('show');
+  backdrop.setAttribute('aria-hidden', 'true');
+  sheet.setAttribute('aria-hidden', 'true');
+  if (clearPending) {
+    pendingAdminAction = '';
+    sessionStorage.removeItem('lamnei_admin_pending');
+  }
+  if (!document.getElementById('addGameDrawer').classList.contains('show') &&
+      !document.getElementById('profileSheet').classList.contains('show')) {
+    document.body.classList.remove('profile-open');
+  }
+}
+
+async function refreshAdminAccess() {
+  if (!supabaseClient) return false;
+  if (adminAuthCheckPromise) return adminAuthCheckPromise;
+  adminAuthCheckPromise = (async () => {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      adminSession = session || null;
+      if (!session) {
+        isAdminUser = false;
+        return false;
+      }
+      const { data, error } = await supabaseClient.rpc('is_current_user_admin');
+      if (error) throw error;
+      isAdminUser = data === true;
+      return isAdminUser;
+    } catch (err) {
+      isAdminUser = false;
+      console.error('Admin auth check failed:', err);
+      return false;
+    }
+  })();
+  try {
+    return await adminAuthCheckPromise;
+  } finally {
+    adminAuthCheckPromise = null;
+  }
+}
+
+async function requireAdminAccess(action, onSuccess) {
+  if (!supabaseClient) {
+    openAdminAuthModal('目前無法連線至登入服務。');
+    setAdminAuthError('Supabase 尚未初始化。');
+    return false;
+  }
+  const allowed = await refreshAdminAccess();
+  if (allowed) {
+    if (typeof onSuccess === 'function') await onSuccess();
+    return true;
+  }
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) {
+    pendingAdminAction = action || 'add';
+    sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
+    openAdminAuthModal('新增及修改牌局只限管理員使用。');
+    return false;
+  }
+  await supabaseClient.auth.signOut();
+  adminSession = null;
+  isAdminUser = false;
+  pendingAdminAction = '';
+  sessionStorage.removeItem('lamnei_admin_pending');
+  openAdminAuthModal('新增及修改牌局只限管理員使用。');
+  return false;
+}
+
+async function verifyAdminBeforeSave() {
+  const allowed = await refreshAdminAccess();
+  if (!allowed) {
+    showAddGameError('管理權限已失效，請重新使用 Google 登入。');
+    closeAddGameDrawer(true);
+    pendingAdminAction = addGameMode === 'edit' ? 'edit' : 'add';
+    sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
+    openAdminAuthModal('請重新使用管理員 Google 帳戶登入。');
+    return false;
+  }
+  return true;
+}
+
+async function handleGoogleLogin() {
+  if (!supabaseClient) return;
+  const button = document.getElementById('adminGoogleLogin');
+  const action = pendingAdminAction || 'add';
+  pendingAdminAction = action;
+  sessionStorage.setItem('lamnei_admin_pending', action);
+  setAdminAuthError('');
+  if (button) {
+    button.disabled = true;
+    button.querySelector('span').textContent = '正在連線 Google…';
+  }
+  try {
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: getAdminRedirectUrl(),
+        queryParams: { prompt: 'select_account' }
+      }
+    });
+    if (error) throw error;
+  } catch (err) {
+    setAdminAuthError(err.message || 'Google 登入失敗。');
+    if (button) {
+      button.disabled = false;
+      button.querySelector('span').textContent = '使用 Google 登入';
+    }
+  }
+}
+
+async function initAdminAuth() {
+  if (!supabaseClient) return;
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    adminSession = session || null;
+    if (!session) {
+      isAdminUser = false;
+      return;
+    }
+    setTimeout(async () => {
+      const allowed = await refreshAdminAccess();
+      if (!allowed) {
+        if (pendingAdminAction) {
+          pendingAdminAction = '';
+          sessionStorage.removeItem('lamnei_admin_pending');
+          await supabaseClient.auth.signOut();
+          adminSession = null;
+          isAdminUser = false;
+          openAdminAuthModal('新增及修改牌局只限管理員使用。');
+          setAdminAuthError('請重新使用管理員 Google 帳戶登入。');
+        }
         return;
-    backdrop.classList.remove('show');
-    sheet.classList.remove('show');
-    backdrop.setAttribute('aria-hidden', 'true');
-    sheet.setAttribute('aria-hidden', 'true');
-    if (clearPending) {
+      }
+      if (pendingAdminAction === 'add' || pendingAdminAction === 'edit') {
+        const mode = pendingAdminAction;
         pendingAdminAction = '';
         sessionStorage.removeItem('lamnei_admin_pending');
-    }
-    if (!document.getElementById('addGameDrawer').classList.contains('show') && !document.getElementById('profileSheet').classList.contains('show')) {
-        document.body.classList.remove('profile-open');
-    }
-}
-async function refreshAdminAccess() {
-    if (!supabaseClient)
-        return false;
-    if (adminAuthCheckPromise)
-        return adminAuthCheckPromise;
-    adminAuthChecking = true;
-    adminAuthCheckPromise = (async () => {
-        try {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            adminSession = session || null;
-            if (!session) {
-                isAdminUser = false;
-                return false;
-            }
-            const { data, error } = await supabaseClient.rpc('is_current_user_admin');
-            if (error)
-                throw error;
-            isAdminUser = data === true;
-            return isAdminUser;
-        }
-        catch (err) {
-            isAdminUser = false;
-            console.error('Admin auth check failed:', err);
-            return false;
-        }
-        finally {
-            adminAuthChecking = false;
-        }
-    })();
-    try {
-        return await adminAuthCheckPromise;
-    }
-    finally {
-        adminAuthCheckPromise = null;
-    }
-}
-async function requireAdminAccess(action, onSuccess) {
-    if (!supabaseClient) {
-        openAdminAuthModal('目前無法連線至登入服務。');
-        setAdminAuthError('Supabase 尚未初始化。');
-        return false;
-    }
-    const allowed = await refreshAdminAccess();
-    if (allowed) {
-        if (typeof onSuccess === 'function')
-            await onSuccess();
-        return true;
-    }
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-        pendingAdminAction = action || 'add';
-        sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
-        openAdminAuthModal('新增及修改牌局只限管理員使用。');
-        return false;
-    }
+        closeAdminAuthModal(false);
+        openGameDrawerUnlocked(mode);
+      }
+    }, 0);
+  });
+
+  const allowed = await refreshAdminAccess();
+  if (!allowed && pendingAdminAction && adminSession) {
+    pendingAdminAction = '';
+    sessionStorage.removeItem('lamnei_admin_pending');
     await supabaseClient.auth.signOut();
     adminSession = null;
     isAdminUser = false;
-    pendingAdminAction = '';
-    sessionStorage.removeItem('lamnei_admin_pending');
-    openAdminAuthModal('新增及修改牌局只限管理員使用。');
-    return false;
+  }
 }
-async function verifyAdminBeforeSave() {
-    const allowed = await refreshAdminAccess();
-    if (!allowed) {
-        showAddGameError('管理權限已失效，請重新使用 Google 登入。');
-        closeAddGameDrawer(true);
-        pendingAdminAction = addGameMode === 'edit' ? 'edit' : 'add';
-        sessionStorage.setItem('lamnei_admin_pending', pendingAdminAction);
-        openAdminAuthModal('請重新使用管理員 Google 帳戶登入。');
-        return false;
-    }
-    return true;
-}
-async function handleGoogleLogin() {
-    if (!supabaseClient)
-        return;
-    const button = document.getElementById('adminGoogleLogin');
-    const action = pendingAdminAction || 'add';
-    pendingAdminAction = action;
-    sessionStorage.setItem('lamnei_admin_pending', action);
-    setAdminAuthError('');
-    if (button) {
-        button.disabled = true;
-        button.querySelector('span').textContent = '正在連線 Google…';
-    }
-    try {
-        const { error } = await supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: getAdminRedirectUrl(),
-                queryParams: { prompt: 'select_account' }
-            }
-        });
-        if (error)
-            throw error;
-    }
-    catch (err) {
-        setAdminAuthError(err.message || 'Google 登入失敗。');
-        if (button) {
-            button.disabled = false;
-            button.querySelector('span').textContent = '使用 Google 登入';
-        }
-    }
-}
-async function initAdminAuth() {
-    if (!supabaseClient)
-        return;
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        adminSession = session || null;
-        if (!session) {
-            isAdminUser = false;
-            return;
-        }
-        setTimeout(async () => {
-            const allowed = await refreshAdminAccess();
-            if (!allowed) {
-                if (pendingAdminAction) {
-                    await supabaseClient.auth.signOut();
-                    adminSession = null;
-                    isAdminUser = false;
-                    openAdminAuthModal('新增及修改牌局只限管理員使用。');
-                    setAdminAuthError('請重新使用管理員 Google 帳戶登入。');
-                }
-                return;
-            }
-            if (pendingAdminAction === 'add') {
-                pendingAdminAction = '';
-                sessionStorage.removeItem('lamnei_admin_pending');
-                closeAdminAuthModal(false);
-                openAddGameDrawerUnlocked();
-            }
-            else if (pendingAdminAction === 'edit') {
-                pendingAdminAction = '';
-                sessionStorage.removeItem('lamnei_admin_pending');
-                closeAdminAuthModal(false);
-                await openEditGameDrawerUnlocked();
-            }
-        }, 0);
-    });
-    const allowed = await refreshAdminAccess();
-    if (!allowed && pendingAdminAction && adminSession) {
-        await supabaseClient.auth.signOut();
-        adminSession = null;
-        isAdminUser = false;
-    }
-}
+
 function createAddGameRow(removable = false) {
-    return { id: ++addGameRowSeq, removable, playerId: '', mode: 'select', playerName: '', sign: 1, score: '' };
+  return { id: ++addGameRowSeq, removable, playerId: '', mode: 'select', playerName: '', sign: 1, score: '' };
 }
+
 function setAddGameMode(mode) {
-    addGameMode = mode === 'edit' ? 'edit' : 'add';
-    editingGameId = null;
-    editingGameIsDeleted = false;
-    const title = document.getElementById('addGameTitle');
-    const toggle = document.getElementById('addGameModeToggle');
-    const submit = document.getElementById('saveGameButton');
-    const deleteBtn = document.getElementById('editGameDeleteToggle');
-    const picker = document.getElementById('editGamePicker');
-    const empty = document.getElementById('editGameEmpty');
-    if (addGameMode === 'edit') {
-        title.textContent = '修改牌局';
-        toggle.setAttribute('aria-label', '返回新增牌局');
-        toggle.setAttribute('title', '返回新增牌局');
-        toggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M9 6L3.75 12L9 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M4.5 12H20.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>`;
-        submit.textContent = '儲存修改';
-        if (deleteBtn)
-            deleteBtn.hidden = true;
-    }
-    else {
-        title.textContent = '新增牌局';
-        toggle.setAttribute('aria-label', '修改牌局');
-        toggle.setAttribute('title', '修改牌局');
-        toggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M4.5 19.5L5.4 15.8L15.9 5.3C16.7 4.5 18 4.5 18.8 5.3L18.7 5.4L18.7 5.5L18.8 5.6C19.6 6.4 19.6 7.7 18.8 8.5L8.3 19L4.5 19.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-          <path d="M14.4 6.8L17.2 9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>`;
-        submit.textContent = '新增牌局';
-        if (deleteBtn)
-            deleteBtn.hidden = true;
-    }
-    picker.classList.remove('show');
-    empty.classList.remove('show');
+  addGameMode = mode === 'edit' ? 'edit' : 'add';
+  editingGameId = null;
+  editingGameIsDeleted = false;
+  const title = document.getElementById('addGameTitle');
+  const toggle = document.getElementById('addGameModeToggle');
+  const submit = document.getElementById('saveGameButton');
+  const deleteBtn = document.getElementById('editGameDeleteToggle');
+  const picker = document.getElementById('editGamePicker');
+  const empty = document.getElementById('editGameEmpty');
+  if (addGameMode === 'edit') {
+    title.textContent = '修改牌局';
+    toggle.setAttribute('aria-label', '返回新增牌局');
+    toggle.setAttribute('title', '返回新增牌局');
+    toggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M9 6L3.75 12L9 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.5 12H20.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>`;
+    submit.textContent = '儲存修改';
+  } else {
+    title.textContent = '新增牌局';
+    toggle.setAttribute('aria-label', '修改牌局');
+    toggle.setAttribute('title', '修改牌局');
+    toggle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M4.5 19.5L5.4 15.8L15.9 5.3C16.7 4.5 18 4.5 18.8 5.3L18.7 5.4L18.7 5.5L18.8 5.6C19.6 6.4 19.6 7.7 18.8 8.5L8.3 19L4.5 19.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M14.4 6.8L17.2 9.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>`;
+    submit.textContent = '新增牌局';
+  }
+  if (deleteBtn) deleteBtn.hidden = true;
+  picker.classList.remove('show');
+  empty.classList.remove('show');
 }
+
 function resetEditSelection() {
-    editingGameId = null;
-    editingGameIsDeleted = false;
-    const deleteBtn = document.getElementById('editGameDeleteToggle');
-    if (deleteBtn)
-        deleteBtn.hidden = true;
-    const picker = document.getElementById('editGamePicker');
-    const empty = document.getElementById('editGameEmpty');
-    const select = document.getElementById('editGameSelect');
+  editingGameId = null;
+  editingGameIsDeleted = false;
+  const deleteBtn = document.getElementById('editGameDeleteToggle');
+  if (deleteBtn) deleteBtn.hidden = true;
+  const picker = document.getElementById('editGamePicker');
+  const empty = document.getElementById('editGameEmpty');
+  const select = document.getElementById('editGameSelect');
+  picker.classList.remove('show');
+  empty.classList.remove('show');
+  select.innerHTML = '<option value="" disabled selected>選擇牌局</option>';
+  select.value = '';
+  resetAddGameRows();
+  renderAddGameRows();
+}
+
+function getGamesForDate(dateStr) {
+  return rawGames
+    .filter(g => String(g.played_on) === String(dateStr))
+    .sort((a, b) => a.id - b.id);
+}
+
+function populateEditGamesForDate(dateStr) {
+  const picker = document.getElementById('editGamePicker');
+  const empty = document.getElementById('editGameEmpty');
+  const select = document.getElementById('editGameSelect');
+  editingGameId = null;
+  editingGameIsDeleted = false;
+  updateEditGameDeleteButton();
+  if (!dateStr) {
     picker.classList.remove('show');
     empty.classList.remove('show');
     select.innerHTML = '<option value="" disabled selected>選擇牌局</option>';
     select.value = '';
     resetAddGameRows();
     renderAddGameRows();
+    return;
+  }
+  const games = getGamesForDate(dateStr);
+  select.innerHTML = '<option value="" disabled>選擇牌局</option>' + games.map(g => `<option value="${g.id}">${g.is_deleted ? `牌局 #${g.id}（已刪除）` : `牌局 #${g.id}`}</option>`).join('');
+  if (!games.length) {
+    picker.classList.remove('show');
+    empty.classList.add('show');
+    resetAddGameRows();
+    renderAddGameRows();
+    return;
+  }
+  empty.classList.remove('show');
+  if (games.length === 1) {
+    picker.classList.remove('show');
+    select.value = String(games[0].id);
+    loadGameIntoForm(games[0].id);
+  } else {
+    picker.classList.add('show');
+    select.value = '';
+    resetAddGameRows();
+    renderAddGameRows();
+  }
 }
-function getGamesForDate(dateStr) {
-    return rawGames
-        .filter(g => String(g.played_on) === String(dateStr))
-        .sort((a, b) => a.id - b.id);
-}
-function populateEditGamesForDate(dateStr) {
-    const picker = document.getElementById('editGamePicker');
-    const empty = document.getElementById('editGameEmpty');
-    const select = document.getElementById('editGameSelect');
+
+function loadGameIntoForm(gameId) {
+  const game = rawGames.find(g => Number(g.id) === Number(gameId));
+  if (!game) {
     editingGameId = null;
     editingGameIsDeleted = false;
     updateEditGameDeleteButton();
-    if (!dateStr) {
-        picker.classList.remove('show');
-        empty.classList.remove('show');
-        select.innerHTML = '<option value="" disabled selected>選擇牌局</option>';
-        select.value = '';
-        resetAddGameRows();
-        renderAddGameRows();
-        return;
-    }
-    const games = getGamesForDate(dateStr);
-    select.innerHTML = '<option value="" disabled>選擇牌局</option>' + games.map(g => `<option value="${g.id}">${g.is_deleted ? `牌局 #${g.id}（已刪除）` : `牌局 #${g.id}`}</option>`).join('');
-    if (!games.length) {
-        picker.classList.remove('show');
-        empty.classList.add('show');
-        resetAddGameRows();
-        renderAddGameRows();
-        return;
-    }
-    empty.classList.remove('show');
-    if (games.length === 1) {
-        picker.classList.remove('show');
-        select.value = String(games[0].id);
-        loadGameIntoForm(games[0].id);
-    }
-    else {
-        picker.classList.add('show');
-        select.value = '';
-        resetAddGameRows();
-        renderAddGameRows();
-    }
-}
-function loadGameIntoForm(gameId) {
-    const game = rawGames.find(g => Number(g.id) === Number(gameId));
-    if (!game) {
-        editingGameId = null;
-        editingGameIsDeleted = false;
-        updateEditGameDeleteButton();
-        resetAddGameRows();
-        renderAddGameRows();
-        return;
-    }
-    editingGameId = Number(game.id);
-    editingGameIsDeleted = Boolean(game.is_deleted);
-    updateEditGameDeleteButton();
-    const dateInput = document.getElementById('gameDateInput');
-    const dateDisplay = document.getElementById('gameDateDisplay');
-    const dateText = document.getElementById('gameDateText');
-    dateInput.value = String(game.played_on);
-    dateText.textContent = formatDateDisplay(game.played_on);
-    dateDisplay.classList.remove('placeholder');
-    const results = [...(game.results || [])].slice(0, 8);
-    addGameRows = results.map((r, index) => ({
-        id: ++addGameRowSeq,
-        removable: index >= 4,
-        playerId: String(r.playerId),
-        mode: 'select',
-        playerName: '',
-        sign: Number(r.score) < 0 ? -1 : 1,
-        score: Number(r.score) || 0
-    }));
-    while (addGameRows.length < 4)
-        addGameRows.push(createAddGameRow(false));
+    resetAddGameRows();
     renderAddGameRows();
+    return;
+  }
+  editingGameId = Number(game.id);
+  editingGameIsDeleted = Boolean(game.is_deleted);
+  updateEditGameDeleteButton();
+  const dateInput = document.getElementById('gameDateInput');
+  const dateDisplay = document.getElementById('gameDateDisplay');
+  const dateText = document.getElementById('gameDateText');
+  dateInput.value = String(game.played_on);
+  dateText.textContent = formatDateDisplay(game.played_on);
+  dateDisplay.classList.remove('placeholder');
+  const results = [...(game.results || [])].slice(0, 8);
+  addGameRows = results.map((r, index) => ({
+    id: ++addGameRowSeq,
+    removable: index >= 4,
+    playerId: String(r.playerId),
+    mode: 'select',
+    playerName: '',
+    sign: Number(r.score) < 0 ? -1 : 1,
+    score: Number(r.score) || 0
+  }));
+  while (addGameRows.length < 4) addGameRows.push(createAddGameRow(false));
+  renderAddGameRows();
 }
+
 function updateEditGameDeleteButton() {
-    const btn = document.getElementById('editGameDeleteToggle');
-    const icon = document.getElementById('editGameDeleteIcon');
-    if (!btn || !icon)
-        return;
-    const isAvailable = addGameMode === 'edit' && !!editingGameId;
-    btn.hidden = !isAvailable;
-    if (!isAvailable)
-        return;
-    if (editingGameIsDeleted) {
-        btn.classList.add('restore-mode');
-        btn.setAttribute('aria-label', '復原牌局');
-        btn.setAttribute('title', '復原牌局');
-        icon.innerHTML = `
-          <path d="M4.75 12A7.25 7.25 0 1 0 6.87 6.87L4.75 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M4.75 4.75V9H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        `;
-    }
-    else {
-        btn.classList.remove('restore-mode');
-        btn.setAttribute('aria-label', '刪除牌局');
-        btn.setAttribute('title', '刪除牌局');
-        icon.innerHTML = `
-          <path d="M4.75 7.25H19.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M9.25 4.25H14.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M7 7.25L7.75 19.25C7.82 20.38 8.76 21.25 9.89 21.25H14.11C15.24 21.25 16.18 20.38 16.25 19.25L17 7.25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-          <path d="M10 10.5V17.5M14 10.5V17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        `;
-    }
+  const btn = document.getElementById('editGameDeleteToggle');
+  const icon = document.getElementById('editGameDeleteIcon');
+  if (!btn || !icon) return;
+  const isAvailable = addGameMode === 'edit' && Boolean(editingGameId);
+  btn.hidden = !isAvailable;
+  if (!isAvailable) return;
+  if (editingGameIsDeleted) {
+    btn.classList.add('restore-mode');
+    btn.setAttribute('aria-label', '復原牌局');
+    btn.setAttribute('title', '復原牌局');
+    icon.innerHTML = `
+      <path d="M4.75 12A7.25 7.25 0 1 0 6.87 6.87L4.75 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4.75 4.75V9H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    `;
+  } else {
+    btn.classList.remove('restore-mode');
+    btn.setAttribute('aria-label', '刪除牌局');
+    btn.setAttribute('title', '刪除牌局');
+    icon.innerHTML = `
+      <path d="M4.75 7.25H19.25" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M9.25 4.25H14.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M7 7.25L7.75 19.25C7.82 20.38 8.76 21.25 9.89 21.25H14.11C15.24 21.25 16.18 20.38 16.25 19.25L17 7.25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M10 10.5V17.5M14 10.5V17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    `;
+  }
 }
+
 async function toggleEditGameDeleted() {
-    if (addGameSaving ||
-        addGameMode !== 'edit' ||
-        !editingGameId) {
-        return;
+  if (addGameSaving || addGameMode !== 'edit' || !editingGameId) return;
+  if (!(await verifyAdminBeforeSave())) return;
+  const deleting = !editingGameIsDeleted;
+  const actionName = deleting ? '刪除' : '復原';
+  const message = deleting
+    ? `確定要刪除牌局 #${editingGameId}？\n\n牌局會從月份表格及統計中隱藏，但仍可在修改牌局中復原。`
+    : `確定要復原牌局 #${editingGameId}？`;
+  if (!window.confirm(message)) return;
+
+  let databaseWriteSucceeded = false;
+  const targetId = Number(editingGameId);
+  const btn = document.getElementById('editGameDeleteToggle');
+  if (btn) btn.disabled = true;
+  addGameSaving = true;
+  showAddGameError('');
+  try {
+    const { data, error } = await supabaseClient.rpc('admin_set_game_deleted', {
+      p_game_id: targetId,
+      p_is_deleted: deleting
+    });
+    if (error) throw error;
+    if (data !== true) {
+      throw new Error(deleting ? '刪除牌局失敗。' : '復原牌局失敗。');
     }
-    if (!(await verifyAdminBeforeSave()))
-        return;
-    const deleting = !editingGameIsDeleted;
-    const actionName = deleting
-        ? '刪除'
-        : '復原';
-    const message = deleting
-        ? `確定要刪除牌局 #${editingGameId}？\n\n牌局會從月份表格及統計中隱藏，但仍可在修改牌局中復原。`
-        : `確定要復原牌局 #${editingGameId}？`;
-    if (!window.confirm(message))
-        return;
-    let databaseWriteSucceeded = false;
-    const targetId = Number(editingGameId);
-    const btn = document.getElementById('editGameDeleteToggle');
-    if (btn)
-        btn.disabled = true;
-    addGameSaving = true;
-    showAddGameError('');
-    try {
-        const { data, error } = await supabaseClient.rpc('admin_set_game_deleted', {
-            p_game_id: targetId,
-            p_is_deleted: deleting
-        });
-        if (error)
-            throw error;
-        if (data !== true) {
-            throw new Error(deleting
-                ? '刪除牌局失敗。'
-                : '復原牌局失敗。');
-        }
-        databaseWriteSucceeded = true;
-        if (deleting) {
-            hasInitializedYear = false;
-            preferredMonthNo = null;
-            activeMonthNo = null;
-            activeViewMode = 'month';
-            resetTableViewState();
-        }
-        const refreshSucceeded = await fetchData();
-        if (!refreshSucceeded) {
-            editingGameIsDeleted = deleting;
-            updateEditGameDeleteButton();
-            closeAddGameDrawer(true);
-            showToast(deleting
-                ? '已刪除；畫面更新失敗，請重新載入。'
-                : '已復原；畫面更新失敗，請重新載入。', 'warning');
-            return;
-        }
-        if (deleting) {
-            closeAddGameDrawer(true);
-            showToast('已刪除牌局');
-            return;
-        }
-        const targetGame = rawGames.find(g => Number(g.id) === targetId);
-        if (!targetGame) {
-            closeAddGameDrawer(true);
-            showToast(`已${actionName}；但無法確認最新資料，請重新載入。`, 'warning');
-            return;
-        }
-        focusGameInTable(targetGame);
-        closeAddGameDrawer(true);
-        showToast('已復原牌局');
+    databaseWriteSucceeded = true;
+    if (deleting) {
+      hasInitializedYear = false;
+      preferredMonthNo = null;
+      activeMonthNo = null;
+      activeViewMode = 'month';
+      resetTableViewState();
     }
-    catch (err) {
-        if (databaseWriteSucceeded) {
-            console.error('資料庫操作已成功，但畫面更新失敗：', err);
-            editingGameIsDeleted = deleting;
-            updateEditGameDeleteButton();
-            closeAddGameDrawer(true);
-            showToast(`已${actionName}；畫面更新失敗，請重新載入。`, 'warning');
-        }
-        else {
-            showAddGameError(`${actionName}失敗：${escapeHtml(err.message || String(err))}`);
-        }
+    const refreshSucceeded = await fetchData();
+    if (!refreshSucceeded) {
+      editingGameIsDeleted = deleting;
+      updateEditGameDeleteButton();
+      closeAddGameDrawer(true);
+      showToast(deleting ? '已刪除；畫面更新失敗，請重新載入。' : '已復原；畫面更新失敗，請重新載入。', 'warning');
+      return;
     }
-    finally {
-        addGameSaving = false;
-        if (btn)
-            btn.disabled = false;
+    if (deleting) {
+      closeAddGameDrawer(true);
+      showToast('已刪除牌局');
+      return;
     }
+    const targetGame = rawGames.find(g => Number(g.id) === targetId);
+    if (!targetGame) {
+      closeAddGameDrawer(true);
+      showToast(`已${actionName}；但無法確認最新資料，請重新載入。`, 'warning');
+      return;
+    }
+    focusGameInTable(targetGame);
+    closeAddGameDrawer(true);
+    showToast('已復原牌局');
+  } catch (err) {
+    if (databaseWriteSucceeded) {
+      console.error('資料庫操作已成功，但畫面更新失敗：', err);
+      editingGameIsDeleted = deleting;
+      updateEditGameDeleteButton();
+      closeAddGameDrawer(true);
+      showToast(`已${actionName}；畫面更新失敗，請重新載入。`, 'warning');
+    } else {
+      showAddGameError(`${actionName}失敗：${err.message || String(err)}`);
+    }
+  } finally {
+    addGameSaving = false;
+    if (btn) btn.disabled = false;
+  }
 }
+
 function resetAddGameRows() {
-    addGameRows = [createAddGameRow(false), createAddGameRow(false), createAddGameRow(false), createAddGameRow(false)];
+  addGameRows = [createAddGameRow(false), createAddGameRow(false), createAddGameRow(false), createAddGameRow(false)];
 }
+
 function getSelectedIds(exceptRowId = null) {
-    return new Set(addGameRows.filter(r => r.id !== exceptRowId && r.mode === 'select' && r.playerId).map(r => String(r.playerId)));
+  return new Set(
+    addGameRows
+      .filter(r => r.id !== exceptRowId && r.mode === 'select' && r.playerId)
+      .map(r => String(r.playerId))
+  );
 }
+
 function renderAddGameRows() {
-    const host = document.getElementById('playerRows');
-    if (!host)
-        return;
-    host.innerHTML = addGameRows.map((row, rowIndex) => {
-        const selectedElsewhere = getSelectedIds(row.id);
-        const entryClass = row.removable ? 'player-entry' : 'player-entry required';
-        const nameControl = row.mode === 'input'
-            ? `<div class="inline-player-wrap"><input class="inline-player-input" data-row-id="${row.id}" value="${escapeHtml(row.playerName)}" placeholder="玩家名稱" autocomplete="off" enterkeyhint="done"><button type="button" class="inline-player-back" data-row-back="${row.id}">返回</button></div>`
-            : `<select class="player-select" data-row-select="${row.id}"><option value="" disabled ${row.playerId ? "" : "selected"}>玩家</option>${rawPlayers.map(p => `<option value="${p.id}" ${String(p.id) === String(row.playerId) ? 'selected' : ''} ${selectedElsewhere.has(String(p.id)) ? 'disabled' : ''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
-        const scoreAbs = row.score === '' ? '' : Math.abs(Number(row.score) || 0);
-        const scoreClass = row.score === '' ? 'zero' : (row.sign < 0 && Number(scoreAbs) > 0 ? 'lose' : (row.sign > 0 && Number(scoreAbs) > 0 ? 'win' : 'zero'));
-        const removeHtml = row.removable
-            ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>`
-            : `<span class="player-remove-placeholder" aria-hidden="true"></span>`;
-        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign < 0 ? 'negative' : 'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign < 0 ? '−' : '+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="${rowIndex < addGameRows.length - 1 ? 'next' : 'done'}" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
-    }).join('');
-    host.querySelectorAll('[data-row-select]').forEach(select => select.addEventListener('change', e => {
-        const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowSelect));
-        if (!row)
-            return;
-        if (e.currentTarget.value === '__NEW__') {
-            row.mode = 'input';
-            row.playerId = '';
-            row.playerName = '';
-            renderAddGameRows();
-            const input = host.querySelector(`[data-row-id="${row.id}"]`);
-            if (input) {
-                input.focus();
-                input.select();
-            }
-        }
-        else {
-            row.mode = 'select';
-            row.playerId = e.currentTarget.value;
-            row.playerName = '';
-            renderAddGameRows();
-        }
-    }));
-    host.querySelectorAll('[data-row-sign]').forEach(btn => btn.addEventListener('click', () => {
-        const row = addGameRows.find(r => String(r.id) === String(btn.dataset.rowSign));
-        if (!row)
-            return;
-        row.sign *= -1;
-        renderAddGameRows();
-        const input = host.querySelector(`[data-row-score="${row.id}"]`);
-        if (input) {
-            input.focus();
-            input.setSelectionRange(input.value.length, input.value.length);
-        }
-    }));
-    host.querySelectorAll('[data-row-score]').forEach(input => {
-        input.addEventListener('input', e => {
-            const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowScore));
-            if (!row)
-                return;
-            let val = e.currentTarget.value.replace(/[^0-9]/g, '');
-            if (val.length > 1)
-                val = val.replace(/^0+(?=\d)/, '');
-            e.currentTarget.value = val;
-            row.score = val === '' ? '' : Number(val) * row.sign;
-            e.currentTarget.classList.toggle('win', row.score > 0);
-            e.currentTarget.classList.toggle('lose', row.score < 0);
-            e.currentTarget.classList.toggle('zero', row.score === 0 || row.score === '');
-        });
-        input.addEventListener('keydown', e => {
-            if (e.key !== 'Enter')
-                return;
-            e.preventDefault();
-            const scoreInputs = Array.from(host.querySelectorAll('[data-row-score]'));
-            const currentIndex = scoreInputs.indexOf(e.currentTarget);
-            const nextInput = scoreInputs[currentIndex + 1];
-            if (nextInput)
-                nextInput.focus();
-            else
-                e.currentTarget.blur();
-        });
+  const host = document.getElementById('playerRows');
+  if (!host) return;
+  host.innerHTML = addGameRows.map((row, rowIndex) => {
+    const selectedElsewhere = getSelectedIds(row.id);
+    const selectablePlayers = rawPlayers.filter(
+      p => p.is_active !== false || String(p.id) === String(row.playerId)
+    );
+    const nameControl = row.mode === 'input'
+      ? `<div class="inline-player-wrap"><input class="inline-player-input" data-row-id="${row.id}" value="${escapeHtml(row.playerName)}" placeholder="玩家名稱" autocomplete="off" enterkeyhint="done"><button type="button" class="inline-player-back" data-row-back="${row.id}">返回</button></div>`
+      : `<select class="player-select" data-row-select="${row.id}"><option value="" disabled ${row.playerId ? '' : 'selected'}>玩家</option>${selectablePlayers.map(p => `<option value="${p.id}" ${String(p.id) === String(row.playerId) ? 'selected' : ''} ${selectedElsewhere.has(String(p.id)) ? 'disabled' : ''}>${escapeHtml(p.name)}</option>`).join('')}<option value="__NEW__">＋新增玩家</option></select>`;
+    const scoreAbs = row.score === '' ? '' : Math.abs(Number(row.score) || 0);
+    const scoreClass = row.score === '' ? 'zero' : (row.sign < 0 && Number(scoreAbs) > 0 ? 'lose' : (row.sign > 0 && Number(scoreAbs) > 0 ? 'win' : 'zero'));
+    const removeHtml = row.removable
+      ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>`
+      : `<span class="player-remove-placeholder" aria-hidden="true"></span>`;
+    return `<div class="player-entry" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign < 0 ? 'negative' : 'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign < 0 ? '−' : '+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="text" inputmode="numeric" pattern="[0-9]*" enterkeyhint="${rowIndex < addGameRows.length - 1 ? 'next' : 'done'}" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
+  }).join('');
+
+  host.querySelectorAll('[data-row-select]').forEach(select => select.addEventListener('change', e => {
+    const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowSelect));
+    if (!row) return;
+    if (e.currentTarget.value === '__NEW__') {
+      row.mode = 'input';
+      row.playerId = '';
+      row.playerName = '';
+      renderAddGameRows();
+      const input = host.querySelector(`[data-row-id="${row.id}"]`);
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    } else {
+      row.mode = 'select';
+      row.playerId = e.currentTarget.value;
+      row.playerName = '';
+      renderAddGameRows();
+    }
+  }));
+
+  host.querySelectorAll('[data-row-sign]').forEach(btn => btn.addEventListener('click', () => {
+    const row = addGameRows.find(r => String(r.id) === String(btn.dataset.rowSign));
+    if (!row) return;
+    row.sign *= -1;
+    renderAddGameRows();
+    const input = host.querySelector(`[data-row-score="${row.id}"]`);
+    if (input) {
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+  }));
+
+  host.querySelectorAll('[data-row-score]').forEach(input => {
+    input.addEventListener('input', e => {
+      const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowScore));
+      if (!row) return;
+      let val = e.currentTarget.value.replace(/[^0-9]/g, '');
+      if (val.length > 1) val = val.replace(/^0+(?=\d)/, '');
+      e.currentTarget.value = val;
+      row.score = val === '' ? '' : Number(val) * row.sign;
+      e.currentTarget.classList.toggle('win', row.score > 0);
+      e.currentTarget.classList.toggle('lose', row.score < 0);
+      e.currentTarget.classList.toggle('zero', row.score === 0 || row.score === '');
     });
-    host.querySelectorAll('[data-row-remove]').forEach(btn => btn.addEventListener('click', () => {
-        addGameRows = addGameRows.filter(r => String(r.id) !== String(btn.dataset.rowRemove));
-        renderAddGameRows();
-    }));
-    host.querySelectorAll('[data-row-id]').forEach(input => input.addEventListener('input', e => {
-        const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowId));
-        if (row)
-            row.playerName = e.currentTarget.value;
-    }));
-    host.querySelectorAll('[data-row-id]').forEach(input => input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            input.blur();
-        }
-    }));
-    host.querySelectorAll('[data-row-back]').forEach(btn => btn.addEventListener('click', () => {
-        const row = addGameRows.find(r => String(r.id) === String(btn.dataset.rowBack));
-        if (!row)
-            return;
-        row.mode = 'select';
-        row.playerName = '';
-        row.playerId = '';
-        renderAddGameRows();
-    }));
-    updateAddPlayerButtonState();
+    input.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const scoreInputs = Array.from(host.querySelectorAll('[data-row-score]'));
+      const currentIndex = scoreInputs.indexOf(e.currentTarget);
+      const nextInput = scoreInputs[currentIndex + 1];
+      if (nextInput) nextInput.focus();
+      else e.currentTarget.blur();
+    });
+  });
+
+  host.querySelectorAll('[data-row-remove]').forEach(btn => btn.addEventListener('click', () => {
+    addGameRows = addGameRows.filter(r => String(r.id) !== String(btn.dataset.rowRemove));
+    renderAddGameRows();
+  }));
+
+  host.querySelectorAll('[data-row-id]').forEach(input => {
+    input.addEventListener('input', e => {
+      const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowId));
+      if (row) row.playerName = e.currentTarget.value;
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        input.blur();
+      }
+    });
+  });
+
+  host.querySelectorAll('[data-row-back]').forEach(btn => btn.addEventListener('click', () => {
+    const row = addGameRows.find(r => String(r.id) === String(btn.dataset.rowBack));
+    if (!row) return;
+    row.mode = 'select';
+    row.playerName = '';
+    row.playerId = '';
+    renderAddGameRows();
+  }));
+
+  updateAddPlayerButtonState();
 }
+
 function updateAddPlayerButtonState() {
-    const btn = document.getElementById('addPlayerRow');
-    if (!btn)
-        return;
-    const maxReached = addGameRows.length >= 8;
-    btn.disabled = maxReached;
-    btn.style.opacity = maxReached ? '0.45' : '';
-    btn.style.cursor = maxReached ? 'default' : '';
+  const btn = document.getElementById('addPlayerRow');
+  if (!btn) return;
+  const maxReached = addGameRows.length >= 8;
+  btn.disabled = maxReached;
+  btn.style.opacity = maxReached ? '0.45' : '';
+  btn.style.cursor = maxReached ? 'default' : '';
 }
-function openAddGameDrawerUnlocked() {
-    if (addGameSaving)
-        return;
-    setAddGameMode('add');
-    resetAddGameRows();
-    showAddGameError('');
-    const input = document.getElementById('gameDateInput');
-    const display = document.getElementById('gameDateDisplay');
-    const text = document.getElementById('gameDateText');
-    input.value = '';
-    text.textContent = '日期';
-    display.classList.add('placeholder');
-    resetEditSelection();
-    renderAddGameRows();
-    document.getElementById('addGameBackdrop').classList.add('show');
-    document.getElementById('addGameDrawer').classList.add('show');
-    document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'false');
-    document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'false');
-    document.body.classList.add('profile-open');
+
+function openGameDrawerUnlocked(mode = 'add') {
+  if (addGameSaving) return;
+  setAddGameMode(mode);
+  showAddGameError('');
+  const input = document.getElementById('gameDateInput');
+  const display = document.getElementById('gameDateDisplay');
+  const text = document.getElementById('gameDateText');
+  input.value = '';
+  text.textContent = '日期';
+  display.classList.add('placeholder');
+  resetEditSelection();
+  document.getElementById('addGameBackdrop').classList.add('show');
+  document.getElementById('addGameDrawer').classList.add('show');
+  document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'false');
+  document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'false');
+  document.body.classList.add('profile-open');
 }
-async function openEditGameDrawerUnlocked() {
-    if (addGameSaving)
-        return;
-    setAddGameMode('edit');
-    resetAddGameRows();
-    showAddGameError('');
-    const input = document.getElementById('gameDateInput');
-    const display = document.getElementById('gameDateDisplay');
-    const text = document.getElementById('gameDateText');
-    input.value = '';
-    text.textContent = '日期';
-    display.classList.add('placeholder');
-    resetEditSelection();
-    renderAddGameRows();
-    document.getElementById('addGameBackdrop').classList.add('show');
-    document.getElementById('addGameDrawer').classList.add('show');
-    document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'false');
-    document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'false');
-    document.body.classList.add('profile-open');
-}
+
 async function openAddGameDrawer() {
-    if (addGameSaving)
-        return;
-    await requireAdminAccess('add', openAddGameDrawerUnlocked);
+  if (addGameSaving) return;
+  await requireAdminAccess('add', () => openGameDrawerUnlocked('add'));
 }
+
 async function openEditGameDrawer() {
-    if (addGameSaving)
-        return;
-    await requireAdminAccess('edit', openEditGameDrawerUnlocked);
+  if (addGameSaving) return;
+  await requireAdminAccess('edit', () => openGameDrawerUnlocked('edit'));
 }
+
 function closeAddGameDrawer(force = false) {
-    if (addGameSaving && !force)
-        return;
-    document.getElementById('addGameBackdrop').classList.remove('show');
-    document.getElementById('addGameDrawer').classList.remove('show');
-    document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'true');
-    document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'true');
-    if (!document.getElementById('profileSheet').classList.contains('show'))
-        document.body.classList.remove('profile-open');
+  if (addGameSaving && force !== true) return;
+  resetAddGameDrag();
+  document.getElementById('addGameBackdrop').classList.remove('show');
+  document.getElementById('addGameDrawer').classList.remove('show');
+  document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'true');
+  document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'true');
+  if (!document.getElementById('profileSheet').classList.contains('show') &&
+      !document.getElementById('adminAuthSheet').classList.contains('show')) {
+    document.body.classList.remove('profile-open');
+  }
 }
+
 async function ensurePlayerForAddGameRow(row) {
-    if (row.mode === 'select') {
-        if (!row.playerId)
-            throw new Error('請選擇所有玩家。');
-        return Number(row.playerId);
-    }
-    const name = String(row.playerName || '').trim();
-    if (!name)
-        throw new Error('請輸入玩家名稱。');
-    const existing = rawPlayers.find(p => String(p.name).trim() === name);
-    if (existing)
-        return Number(existing.id);
-    const { data, error } = await supabaseClient.from('players').insert({ name, is_active: true }).select('id,name,is_active').single();
-    if (error)
-        throw error;
-    const player = { ...data, id: Number(data.id) };
-    rawPlayers.push(player);
-    return player.id;
+  if (row.mode === 'select') {
+    if (!row.playerId) throw new Error('請選擇所有玩家。');
+    return Number(row.playerId);
+  }
+  const name = String(row.playerName || '').trim();
+  if (!name) throw new Error('請輸入玩家名稱。');
+  const normalized = name.toLowerCase();
+  const existing = rawPlayers.find(p => String(p.name).trim().toLowerCase() === normalized);
+  if (existing) return Number(existing.id);
+  const { data, error } = await supabaseClient
+    .from('players')
+    .insert({ name, is_active: true })
+    .select('id,name,is_active')
+    .single();
+  if (error) throw error;
+  const player = { ...data, id: Number(data.id) };
+  rawPlayers.push(player);
+  return player.id;
 }
-function collectCurrentGameResults() {
-    const chosen = [];
-    for (const row of addGameRows) {
-        if (row.mode === 'select' && !row.playerId)
-            throw new Error('請選擇所有玩家。');
-        if (row.mode === 'input' && !String(row.playerName || '').trim())
-            throw new Error('請輸入玩家名稱。');
-        const abs = row.score === '' ? null : Math.abs(Number(row.score));
-        if (abs === null || !Number.isFinite(abs))
-            throw new Error('請輸入所有分數。');
-        chosen.push({ row, abs });
-    }
-    return chosen;
+
+function parseValidatedRowScore(row) {
+  if (row.score === '' || row.score === null || row.score === undefined) {
+    throw new Error('請輸入所有分數。');
+  }
+  const score = Number(row.score);
+  if (!Number.isFinite(score)) {
+    throw new Error('請輸入所有分數。');
+  }
+  const signedScore = row.sign < 0 ? -Math.abs(score) : Math.abs(score);
+  if (!Number.isSafeInteger(signedScore) || signedScore < -2147483648 || signedScore > 2147483647) {
+    throw new Error('分數必須為有效整數。');
+  }
+  return signedScore;
 }
+
 function collectNewGameRpcResults() {
-    const results = [];
-    for (const row of addGameRows) {
-        if (row.score === '' ||
-            row.score === null ||
-            row.score === undefined) {
-            throw new Error('請輸入所有分數。');
-        }
-        const score = Number(row.score);
-        const signedScore = row.sign < 0 ? -Math.abs(score) : Math.abs(score);
-        if (!Number.isSafeInteger(signedScore) ||
-            signedScore < -2147483648 ||
-            signedScore > 2147483647) {
-            throw new Error('分數必須為有效整數。');
-        }
-        if (row.mode === 'select') {
-            if (!row.playerId) {
-                throw new Error('請選擇所有玩家。');
-            }
-            const playerId = Number(row.playerId);
-            if (!Number.isSafeInteger(playerId) ||
-                playerId <= 0) {
-                throw new Error('玩家資料不正確。');
-            }
-            results.push({
-                player_id: playerId,
-                score: signedScore
-            });
-        }
-        else {
-            const playerName = String(row.playerName || '').trim();
-            if (!playerName) {
-                throw new Error('請輸入玩家名稱。');
-            }
-            results.push({
-                player_name: playerName,
-                score: signedScore
-            });
-        }
+  if (addGameRows.length < 4 || addGameRows.length > 8) {
+    throw new Error('玩家人數必須為 4 至 8 人。');
+  }
+  const usedIds = new Set();
+  const usedNames = new Set();
+  const results = [];
+
+  for (const row of addGameRows) {
+    const signedScore = parseValidatedRowScore(row);
+    if (row.mode === 'select') {
+      if (!row.playerId) throw new Error('請選擇所有玩家。');
+      const playerId = Number(row.playerId);
+      if (!Number.isSafeInteger(playerId) || playerId <= 0) {
+        throw new Error('玩家資料不正確。');
+      }
+      if (usedIds.has(playerId)) throw new Error('同一位玩家不能重複。');
+      usedIds.add(playerId);
+      const matched = rawPlayers.find(p => Number(p.id) === playerId);
+      if (matched) usedNames.add(String(matched.name).trim().toLowerCase());
+      results.push({ player_id: playerId, score: signedScore });
+    } else {
+      const playerName = String(row.playerName || '').trim();
+      if (!playerName) throw new Error('請輸入玩家名稱。');
+      const normalized = playerName.toLowerCase();
+      if (usedNames.has(normalized)) throw new Error('同一位玩家不能重複。');
+      usedNames.add(normalized);
+      const existing = rawPlayers.find(p => String(p.name).trim().toLowerCase() === normalized);
+      if (existing) {
+        const existingId = Number(existing.id);
+        if (usedIds.has(existingId)) throw new Error('同一位玩家不能重複。');
+        usedIds.add(existingId);
+        results.push({ player_id: existingId, score: signedScore });
+      } else {
+        results.push({ player_name: playerName, score: signedScore });
+      }
     }
-    if (results.length < 4 || results.length > 8) {
-        throw new Error('玩家人數必須為 4 至 8 人。');
-    }
-    return results;
+  }
+  return results;
 }
+
 async function resolveCurrentRows() {
-    const selected = collectCurrentGameResults();
-    const chosen = [];
-    for (const item of selected) {
-        const playerId = await ensurePlayerForAddGameRow(item.row);
-        if (chosen.some(x => x.playerId === playerId))
-            throw new Error('同一位玩家不能重複。');
-        chosen.push({ playerId, score: item.row.sign < 0 ? -item.abs : item.abs });
+  if (addGameRows.length < 4 || addGameRows.length > 8) {
+    throw new Error('玩家人數必須為 4 至 8 人。');
+  }
+  const validated = addGameRows.map(row => ({
+    row,
+    signedScore: parseValidatedRowScore(row)
+  }));
+  const chosen = [];
+  for (const item of validated) {
+    const playerId = await ensurePlayerForAddGameRow(item.row);
+    if (chosen.some(x => x.playerId === playerId)) {
+      throw new Error('同一位玩家不能重複。');
     }
-    if (chosen.length < 1)
-        throw new Error('請至少新增一位玩家。');
-    return chosen;
+    chosen.push({ playerId, score: item.signedScore });
+  }
+  return chosen;
 }
+
 async function saveAddGame() {
-    if (addGameSaving)
-        return;
-    showAddGameError('');
-    if (!(await verifyAdminBeforeSave()))
-        return;
-    const date = document.getElementById('gameDateInput').value;
-    if (!date) {
-        showAddGameError('請先選擇日期。');
-        return;
+  if (addGameSaving) return;
+  showAddGameError('');
+  if (!(await verifyAdminBeforeSave())) return;
+  const date = document.getElementById('gameDateInput').value;
+  if (!date) {
+    showAddGameError('請先選擇日期。');
+    return;
+  }
+
+  let databaseWriteSucceeded = false;
+  let targetGameId = null;
+  const isEdit = addGameMode === 'edit';
+  const actionName = isEdit ? '修改牌局' : '新增牌局';
+  const saveBtn = document.getElementById('saveGameButton');
+  addGameSaving = true;
+  saveBtn.disabled = true;
+  saveBtn.textContent = isEdit ? '儲存中…' : '新增中…';
+
+  try {
+    if (isEdit) {
+      if (!editingGameId) {
+        throw new Error('請選擇要修改的牌局。');
+      }
+      const chosen = await resolveCurrentRows();
+      targetGameId = Number(editingGameId);
+      const { error } = await supabaseClient.rpc('admin_update_game', {
+        p_game_id: targetGameId,
+        p_played_on: date,
+        p_results: chosen.map(x => ({ player_id: x.playerId, score: x.score }))
+      });
+      if (error) throw error;
+      databaseWriteSucceeded = true;
+    } else {
+      const payload = collectNewGameRpcResults();
+      const { data, error } = await supabaseClient.rpc('admin_create_game', {
+        p_played_on: date,
+        p_results: payload
+      });
+      if (error) throw error;
+      databaseWriteSucceeded = true;
+      targetGameId = Number(data);
+      if (!Number.isSafeInteger(targetGameId) || targetGameId <= 0) {
+        throw new Error('資料庫沒有返回有效的牌局編號。');
+      }
     }
-    let databaseWriteSucceeded = false;
-    let targetGameId = null;
-    const isEdit = addGameMode === 'edit';
-    const actionName = isEdit
-        ? '修改牌局'
-        : '新增牌局';
-    const saveBtn = document.getElementById('saveGameButton');
-    addGameSaving = true;
-    saveBtn.disabled = true;
-    saveBtn.textContent = isEdit
-        ? '儲存中…'
-        : '新增中…';
-    try {
-        if (isEdit) {
-            const chosen = await resolveCurrentRows();
-            if (!editingGameId) {
-                throw new Error('請選擇要修改的牌局。');
-            }
-            targetGameId = Number(editingGameId);
-            const { error } = await supabaseClient.rpc('admin_update_game', {
-                p_game_id: targetGameId,
-                p_played_on: date,
-                p_results: chosen.map(x => ({
-                    player_id: x.playerId,
-                    score: x.score
-                }))
-            });
-            if (error)
-                throw error;
-            databaseWriteSucceeded = true;
-        }
-        else {
-            const payload = collectNewGameRpcResults();
-            const { data, error } = await supabaseClient.rpc('admin_create_game', {
-                p_played_on: date,
-                p_results: payload
-            });
-            if (error)
-                throw error;
-            databaseWriteSucceeded = true;
-            targetGameId = Number(data);
-            if (!Number.isSafeInteger(targetGameId) ||
-                targetGameId <= 0) {
-                throw new Error('資料庫沒有返回有效的牌局編號。');
-            }
-        }
-        const refreshSucceeded = await fetchData();
-        if (!refreshSucceeded) {
-            closeAddGameDrawer(true);
-            showToast('已儲存；畫面更新失敗，請重新載入。', 'warning');
-            return;
-        }
-        const targetGame = rawGames.find(g => Number(g.id) === Number(targetGameId));
-        if (!targetGame) {
-            closeAddGameDrawer(true);
-            showToast('已儲存，但找不到最新牌局，請重新載入。', 'warning');
-            return;
-        }
-        focusGameInTable(targetGame);
-        closeAddGameDrawer(true);
-        showToast(isEdit ? '已修改牌局' : '已新增牌局');
+
+    const refreshSucceeded = await fetchData();
+    if (!refreshSucceeded) {
+      closeAddGameDrawer(true);
+      showToast('已儲存；畫面更新失敗，請重新載入。', 'warning');
+      return;
     }
-    catch (err) {
-        if (databaseWriteSucceeded) {
-            console.error('資料已儲存，但畫面更新失敗：', err);
-            closeAddGameDrawer(true);
-            showToast('已儲存；畫面更新失敗，請重新載入。', 'warning');
-        }
-        else {
-            showAddGameError(`${actionName}失敗：${escapeHtml(err.message || String(err))}`);
-        }
+    const targetGame = rawGames.find(g => Number(g.id) === Number(targetGameId));
+    if (!targetGame) {
+      closeAddGameDrawer(true);
+      showToast('已儲存，但找不到最新牌局，請重新載入。', 'warning');
+      return;
     }
-    finally {
-        addGameSaving = false;
-        saveBtn.disabled = false;
-        saveBtn.textContent = isEdit
-            ? '儲存修改'
-            : '新增牌局';
+    focusGameInTable(targetGame);
+    closeAddGameDrawer(true);
+    showToast(isEdit ? '已修改牌局' : '已新增牌局');
+  } catch (err) {
+    if (databaseWriteSucceeded) {
+      console.error('資料已儲存，但畫面更新失敗：', err);
+      closeAddGameDrawer(true);
+      showToast('已儲存；畫面更新失敗，請重新載入。', 'warning');
+    } else {
+      showAddGameError(`${actionName}失敗：${err.message || String(err)}`);
     }
+  } finally {
+    addGameSaving = false;
+    saveBtn.disabled = false;
+    saveBtn.textContent = isEdit ? '儲存修改' : '新增牌局';
+  }
 }
+
 function setupAddGameDrawer() {
-    document.getElementById('addGameTrigger').addEventListener('click', () => { closeMainMenu(false); openAddGameDrawer(); });
-    document.getElementById('adminGoogleLogin').addEventListener('click', handleGoogleLogin);
-    document.getElementById('adminAuthClose').addEventListener('click', () => closeAdminAuthModal(true));
-    document.getElementById('adminAuthBackdrop').addEventListener('click', () => closeAdminAuthModal(true));
-    document.getElementById('addGameModeToggle').addEventListener('click', () => {
-        if (addGameSaving)
-            return;
-        if (addGameMode === 'edit')
-            openAddGameDrawer();
-        else
-            openEditGameDrawer();
-    });
-    document.getElementById('editGameDeleteToggle').addEventListener('click', toggleEditGameDeleted);
-    document.getElementById('addGameClose').addEventListener('click', closeAddGameDrawer);
-    document.getElementById('addGameBackdrop').addEventListener('click', closeAddGameDrawer);
-    document.getElementById('saveGameButton').addEventListener('click', saveAddGame);
-    document.getElementById('addPlayerRow').addEventListener('click', () => {
-        if (addGameRows.length >= 8)
-            return;
-        addGameRows.push(createAddGameRow(true));
-        renderAddGameRows();
-        const drawer = document.getElementById('addGameBody');
-        requestAnimationFrame(() => { drawer.scrollTop = drawer.scrollHeight; });
-    });
-    const dateInput = document.getElementById('gameDateInput');
-    const dateDisplay = document.getElementById('gameDateDisplay');
-    const dateText = document.getElementById('gameDateText');
-    dateInput.addEventListener('change', () => {
-        dateText.textContent = formatDateDisplay(dateInput.value);
-        dateDisplay.classList.toggle('placeholder', !dateInput.value);
-        showAddGameError('');
-        if (addGameMode === 'edit')
-            populateEditGamesForDate(dateInput.value);
-    });
-    document.getElementById('editGameSelect').addEventListener('change', e => {
-        showAddGameError('');
-        if (!e.currentTarget.value) {
-            editingGameId = null;
-            editingGameIsDeleted = false;
-            updateEditGameDeleteButton();
-            resetAddGameRows();
-            renderAddGameRows();
-            return;
-        }
-        loadGameIntoForm(Number(e.currentTarget.value));
-    });
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            const authSheet = document.getElementById('adminAuthSheet');
-            if (authSheet.classList.contains('show')) {
-                closeAdminAuthModal(true);
-                return;
-            }
-            const drawer = document.getElementById('addGameDrawer');
-            if (drawer.classList.contains('show'))
-                closeAddGameDrawer();
-        }
-    });
+  setupAddGameDrawerDrag();
+  document.getElementById('addGameTrigger').addEventListener('click', () => {
+    closeMainMenu(false);
+    openAddGameDrawer();
+  });
+  document.getElementById('adminGoogleLogin').addEventListener('click', handleGoogleLogin);
+  document.getElementById('adminAuthClose').addEventListener('click', () => closeAdminAuthModal(true));
+  document.getElementById('adminAuthBackdrop').addEventListener('click', () => closeAdminAuthModal(true));
+  document.getElementById('addGameModeToggle').addEventListener('click', () => {
+    if (addGameSaving) return;
+    if (addGameMode === 'edit') openAddGameDrawer();
+    else openEditGameDrawer();
+  });
+  document.getElementById('editGameDeleteToggle').addEventListener('click', toggleEditGameDeleted);
+  document.getElementById('addGameClose').addEventListener('click', () => closeAddGameDrawer(false));
+  document.getElementById('addGameBackdrop').addEventListener('click', () => closeAddGameDrawer(false));
+  document.getElementById('saveGameButton').addEventListener('click', saveAddGame);
+  document.getElementById('addPlayerRow').addEventListener('click', () => {
+    if (addGameRows.length >= 8) return;
+    addGameRows.push(createAddGameRow(true));
+    renderAddGameRows();
+    const drawer = document.getElementById('addGameBody');
+    requestAnimationFrame(() => { drawer.scrollTop = drawer.scrollHeight; });
+  });
+
+  const dateInput = document.getElementById('gameDateInput');
+  const dateDisplay = document.getElementById('gameDateDisplay');
+  const dateText = document.getElementById('gameDateText');
+  dateInput.addEventListener('change', () => {
+    dateText.textContent = formatDateDisplay(dateInput.value);
+    dateDisplay.classList.toggle('placeholder', !dateInput.value);
+    showAddGameError('');
+    if (addGameMode === 'edit') populateEditGamesForDate(dateInput.value);
+  });
+
+  document.getElementById('editGameSelect').addEventListener('change', e => {
+    showAddGameError('');
+    if (!e.currentTarget.value) {
+      editingGameId = null;
+      editingGameIsDeleted = false;
+      updateEditGameDeleteButton();
+      resetAddGameRows();
+      renderAddGameRows();
+      return;
+    }
+    loadGameIntoForm(Number(e.currentTarget.value));
+  });
 }
+
 document.addEventListener('click', e => {
-    if (!e.target.closest('.custom-dropdown-container'))
-        closeControlDropdownMenus();
+  if (!e.target.closest('.custom-dropdown-container')) closeControlDropdownMenus();
 });
+
 document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape')
-        return;
-    const openMenu = document.querySelector('.custom-dropdown-menu.show');
-    if (!openMenu)
-        return;
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('adminAuthSheet')?.classList.contains('show')) {
+    closeAdminAuthModal(true);
+    return;
+  }
+  if (document.getElementById('addGameDrawer')?.classList.contains('show')) {
+    closeAddGameDrawer(false);
+    return;
+  }
+  if (document.getElementById('profileSheet')?.classList.contains('show')) {
+    closePlayerProfile();
+    return;
+  }
+  const mainMenu = document.getElementById('mainMenu');
+  if (mainMenu && !mainMenu.hidden) {
+    closeMainMenu(true);
+    return;
+  }
+  const openMenu = document.querySelector('.custom-dropdown-menu.show');
+  if (openMenu) {
     const trigger = openMenu.parentElement?.querySelector('.dropdown-trigger');
     closeControlDropdownMenus();
     trigger?.focus();
+  }
 });
 
 const THEME_STORAGE_KEY = 'lam-nei-theme';
@@ -3880,123 +3888,119 @@ const THEME_MODES = ['light', 'dark'];
 let activeThemeMode = 'light';
 
 function getPreferredThemeMode() {
-    try {
-        const saved = localStorage.getItem(THEME_STORAGE_KEY);
-        return THEME_MODES.includes(saved) ? saved : 'light';
-    }
-    catch (error) {
-        return 'light';
-    }
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return THEME_MODES.includes(saved) ? saved : 'light';
+  } catch (error) {
+    return 'light';
+  }
 }
 
 function updateThemeToggleState(mode) {
-    const button = document.getElementById('themeToggleButton');
-    const label = document.getElementById('themeToggleLabel');
-    const icon = document.getElementById('themeToggleIcon');
-    if (!button || !label || !icon) return;
+  const button = document.getElementById('themeToggleButton');
+  const label = document.getElementById('themeToggleLabel');
+  const icon = document.getElementById('themeToggleIcon');
+  if (!button || !label || !icon) return;
 
-    const isDark = mode === 'dark';
-    const currentLabel = isDark ? '深色' : '淺色';
-    const nextLabel = isDark ? '淺色' : '深色';
-    label.textContent = currentLabel;
-    button.setAttribute('aria-pressed', String(isDark));
-    button.title = `目前為${currentLabel}主題，點擊切換至${nextLabel}主題`;
-    button.setAttribute('aria-label', `目前為${currentLabel}主題，點擊切換至${nextLabel}主題`);
+  const isDark = mode === 'dark';
+  const currentLabel = isDark ? '深色' : '淺色';
+  const nextLabel = isDark ? '淺色' : '深色';
+  label.textContent = currentLabel;
+  button.setAttribute('aria-pressed', String(isDark));
+  button.title = `目前為${currentLabel}主題，點擊切換至${nextLabel}主題`;
+  button.setAttribute('aria-label', `目前為${currentLabel}主題，點擊切換至${nextLabel}主題`);
 
-    icon.innerHTML = isDark
-        ? '<path d="M19.6 15.2A8.3 8.3 0 0 1 8.8 4.4 8.7 8.7 0 1 0 19.6 15.2Z"/>'
-        : '<circle cx="12" cy="12" r="3.8"/><path d="M12 2.5V4.2M12 19.8V21.5M21.5 12H19.8M4.2 12H2.5M18.72 5.28L17.5 6.5M6.5 17.5L5.28 18.72M18.72 18.72L17.5 17.5M6.5 6.5L5.28 5.28"/>';
+  icon.innerHTML = isDark
+    ? '<path d="M19.6 15.2A8.3 8.3 0 0 1 8.8 4.4 8.7 8.7 0 1 0 19.6 15.2Z"/>'
+    : '<circle cx="12" cy="12" r="3.8"/><path d="M12 2.5V4.2M12 19.8V21.5M21.5 12H19.8M4.2 12H2.5M18.72 5.28L17.5 6.5M6.5 17.5L5.28 18.72M18.72 18.72L17.5 17.5M6.5 6.5L5.28 5.28"/>';
 }
 
 function applyTheme(mode, persist = true) {
-    if (!THEME_MODES.includes(mode)) mode = 'light';
-    activeThemeMode = mode;
-    const root = document.documentElement;
-    root.setAttribute('data-theme', mode);
-    root.setAttribute('data-theme-mode', mode);
-    root.style.colorScheme = mode;
+  if (!THEME_MODES.includes(mode)) mode = 'light';
+  activeThemeMode = mode;
+  const root = document.documentElement;
+  root.setAttribute('data-theme', mode);
+  root.setAttribute('data-theme-mode', mode);
+  root.style.colorScheme = mode;
 
-    if (persist) {
-        try {
-            localStorage.setItem(THEME_STORAGE_KEY, mode);
-        }
-        catch (error) {
-        }
+  if (persist) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, mode);
+    } catch (error) {
     }
-    updateThemeToggleState(mode);
+  }
+  updateThemeToggleState(mode);
 }
 
 function closeMainMenu(returnFocus = false) {
-    const menu = document.getElementById('mainMenu');
-    const trigger = document.getElementById('mainMenuTrigger');
-    if (!menu || !trigger) return;
-    menu.hidden = true;
-    trigger.setAttribute('aria-expanded', 'false');
-    trigger.setAttribute('aria-label', '開啟主選單');
-    if (returnFocus) trigger.focus();
+  const menu = document.getElementById('mainMenu');
+  const trigger = document.getElementById('mainMenuTrigger');
+  if (!menu || !trigger) return;
+  menu.hidden = true;
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-label', '開啟主選單');
+  if (returnFocus) trigger.focus();
 }
 
 function initThemeSettings() {
-    const control = document.getElementById('mainMenuControl');
-    const trigger = document.getElementById('mainMenuTrigger');
-    const menu = document.getElementById('mainMenu');
-    const themeButton = document.getElementById('themeToggleButton');
-    if (!control || !trigger || !menu || !themeButton) return;
+  const control = document.getElementById('mainMenuControl');
+  const trigger = document.getElementById('mainMenuTrigger');
+  const menu = document.getElementById('mainMenu');
+  const themeButton = document.getElementById('themeToggleButton');
+  if (!control || !trigger || !menu || !themeButton) return;
 
-    applyTheme(getPreferredThemeMode(), false);
+  applyTheme(getPreferredThemeMode(), false);
 
-    trigger.addEventListener('click', event => {
-        event.stopPropagation();
-        const willOpen = menu.hidden;
-        menu.hidden = !willOpen;
-        trigger.setAttribute('aria-expanded', String(willOpen));
-        trigger.setAttribute('aria-label', willOpen ? '關閉主選單' : '開啟主選單');
-    });
+  trigger.addEventListener('click', event => {
+    event.stopPropagation();
+    const willOpen = menu.hidden;
+    menu.hidden = !willOpen;
+    trigger.setAttribute('aria-expanded', String(willOpen));
+    trigger.setAttribute('aria-label', willOpen ? '關閉主選單' : '開啟主選單');
+  });
 
-    themeButton.addEventListener('click', event => {
-        event.stopPropagation();
-        applyTheme(activeThemeMode === 'light' ? 'dark' : 'light', true);
-        closeMainMenu(true);
-    });
+  themeButton.addEventListener('click', event => {
+    event.stopPropagation();
+    applyTheme(activeThemeMode === 'light' ? 'dark' : 'light', true);
+    closeMainMenu(true);
+  });
 
-    const rulesLink = document.getElementById('rulesMenuItem');
-    if (rulesLink) {
-        rulesLink.addEventListener('click', () => closeMainMenu(false));
+  const rulesLink = document.getElementById('rulesMenuItem');
+  if (rulesLink) {
+    rulesLink.addEventListener('click', () => closeMainMenu(false));
+  }
+
+  document.addEventListener('click', event => {
+    if (!control.contains(event.target)) closeMainMenu(false);
+  });
+
+  window.addEventListener('storage', event => {
+    if (event.key === THEME_STORAGE_KEY) {
+      const nextMode = THEME_MODES.includes(event.newValue) ? event.newValue : 'light';
+      applyTheme(nextMode, false);
     }
-
-    document.addEventListener('click', event => {
-        if (!control.contains(event.target)) closeMainMenu(false);
-    });
-
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && !menu.hidden) closeMainMenu(true);
-    });
-
-    window.addEventListener('storage', event => {
-        if (event.key === THEME_STORAGE_KEY) {
-            const nextMode = THEME_MODES.includes(event.newValue) ? event.newValue : 'light';
-            applyTheme(nextMode, false);
-        }
-    });
+  });
 }
 
-let scrollTimers = { table: null, profile: null, addGame: null };
+const scrollTimers = { table: null, profile: null, addGame: null };
 document.addEventListener('scroll', e => {
-    const cls = e.target.classList;
-    if (cls && (cls.contains('table-container') || cls.contains('profile-body') || cls.contains('add-game-body'))) {
-        e.target.classList.add('scrolling');
-        const key = cls.contains('table-container') ? 'table' : (cls.contains('profile-body') ? 'profile' : 'addGame');
-        clearTimeout(scrollTimers[key]);
-        scrollTimers[key] = setTimeout(() => e.target.classList.remove('scrolling'), 1000);
-    }
+  const cls = e.target.classList;
+  if (cls && (cls.contains('table-container') || cls.contains('profile-body') || cls.contains('add-game-body'))) {
+    e.target.classList.add('scrolling');
+    const key = cls.contains('table-container') ? 'table' : (cls.contains('profile-body') ? 'profile' : 'addGame');
+    clearTimeout(scrollTimers[key]);
+    scrollTimers[key] = setTimeout(() => e.target.classList.remove('scrolling'), 1000);
+  }
 }, true);
+
 document.getElementById('profileBackdrop').addEventListener('click', closePlayerProfile);
 document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
+
 initThemeSettings();
 setupProfileDrag();
 setupAddGameDrawer();
 initAdminAuth();
 fetchData();
-</script>
+  </script>
 </body>
 </html>
