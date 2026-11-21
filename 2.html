@@ -975,43 +975,41 @@
       .dropdown-trigger {
         height: 44px;
         min-height: 44px;
-        padding: 0 10px;
+        padding: 0 11px;
         font-size: 15px;
       }
       .year-dropdown {
-        min-width: 86px;
-        max-width: 102px;
+        min-width: 92px;
+        max-width: 104px;
       }
       .month-dropdown {
-        min-width: 98px;
-        max-width: 118px;
+        min-width: 106px;
+        max-width: 120px;
       }
-      .sk-control-year { width: 86px; }
-      .sk-control-month { width: 98px; }
+      .sk-control-year { width: 92px; }
+      .sk-control-month { width: 106px; }
       .sk-control-segment {
-        box-sizing: border-box;
-        width: 102px;
+        width: 89px;
         height: 44px;
-        gap: 2px;
+        gap: 1px;
         padding: 3px;
-        border-radius: 12px;
       }
-      .sk-control-segment-item { height: 38px; border-radius: 9px; }
-      .sk-control-segment-month { width: 47px; }
-      .sk-control-segment-year { width: 47px; }
+      .sk-control-segment-item { height: 38px; }
+      .sk-control-segment-month { width: 42px; }
+      .sk-control-segment-year { width: 42px; }
       .view-segment {
-        box-sizing: border-box;
         height: 44px;
-        gap: 2px;
+        box-sizing: border-box;
+        gap: 1px;
         padding: 3px;
-        border-radius: 12px;
       }
       .view-segment-btn {
         height: 38px;
         min-height: 38px;
-        padding: 0 10px;
-        border-radius: 9px;
-        font-size: 13.5px;
+        box-sizing: border-box;
+        padding: 0 9px;
+        font-size: 14px;
+        line-height: 1;
       }
       th, td { 
         padding: 8px 4px; 
@@ -1248,28 +1246,31 @@
       gap: 7px;
     }
     .recent-game {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 40px;
+      box-sizing: border-box;
       border: 0;
       border-radius: 11px;
-      padding: 9px 4px;
+      padding: 8px 4px;
       text-align: center;
       background: var(--bg-muted);
-      color: inherit;
-      font: inherit;
+      color: var(--text-primary);
+      font-family: inherit;
       font-weight: 700;
       font-size: 14px;
+      line-height: 1.2;
       cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
       -webkit-tap-highlight-color: transparent;
-      transition: transform .14s ease, filter .14s ease, opacity .14s ease;
     }
     @media (hover: hover) {
-      .recent-game:hover {
-        filter: brightness(0.96);
-      }
+      .recent-game:hover { filter: brightness(.97); }
     }
-    .recent-game:active {
-      transform: scale(0.95);
-      opacity: 0.8;
-    }
+    .recent-game:active { transform: scale(.97); }
     .recent-game:focus-visible {
       outline: 2px solid rgba(var(--accent-rgb), .42);
       outline-offset: 2px;
@@ -2936,29 +2937,13 @@ function getOverallRank(playerName) {
     }
     return null;
 }
-function jumpToRecentGame(gameId) {
-    const targetGame = rawGames.find(g => Number(g.id) === Number(gameId) && !g.is_deleted);
-    if (!targetGame)
-        return;
-    closePlayerProfile();
-    focusGameInTable(targetGame);
-    requestAnimationFrame(() => {
-        const tableContainer = document.querySelector('#contentArea .table-container');
-        if (tableContainer) {
-            tableContainer.scrollLeft = 0;
-        }
-        const card = document.querySelector('.card');
-        if (card) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-    });
-}
 function renderProfileStats(stats) {
     const m = stats.month, y = stats.year;
     const recentHtml = stats.recent.length ? stats.recent.map(g => {
         const cls = g.score > 0 ? 'win' : (g.score < 0 ? 'lose' : 'zero');
-        const scoreLabel = `${g.score > 0 ? '+' : ''}${g.score}`;
-        return `<button type="button" class="recent-game ${cls}" data-game-id="${g.gameId}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}" aria-label="${escapeHtml(g.date)} 分數 ${escapeHtml(scoreLabel)}，點擊跳轉至該牌局">${scoreLabel}</button>`;
+        const scoreText = `${g.score > 0 ? '+' : ''}${g.score}`;
+        const gameLabel = `${g.sheet} ${g.date}，分數 ${scoreText}，點擊查看牌局`;
+        return `<button type="button" class="recent-game ${cls}" data-game-id="${escapeHtml(String(g.gameId))}" title="${escapeHtml(g.sheet)} ${escapeHtml(g.date)}" aria-label="${escapeHtml(gameLabel)}">${scoreText}</button>`;
     }).join('') : `<div class="profile-empty">暫無參加紀錄</div>`;
     const opponents = Object.values(stats.opponents).filter(o => o.games >= 3).map(o => ({ ...o, rate: o.games ? o.wins / o.games : 0 })).sort((a, b) => a.rate - b.rate || b.games - a.games || a.name.localeCompare(b.name));
     const potentialNemesis = opponents[0] || null, nemesis = (potentialNemesis && potentialNemesis.rate < .5) ? potentialNemesis : null;
@@ -2971,8 +2956,7 @@ function renderProfileStats(stats) {
     }
     const monthWinRateClass = rateClass(m.wins, m.games), yearWinRateClass = rateClass(y.wins, y.games);
     const monthAvg = m.games ? Number((m.total / m.games).toFixed(1)) : null, yearAvg = y.games ? Number((y.total / y.games).toFixed(1)) : null;
-    const profileBody = document.getElementById('profileBody');
-    profileBody.innerHTML = `
+    document.getElementById('profileBody').innerHTML = `
         <section class="profile-section"><div class="profile-section-title">本月戰績 · ${escapeHtml(stats.profileMonthName || '-')}</div><div class="profile-grid">
           <div class="profile-stat"><div class="profile-stat-label">對局</div><div class="profile-stat-value">${m.games}</div></div>
           <div class="profile-stat"><div class="profile-stat-label">勝率</div><div class="profile-stat-value ${monthWinRateClass}">${pct(m.wins, m.games)}</div></div>
@@ -2991,10 +2975,16 @@ function renderProfileStats(stats) {
           <div class="duel-card"><div class="duel-label">😇 天使</div>${benefactor ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
         </div></section>
         <section class="profile-section"><div class="profile-section-title">最佳 / 最差單局</div><div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div><div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div></section>`;
-    profileBody.querySelectorAll('.recent-game[data-game-id]').forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.stopPropagation();
-            jumpToRecentGame(btn.dataset.gameId);
+    document.querySelectorAll('.recent-game[data-game-id]').forEach(button => {
+        button.addEventListener('click', () => {
+            const game = rawGames.find(item => Number(item.id) === Number(button.dataset.gameId));
+            if (!game)
+                return;
+            closePlayerProfile();
+            focusGameInTable(game);
+            requestAnimationFrame(() => {
+                document.querySelector('.table-scroll-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
         });
     });
 }
@@ -3057,6 +3047,78 @@ function setupProfileDrag() {
             closePlayerProfile();
     }, { passive: true });
     sheet.addEventListener('touchcancel', () => { profileDrag.active = false; sheet.classList.remove('dragging'); sheet.style.transform = ''; }, { passive: true });
+}
+let addGameDrag = { active: false, startY: 0, startX: 0, currentY: 0, hasContent: false };
+function addGameFormHasContent() {
+    const dateValue = document.getElementById('gameDateInput')?.value || '';
+    return Boolean(dateValue || editingGameId || addGameRows.some(row => {
+        const hasPlayer = row.mode === 'select'
+            ? Boolean(row.playerId)
+            : Boolean(String(row.playerName || '').trim());
+        const hasScore = row.score !== '' && row.score !== null && row.score !== undefined;
+        return hasPlayer || hasScore;
+    }));
+}
+function resetAddGameDrag(drawer = document.getElementById('addGameDrawer')) {
+    addGameDrag.active = false;
+    addGameDrag.hasContent = false;
+    if (drawer) {
+        drawer.classList.remove('dragging');
+        drawer.style.transform = '';
+    }
+}
+function setupAddGameDrawerDrag() {
+    const drawer = document.getElementById('addGameDrawer');
+    const body = document.getElementById('addGameBody');
+    if (!drawer || !body)
+        return;
+
+    drawer.addEventListener('touchstart', e => {
+        if (window.innerWidth > 600 || !drawer.classList.contains('show') || e.touches.length !== 1 || addGameSaving)
+            return;
+        const target = e.target instanceof Element ? e.target : null;
+        if (!target)
+            return;
+        const fromHeader = Boolean(target.closest('.add-game-header'));
+        const interactive = Boolean(target.closest('button, input, select, textarea, a, [contenteditable="true"], .date-picker-wrap'));
+        const bodyAtTop = body.scrollTop <= 0 && !interactive;
+        if ((!fromHeader && !bodyAtTop) || (fromHeader && interactive))
+            return;
+
+        const touch = e.touches[0];
+        addGameDrag.active = true;
+        addGameDrag.startY = touch.clientY;
+        addGameDrag.startX = touch.clientX;
+        addGameDrag.currentY = touch.clientY;
+        addGameDrag.hasContent = addGameFormHasContent();
+        drawer.classList.add('dragging');
+    }, { passive: true });
+
+    drawer.addEventListener('touchmove', e => {
+        if (!addGameDrag.active || window.innerWidth > 600 || e.touches.length !== 1)
+            return;
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - addGameDrag.startX;
+        const deltaY = touch.clientY - addGameDrag.startY;
+        if (Math.abs(deltaX) > Math.abs(deltaY) + 8) {
+            resetAddGameDrag(drawer);
+            return;
+        }
+        addGameDrag.currentY = touch.clientY;
+        drawer.style.transform = `translateY(${Math.max(0, deltaY)}px)`;
+    }, { passive: true });
+
+    drawer.addEventListener('touchend', () => {
+        if (!addGameDrag.active)
+            return;
+        const delta = Math.max(0, addGameDrag.currentY - addGameDrag.startY);
+        const closeThreshold = addGameDrag.hasContent ? 180 : 120;
+        resetAddGameDrag(drawer);
+        if (delta >= closeThreshold)
+            closeAddGameDrawer();
+    }, { passive: true });
+
+    drawer.addEventListener('touchcancel', () => resetAddGameDrag(drawer), { passive: true });
 }
 function getAdminRedirectUrl() {
     return window.location.origin + window.location.pathname;
@@ -3668,109 +3730,13 @@ async function openEditGameDrawer() {
 function closeAddGameDrawer(force = false) {
     if (addGameSaving && !force)
         return;
+    resetAddGameDrag();
     document.getElementById('addGameBackdrop').classList.remove('show');
     document.getElementById('addGameDrawer').classList.remove('show');
     document.getElementById('addGameBackdrop').setAttribute('aria-hidden', 'true');
     document.getElementById('addGameDrawer').setAttribute('aria-hidden', 'true');
     if (!document.getElementById('profileSheet').classList.contains('show'))
         document.body.classList.remove('profile-open');
-}
-function hasAddGameFormInput() {
-    const dateVal = document.getElementById('gameDateInput')?.value || '';
-    if (addGameMode === 'edit') {
-        if (!editingGameId) {
-            return Boolean(dateVal);
-        }
-        const original = rawGames.find(g => Number(g.id) === Number(editingGameId));
-        if (!original)
-            return true;
-        if (String(original.played_on) !== String(dateVal))
-            return true;
-        const origResults = original.results || [];
-        const activeRows = addGameRows.filter(r => r.playerId || String(r.playerName || '').trim() || r.score !== '');
-        if (activeRows.length !== origResults.length)
-            return true;
-        for (let i = 0; i < origResults.length; i++) {
-            const row = addGameRows[i];
-            const orig = origResults[i];
-            if (!row || row.mode !== 'select')
-                return true;
-            if (String(row.playerId) !== String(orig.playerId))
-                return true;
-            const currentScore = row.score === '' ? null : Number(row.score);
-            if (currentScore !== Number(orig.score))
-                return true;
-        }
-        return false;
-    }
-    if (dateVal)
-        return true;
-    if (addGameRows.length > 4)
-        return true;
-    return addGameRows.some(r => (r.mode === 'select' && Boolean(r.playerId)) ||
-        (r.mode === 'input' && String(r.playerName || '').trim() !== '') ||
-        r.score !== '');
-}
-let addGameDrag = { active: false, startY: 0, currentY: 0 };
-function setupAddGameDrag() {
-    const drawer = document.getElementById('addGameDrawer');
-    const body = document.getElementById('addGameBody');
-    if (!drawer || !body)
-        return;
-    drawer.addEventListener('touchstart', e => {
-        if (window.innerWidth > 600 || !drawer.classList.contains('show') || addGameSaving || e.touches.length !== 1)
-            return;
-        const target = e.target;
-        if (target.closest('button, input, select, option, label'))
-            return;
-        const fromHeader = !!target.closest('.add-game-header');
-        const bodyAtTop = body.scrollTop <= 0;
-        if (!fromHeader && !bodyAtTop)
-            return;
-        const touch = e.touches[0];
-        addGameDrag.active = true;
-        addGameDrag.startY = touch.clientY;
-        addGameDrag.currentY = touch.clientY;
-        drawer.classList.add('dragging');
-    }, { passive: true });
-    drawer.addEventListener('touchmove', e => {
-        if (!addGameDrag.active || window.innerWidth > 600 || e.touches.length !== 1)
-            return;
-        const y = e.touches[0].clientY;
-        const delta = Math.max(0, y - addGameDrag.startY);
-        addGameDrag.currentY = y;
-        if (delta > 0) {
-            if (e.cancelable)
-                e.preventDefault();
-            const resisted = hasAddGameFormInput() && delta > 120
-                ? 120 + (delta - 120) * 0.35
-                : delta;
-            drawer.style.transform = `translateY(${resisted}px)`;
-        }
-    }, { passive: false });
-    drawer.addEventListener('touchend', () => {
-        if (!addGameDrag.active)
-            return;
-        const delta = Math.max(0, addGameDrag.currentY - addGameDrag.startY);
-        addGameDrag.active = false;
-        drawer.classList.remove('dragging');
-        drawer.style.transform = '';
-        if (delta >= 120) {
-            if (hasAddGameFormInput()) {
-                if (window.confirm('確定要放棄目前已輸入的內容？')) {
-                    closeAddGameDrawer();
-                }
-            }
-            else {
-                closeAddGameDrawer();
-            }
-        }
-    }, { passive: true });
-    drawer.addEventListener('touchcancel', () => {
-        addGameDrag.active = false;
-        drawer.classList.remove('dragging');
-        drawer.style.transform = '';
-    }, { passive: true });
 }
 async function ensurePlayerForAddGameRow(row) {
     if (row.mode === 'select') {
@@ -3955,6 +3921,7 @@ async function saveAddGame() {
     }
 }
 function setupAddGameDrawer() {
+    setupAddGameDrawerDrag();
     document.getElementById('addGameTrigger').addEventListener('click', () => { closeMainMenu(false); openAddGameDrawer(); });
     document.getElementById('adminGoogleLogin').addEventListener('click', handleGoogleLogin);
     document.getElementById('adminAuthClose').addEventListener('click', () => closeAdminAuthModal(true));
@@ -4148,7 +4115,6 @@ document.getElementById('profileBackdrop').addEventListener('click', closePlayer
 document.getElementById('profileClose').addEventListener('click', closePlayerProfile);
 initThemeSettings();
 setupProfileDrag();
-setupAddGameDrag();
 setupAddGameDrawer();
 initAdminAuth();
 fetchData();
