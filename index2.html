@@ -145,96 +145,12 @@
     }
 
     .main-menu-control {
-      position: relative;
-      margin-left: auto;
-      z-index: calc(var(--z-modal) + 10);
-      display: flex;
-      align-items: center;
-    }
-    .admin-account {
-      position: relative;
-      z-index: calc(var(--z-modal) + 10);
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-      max-width: calc(100% - 48px);
-    }
-    .admin-account[hidden] { display: none; }
-    .header-wrapper.admin-active {
-      padding-top: 46px;
-    }
-    .header-wrapper.admin-active .main-menu-control {
-      top: 0;
-      transform: none;
-    }
-    .admin-account-identity {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-    .admin-account-avatar {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 32px;
-      width: 32px;
-      height: 32px;
-      overflow: hidden;
-      border-radius: 50%;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .admin-account-avatar img {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
+      top: 50%;
+      right: 0;
+      z-index: calc(var(--z-modal) + 10);
+      transform: translateY(-50%);
     }
-    .admin-account-avatar img[hidden],
-    .admin-account-avatar-fallback[hidden] { display: none; }
-    .admin-account-name {
-      display: block;
-      min-width: 0;
-      max-width: 190px;
-      overflow: hidden;
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.2;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .admin-account-logout {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      flex: 0 0 auto;
-      min-height: 34px;
-      padding: 0 9px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--surface);
-      color: var(--text-secondary);
-      font: inherit;
-      font-size: 12px;
-      font-weight: 650;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: background-color .18s ease, border-color .18s ease, color .18s ease, opacity .18s ease;
-    }
-    .admin-account-logout:hover { background: var(--bg-muted); border-color: var(--border-strong); }
-    .admin-account-logout:active { opacity: .65; }
-    .admin-account-logout:disabled { opacity: .5; cursor: wait; }
-    .admin-account-logout svg { width: 15px; height: 15px; display: block; flex: 0 0 auto; }
-    .admin-account-logout:focus-visible { outline: 2px solid rgba(var(--accent-rgb), .42); outline-offset: 2px; }
     .main-menu-trigger {
       display: inline-flex;
       align-items: center;
@@ -406,12 +322,10 @@
     
     .header-wrapper { 
       position: relative; 
-      min-height: 40px;
       margin-bottom: 24px; 
       display: flex; 
-      justify-content: space-between;
+      justify-content: center; 
       align-items: center; 
-      gap: 12px;
     } 
     
     h1 { 
@@ -1046,12 +960,6 @@
     }
 
     @media (max-width: 600px) {
-      .admin-account { gap: 6px; }
-      .admin-account-identity { gap: 6px; }
-      .admin-account-avatar { flex-basis: 30px; width: 30px; height: 30px; }
-      .admin-account-name { max-width: min(104px, 27vw); font-size: 12px; }
-      .admin-account-logout { min-height: 32px; padding: 0 7px; gap: 4px; }
-      .admin-account-logout span { font-size: 12px; }
       .table-controls {
         padding: 13px 14px 11px;
         gap: 6px;
@@ -2059,22 +1967,7 @@
 
   <div class="container">
     <div class="header-wrapper">
-      <div class="admin-account" id="adminAccount" hidden aria-label="管理員帳戶">
-        <div class="admin-account-identity">
-          <span class="admin-account-avatar" aria-hidden="true">
-            <img id="adminAccountAvatarImage" alt="" referrerpolicy="no-referrer" hidden>
-            <span class="admin-account-avatar-fallback" id="adminAccountAvatarFallback">管</span>
-          </span>
-          <span class="admin-account-name" id="adminAccountName"></span>
-        </div>
-        <button type="button" class="admin-account-logout" id="adminLogoutButton" title="登出管理員帳戶" aria-label="登出管理員帳戶">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M10 4.5H6.5C5.4 4.5 4.5 5.4 4.5 6.5V17.5C4.5 18.6 5.4 19.5 6.5 19.5H10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <path d="M13.5 8L17.5 12L13.5 16M17 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>登出</span>
-        </button>
-      </div>
+      <h1>Lam Nei Studio</h1>
       <div class="main-menu-control" id="mainMenuControl">
         <button type="button" class="main-menu-trigger" id="mainMenuTrigger"
                 aria-label="開啟主選單" aria-haspopup="menu" aria-expanded="false"
@@ -2262,75 +2155,6 @@ let isAdminUser = false;
 let adminAuthChecking = false;
 let adminAuthCheckPromise = null;
 let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
-function renderAdminAccount() {
-    const control = document.getElementById('adminAccount');
-    const header = document.querySelector('.header-wrapper');
-    const nameElement = document.getElementById('adminAccountName');
-    const image = document.getElementById('adminAccountAvatarImage');
-    const fallback = document.getElementById('adminAccountAvatarFallback');
-    if (!control || !nameElement || !image || !fallback)
-        return;
-    const user = adminSession?.user || null;
-    const visible = Boolean(isAdminUser && user);
-    control.hidden = !visible;
-    if (header)
-        header.classList.toggle('admin-active', visible);
-    if (!visible) {
-        image.onload = null;
-        image.onerror = null;
-        image.removeAttribute('src');
-        image.hidden = true;
-        fallback.hidden = false;
-        nameElement.textContent = '';
-        return;
-    }
-    const metadata = user.user_metadata || {};
-    const displayName = String(metadata.full_name || metadata.name || metadata.preferred_username || user.email || '管理員').trim() || '管理員';
-    const avatarUrl = metadata.avatar_url || metadata.picture || metadata.avatar || '';
-    nameElement.textContent = displayName;
-    fallback.textContent = Array.from(displayName)[0] || '管';
-    fallback.hidden = false;
-    image.onload = () => {
-        image.hidden = false;
-        fallback.hidden = true;
-    };
-    image.onerror = () => {
-        image.hidden = true;
-        fallback.hidden = false;
-    };
-    image.hidden = true;
-    image.removeAttribute('src');
-    if (typeof avatarUrl === 'string' && /^https?:\/\//i.test(avatarUrl))
-        image.src = avatarUrl;
-}
-async function handleAdminLogout() {
-    if (!supabaseClient || addGameSaving)
-        return;
-    const button = document.getElementById('adminLogoutButton');
-    if (button)
-        button.disabled = true;
-    try {
-        const { error } = await supabaseClient.auth.signOut();
-        if (error)
-            throw error;
-        adminSession = null;
-        isAdminUser = false;
-        pendingAdminAction = '';
-        sessionStorage.removeItem('lamnei_admin_pending');
-        renderAdminAccount();
-        closeMainMenu(false);
-        closeAddGameDrawer(true);
-        closeAdminAuthModal(true);
-        showToast('已登出管理員帳戶');
-    }
-    catch (err) {
-        showToast(`登出失敗：${err.message || String(err)}`, 'warning');
-    }
-    finally {
-        if (button)
-            button.disabled = false;
-    }
-}
 function escapeHtml(value) {
     return String(value ?? '')
         .replace(/&/g, '&amp;')
@@ -3202,19 +3026,16 @@ async function refreshAdminAccess() {
             adminSession = session || null;
             if (!session) {
                 isAdminUser = false;
-                renderAdminAccount();
                 return false;
             }
             const { data, error } = await supabaseClient.rpc('is_current_user_admin');
             if (error)
                 throw error;
             isAdminUser = data === true;
-            renderAdminAccount();
             return isAdminUser;
         }
         catch (err) {
             isAdminUser = false;
-            renderAdminAccount();
             console.error('Admin auth check failed:', err);
             return false;
         }
@@ -3303,16 +3124,11 @@ async function initAdminAuth() {
     if (!supabaseClient)
         return;
     supabaseClient.auth.onAuthStateChange((event, session) => {
-        const previousUserId = adminSession?.user?.id || '';
         adminSession = session || null;
         if (!session) {
             isAdminUser = false;
-            renderAdminAccount();
             return;
         }
-        if (previousUserId && previousUserId !== session.user?.id)
-            isAdminUser = false;
-        renderAdminAccount();
         setTimeout(async () => {
             const allowed = await refreshAdminAccess();
             if (!allowed) {
@@ -3981,7 +3797,6 @@ async function saveAddGame() {
 function setupAddGameDrawer() {
     document.getElementById('addGameTrigger').addEventListener('click', () => { closeMainMenu(false); openAddGameDrawer(); });
     document.getElementById('adminGoogleLogin').addEventListener('click', handleGoogleLogin);
-    document.getElementById('adminLogoutButton').addEventListener('click', handleAdminLogout);
     document.getElementById('adminAuthClose').addEventListener('click', () => closeAdminAuthModal(true));
     document.getElementById('adminAuthBackdrop').addEventListener('click', () => closeAdminAuthModal(true));
     document.getElementById('addGameModeToggle').addEventListener('click', () => {
