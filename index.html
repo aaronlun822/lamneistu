@@ -293,10 +293,18 @@
       }
     }
 
-    * { 
-      -webkit-touch-callout: none; 
-      -webkit-user-select: none; 
-      user-select: none; 
+    button,
+    th,
+    .profile-grabber {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .player-name-btn {
+      -webkit-touch-callout: default;
+      -webkit-user-select: text;
+      user-select: text;
     }
     
     body { 
@@ -1894,8 +1902,7 @@
       line-height: 1.45;
     }
     .add-game-drawer input,
-    .add-game-drawer select,
-    .add-game-drawer button { -webkit-user-select: auto; user-select: auto; }
+    .add-game-drawer select { -webkit-user-select: auto; user-select: auto; }
 
     @media (max-width: 600px) {
       .add-game-drawer {
@@ -2570,6 +2577,34 @@ function resetTableViewState() {
     currentSortCol = 'total';
     sortAscending = false;
     focusedDateCol = null;
+}
+function focusGameInTable(targetGame) {
+    if (!targetGame)
+        return;
+    if (targetGame.is_deleted) {
+        hasInitializedYear = false;
+        preferredMonthNo = null;
+        activeMonthNo = null;
+        activeViewMode = 'month';
+        resetTableViewState();
+        aggregateDatabaseData();
+        renderControls();
+        renderContent();
+        return;
+    }
+    activeYear = targetGame.year;
+    activeMonthNo = targetGame.monthNo;
+    preferredMonthNo = targetGame.monthNo;
+    activeViewMode = 'month';
+    aggregateDatabaseData();
+    activeSheetName = monthName(targetGame.monthNo);
+    focusedDateCol = getGameColumnIndex(activeSheetName, targetGame.id);
+    currentSortCol = focusedDateCol !== null
+        ? focusedDateCol
+        : 'total';
+    sortAscending = false;
+    renderControls();
+    renderContent();
 }
 function switchYear(yearValue) {
     const nextYear = Number(yearValue);
@@ -3301,10 +3336,8 @@ function updateEditGameDeleteButton() {
         btn.setAttribute('aria-label', '復原牌局');
         btn.setAttribute('title', '復原牌局');
         icon.innerHTML = `
-          <path d="M7.25 7.5A7.75 7.75 0 1 1 5.2 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M7.25 4.25V7.5H4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M10 10.25L13.5 13.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M13.5 10.25L10 13.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M4.75 12A7.25 7.25 0 1 0 6.87 6.87L4.75 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4.75 4.75V9H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         `;
     }
     else {
@@ -3356,6 +3389,13 @@ async function toggleEditGameDeleted() {
                 : '復原牌局失敗。');
         }
         databaseWriteSucceeded = true;
+        if (deleting) {
+            hasInitializedYear = false;
+            preferredMonthNo = null;
+            activeMonthNo = null;
+            activeViewMode = 'month';
+            resetTableViewState();
+        }
         const refreshSucceeded = await fetchData();
         if (!refreshSucceeded) {
             editingGameIsDeleted = deleting;
@@ -3366,18 +3406,20 @@ async function toggleEditGameDeleted() {
                 : '已復原；畫面更新失敗，請重新載入。', 'warning');
             return;
         }
+        if (deleting) {
+            closeAddGameDrawer(true);
+            showToast('已刪除牌局');
+            return;
+        }
         const targetGame = rawGames.find(g => Number(g.id) === targetId);
         if (!targetGame) {
             closeAddGameDrawer(true);
             showToast(`已${actionName}；但無法確認最新資料，請重新載入。`, 'warning');
             return;
         }
-        editingGameIsDeleted = Boolean(targetGame.is_deleted);
-        loadGameIntoForm(targetId);
-        updateEditGameDeleteButton();
-        showToast(editingGameIsDeleted
-            ? '已刪除牌局'
-            : '已復原牌局');
+        focusGameInTable(targetGame);
+        closeAddGameDrawer(true);
+        showToast('已復原牌局');
     }
     catch (err) {
         if (databaseWriteSucceeded) {
@@ -3407,7 +3449,7 @@ function renderAddGameRows() {
     const host = document.getElementById('playerRows');
     if (!host)
         return;
-    host.innerHTML = addGameRows.map(row => {
+    host.innerHTML = addGameRows.map((row, rowIndex) => {
         const selectedElsewhere = getSelectedIds(row.id);
         const entryClass = row.removable ? 'player-entry' : 'player-entry required';
         const nameControl = row.mode === 'input'
@@ -3418,7 +3460,7 @@ function renderAddGameRows() {
         const removeHtml = row.removable
             ? `<button type="button" class="player-remove" data-row-remove="${row.id}" aria-label="刪除玩家列">×</button>`
             : `<span class="player-remove-placeholder" aria-hidden="true"></span>`;
-        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign < 0 ? 'negative' : 'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign < 0 ? '−' : '+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
+        return `<div class="${entryClass}" data-row-wrap="${row.id}">${nameControl}<button type="button" class="sign-switch ${row.sign < 0 ? 'negative' : 'positive'}" data-row-sign="${row.id}" aria-label="切換正負">${row.sign < 0 ? '−' : '+'}</button><input class="score-input ${scoreClass}" data-row-score="${row.id}" type="number" min="0" step="1" inputmode="numeric" enterkeyhint="${rowIndex < addGameRows.length - 1 ? 'next' : 'done'}" value="${scoreAbs}" placeholder="分數" aria-label="分數">${removeHtml}</div>`;
     }).join('');
     host.querySelectorAll('[data-row-select]').forEach(select => select.addEventListener('change', e => {
         const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowSelect));
@@ -3454,19 +3496,33 @@ function renderAddGameRows() {
             input.setSelectionRange(input.value.length, input.value.length);
         }
     }));
-    host.querySelectorAll('[data-row-score]').forEach(input => input.addEventListener('input', e => {
-        const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowScore));
-        if (!row)
-            return;
-        let val = e.currentTarget.value.replace(/[^0-9]/g, '');
-        if (val.length > 1)
-            val = val.replace(/^0+(?=\d)/, '');
-        e.currentTarget.value = val;
-        row.score = val === '' ? '' : Number(val) * row.sign;
-        e.currentTarget.classList.toggle('win', row.score > 0);
-        e.currentTarget.classList.toggle('lose', row.score < 0);
-        e.currentTarget.classList.toggle('zero', row.score === 0 || row.score === '');
-    }));
+    host.querySelectorAll('[data-row-score]').forEach(input => {
+        input.addEventListener('input', e => {
+            const row = addGameRows.find(r => String(r.id) === String(e.currentTarget.dataset.rowScore));
+            if (!row)
+                return;
+            let val = e.currentTarget.value.replace(/[^0-9]/g, '');
+            if (val.length > 1)
+                val = val.replace(/^0+(?=\d)/, '');
+            e.currentTarget.value = val;
+            row.score = val === '' ? '' : Number(val) * row.sign;
+            e.currentTarget.classList.toggle('win', row.score > 0);
+            e.currentTarget.classList.toggle('lose', row.score < 0);
+            e.currentTarget.classList.toggle('zero', row.score === 0 || row.score === '');
+        });
+        input.addEventListener('keydown', e => {
+            if (e.key !== 'Enter')
+                return;
+            e.preventDefault();
+            const scoreInputs = Array.from(host.querySelectorAll('[data-row-score]'));
+            const currentIndex = scoreInputs.indexOf(e.currentTarget);
+            const nextInput = scoreInputs[currentIndex + 1];
+            if (nextInput)
+                nextInput.focus();
+            else
+                e.currentTarget.blur();
+        });
+    });
     host.querySelectorAll('[data-row-remove]').forEach(btn => btn.addEventListener('click', () => {
         addGameRows = addGameRows.filter(r => String(r.id) !== String(btn.dataset.rowRemove));
         renderAddGameRows();
@@ -3722,27 +3778,9 @@ async function saveAddGame() {
             showToast('已儲存，但找不到最新牌局，請重新載入。', 'warning');
             return;
         }
-        editingGameIsDeleted = Boolean(targetGame.is_deleted);
-        if (isEdit) {
-            updateEditGameDeleteButton();
-        }
-        activeYear = targetGame.year;
-        activeMonthNo = targetGame.monthNo;
-        preferredMonthNo = targetGame.monthNo;
-        activeViewMode = 'month';
-        aggregateDatabaseData();
-        activeSheetName = monthName(targetGame.monthNo);
-        focusedDateCol = getGameColumnIndex(activeSheetName, targetGame.id);
-        currentSortCol = focusedDateCol !== null
-            ? focusedDateCol
-            : 'total';
-        sortAscending = false;
-        renderControls();
-        renderContent();
+        focusGameInTable(targetGame);
         closeAddGameDrawer(true);
-        showToast(isEdit
-            ? '已修改牌局'
-            : '已新增牌局');
+        showToast(isEdit ? '已修改牌局' : '已新增牌局');
     }
     catch (err) {
         if (databaseWriteSucceeded) {
