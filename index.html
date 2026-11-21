@@ -910,7 +910,7 @@
       flex: 0 0 auto;
       gap: 2px;
       box-sizing: border-box;
-      width: 144px;
+      width: 116px;
       height: 38px;
       padding: 3px;
       border-radius: 11px;
@@ -925,7 +925,7 @@
     }
 
     .sk-control-segment-month { width: 54px; }
-    .sk-control-segment-year { width: 82px; }
+    .sk-control-segment-year { width: 54px; }
     
     @keyframes sk-pulse { 
       0%, 100% { 
@@ -989,14 +989,14 @@
       .sk-control-year { width: 92px; }
       .sk-control-month { width: 106px; }
       .sk-control-segment {
-        width: 113px;
+        width: 89px;
         height: 34px;
         gap: 1px;
         padding: 2px;
       }
       .sk-control-segment-item { height: 30px; }
       .sk-control-segment-month { width: 42px; }
-      .sk-control-segment-year { width: 66px; }
+      .sk-control-segment-year { width: 42px; }
       .view-segment { gap: 1px; padding: 2px; }
       .view-segment-btn {
         min-height: 30px;
@@ -2564,7 +2564,7 @@ function renderControls() {
           </div>
           <div class="view-segment" role="group" aria-label="資料檢視模式">
             <button type="button" class="view-segment-btn ${isMonthView ? 'active' : ''}" data-view-mode="month" aria-pressed="${isMonthView}" ${hasMonths ? '' : 'disabled'}>月份</button>
-            <button type="button" class="view-segment-btn ${!isMonthView ? 'active' : ''}" data-view-mode="year" aria-pressed="${!isMonthView}">年度排名</button>
+            <button type="button" class="view-segment-btn ${!isMonthView ? 'active' : ''}" data-view-mode="year" aria-pressed="${!isMonthView}">全年</button>
           </div>
         </div>`;
     setupControlDropdown('yearSelector', 'yearSelectorMenu', 'year', switchYear);
