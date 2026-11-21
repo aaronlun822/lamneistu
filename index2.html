@@ -145,23 +145,20 @@
     }
 
     .main-menu-control {
-      position: absolute;
-      top: 50%;
-      right: 0;
+      position: relative;
+      margin-left: auto;
       z-index: calc(var(--z-modal) + 10);
-      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
     }
     .admin-account {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: auto;
+      position: relative;
       z-index: calc(var(--z-modal) + 10);
       display: flex;
       align-items: center;
       gap: 9px;
-      max-width: min(340px, calc(100% - 48px));
-      transform: translateY(-50%);
+      min-width: 0;
+      max-width: calc(100% - 48px);
     }
     .admin-account[hidden] { display: none; }
     .header-wrapper.admin-active {
@@ -412,8 +409,9 @@
       min-height: 40px;
       margin-bottom: 24px; 
       display: flex; 
-      justify-content: center; 
+      justify-content: space-between;
       align-items: center; 
+      gap: 12px;
     } 
     
     h1 { 
@@ -1048,9 +1046,6 @@
     }
 
     @media (max-width: 600px) {
-      .header-wrapper.admin-active .admin-account {
-        max-width: calc(100% - 48px);
-      }
       .admin-account { gap: 6px; }
       .admin-account-identity { gap: 6px; }
       .admin-account-avatar { flex-basis: 30px; width: 30px; height: 30px; }
