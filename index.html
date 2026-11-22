@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" id="metaThemeColor" content="#F2F2F7">
   <title>Lam Nei Studio</title>
   <script>
     (function () {
       const THEME_STORAGE_KEY = 'lam-nei-theme';
       const VALID_THEMES = ['light', 'dark'];
+      const THEME_COLORS = {
+        light: '#F2F2F7',
+        dark: '#11151B'
+      };
       let savedTheme = 'light';
       try {
         const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
@@ -24,6 +29,11 @@
       document.documentElement.setAttribute('data-theme', savedTheme);
       document.documentElement.setAttribute('data-theme-mode', savedTheme);
       document.documentElement.style.colorScheme = savedTheme;
+
+      const metaTheme = document.getElementById('metaThemeColor');
+      if (metaTheme) {
+        metaTheme.setAttribute('content', THEME_COLORS[savedTheme]);
+      }
     })();
   </script>
   <style>
@@ -311,7 +321,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-main);
       margin: 0;
-      padding: 20px 16px;
+      padding: calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom));
       color: var(--text-primary);
     }
 
@@ -3922,6 +3932,11 @@ function applyTheme(mode, persist = true) {
   root.setAttribute('data-theme', mode);
   root.setAttribute('data-theme-mode', mode);
   root.style.colorScheme = mode;
+
+  const metaTheme = document.getElementById('metaThemeColor');
+  if (metaTheme) {
+    metaTheme.setAttribute('content', THEME_STATUS_COLORS[mode]);
+  }
 
   if (persist) {
     try {
