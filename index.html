@@ -145,6 +145,7 @@
     .custom-dropdown-item,
     th, td,
     .dropdown-trigger,
+    .duel-back-btn,
     .view-segment,
     .view-segment-btn,
     .profile-stat,
@@ -290,6 +291,7 @@
       .custom-dropdown-item,
       th, td,
       .dropdown-trigger,
+      .duel-back-btn,
       .view-segment,
       .view-segment-btn,
       .profile-stat,
@@ -580,7 +582,11 @@
 
     @media (hover: hover) {
       .custom-dropdown-item:hover { background: var(--bg-muted); }
+      .duel-card.clickable:hover {
+        box-shadow: inset 0 0 0 1px var(--border-strong);
+      }
     }
+    .duel-card.clickable:active { opacity: .78; }
 
     .custom-dropdown-item:active { background: var(--border); }
 
@@ -588,6 +594,93 @@
       background: var(--accent-soft);
       color: var(--accent);
       font-weight: 650;
+    }
+
+    tr.duel-pin-1 td {
+      position: sticky;
+      top: 48px;
+      z-index: calc(var(--z-sticky) + 2);
+      background-color: var(--accent-soft-2);
+    }
+    tr.duel-pin-2 td {
+      position: sticky;
+      top: 96px;
+      z-index: calc(var(--z-sticky) + 2);
+      background-color: var(--surface);
+      box-shadow: 0 2px 0 var(--border-strong);
+    }
+
+    tr.duel-pin-1 td:nth-child(1),
+    tr.duel-pin-1 td:nth-child(2),
+    tr.duel-pin-1 td:nth-child(3),
+    tr.duel-pin-2 td:nth-child(1),
+    tr.duel-pin-2 td:nth-child(2),
+    tr.duel-pin-2 td:nth-child(3) {
+      z-index: calc(var(--z-sticky) + 3);
+    }
+    tr.duel-pin-1 td.focused-sticky,
+    tr.duel-pin-2 td.focused-sticky {
+      z-index: calc(var(--z-sticky) + 4);
+    }
+
+    .duel-player-dropdown {
+      width: 112px;
+      min-width: 112px;
+      max-width: 112px;
+    }
+
+    .duel-player-dropdown .dropdown-trigger-label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .duel-vs-label {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .duel-back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      min-height: 44px;
+      box-sizing: border-box;
+      padding: 0 15px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--bg-muted);
+      color: var(--text-primary);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color .18s ease, color .18s ease, border-color .18s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .duel-back-btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-strong);
+    }
+
+    .duel-back-btn:active {
+      background: var(--border);
+    }
+
+    .duel-empty-state {
+      padding: 44px 20px;
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 15px;
+      font-weight: 500;
     }
 
     .custom-dropdown-item:focus-visible {
@@ -953,6 +1046,17 @@
         min-width: 106px;
         max-width: 120px;
       }
+      tr.duel-pin-1 td { top: 40px; }
+      tr.duel-pin-2 td { top: 80px; }
+      .duel-player-dropdown {
+        width: 96px;
+        min-width: 96px;
+        max-width: 96px;
+      }
+      .duel-back-btn {
+        padding: 0 12px;
+        font-size: 14px;
+      }
       .sk-control-year { width: 92px; }
       .sk-control-month { width: 106px; }
       .sk-control-segment {
@@ -1273,6 +1377,17 @@
       padding: 12px;
       background: var(--bg-muted);
       min-width: 0;
+    }
+    .duel-card.clickable {
+      width: 100%;
+      border: 0;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -webkit-tap-highlight-color: transparent;
     }
     .duel-label {
       color: var(--text-tertiary);
@@ -2101,6 +2216,8 @@ let adminSession = null;
 let isAdminUser = false;
 let adminAuthCheckPromise = null;
 let pendingAdminAction = sessionStorage.getItem('lamnei_admin_pending') || '';
+let activeDuelFilter = null;
+let activeDuelData = null;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -2331,6 +2448,100 @@ function aggregateDatabaseData() {
   }
 }
 
+function buildDuelTableData(filter) {
+  if (!filter) return null;
+  const duelGames = rawGames
+    .filter(g => !g.is_deleted && g.year === Number(filter.year))
+    .filter(g =>
+      g.results.some(r => r.playerName === filter.playerName) &&
+      g.results.some(r => r.playerName === filter.opponentName)
+    )
+    .sort((a, b) => b.played_on.localeCompare(a.played_on) || b.id - a.id);
+
+  const dateHeaders = duelGames.map(g => `${g.day}/${g.monthNo}`);
+  const header = [null, 'Total', ...dateHeaders];
+
+  const rows = [];
+  rawPlayers.forEach(p => {
+    const pid = Number(p.id);
+    const scores = duelGames.map(game => {
+      const res = game.results.find(r => r.playerId === pid);
+      return res ? res.score : '';
+    });
+    const participated = scores.some(v => v !== '');
+    if (!participated && p.name !== filter.playerName && p.name !== filter.opponentName) {
+      return;
+    }
+    const total = scores.reduce((sum, v) => sum + (Number(v) || 0), 0);
+    rows.push([p.name, total, ...scores]);
+  });
+
+  return [[String(filter.year)], header, ...rows];
+}
+
+function openDuelView(playerName, opponentName) {
+  activeDuelFilter = {
+    playerName,
+    opponentName,
+    year: activeYear
+  };
+  activeDuelData = buildDuelTableData(activeDuelFilter);
+  resetTableViewState();
+  renderControls();
+  renderTableLayout();
+}
+
+function clearDuelView() {
+  activeDuelFilter = null;
+  activeDuelData = null;
+}
+
+function getActiveYearPlayers(year) {
+  const nameSet = new Set();
+  rawGames
+    .filter(g => !g.is_deleted && g.year === Number(year))
+    .forEach(g => {
+      g.results.forEach(r => {
+        if (r.playerName) nameSet.add(r.playerName);
+      });
+    });
+  return [...nameSet].sort((a, b) => a.localeCompare(b));
+}
+
+function switchDuelPlayer(slot, nextName) {
+  if (!activeDuelFilter || !nextName) return;
+  if (slot === 'A') {
+    if (nextName === activeDuelFilter.playerName || nextName === activeDuelFilter.opponentName) return;
+    activeDuelFilter.playerName = nextName;
+  } else if (slot === 'B') {
+    if (nextName === activeDuelFilter.opponentName || nextName === activeDuelFilter.playerName) return;
+    activeDuelFilter.opponentName = nextName;
+  }
+  activeDuelData = buildDuelTableData(activeDuelFilter);
+  resetTableViewState();
+  renderControls();
+  renderTableLayout();
+}
+
+function exitDuelToLatestMonth() {
+  clearDuelView();
+  const monthNames = allSheetNames.filter(name => name !== '年度排名');
+  if (monthNames.length) {
+    const latestSheet = monthNames[monthNames.length - 1];
+    const latestMonthNo = Number(globalData[latestSheet]?.[0]?.[0]);
+    activeMonthNo = latestMonthNo;
+    preferredMonthNo = latestMonthNo;
+    activeViewMode = 'month';
+    activeSheetName = latestSheet;
+  } else {
+    activeViewMode = 'year';
+    activeSheetName = '年度排名';
+  }
+  resetTableViewState();
+  renderControls();
+  renderTableLayout();
+}
+
 const PGRST303_RETRY_DELAYS_MS = [800, 1600, 3000];
 
 function isPgrst303Error(err) {
@@ -2407,6 +2618,7 @@ async function fetchData() {
       throw new Error('players 表沒有資料。');
     }
     aggregateDatabaseData();
+    if (activeDuelFilter) activeDuelData = buildDuelTableData(activeDuelFilter);
     renderControls();
     renderTableLayout();
     const retryStatus = document.getElementById('pgrst303RetryStatus');
@@ -2461,6 +2673,53 @@ function setupControlDropdown(triggerId, menuId, dataAttribute, onSelect) {
 }
 
 function renderControls() {
+  // 【對戰模式控制列】
+  if (activeDuelFilter) {
+    const yearPlayers = getActiveYearPlayers(activeDuelFilter.year);
+    const playerAOptions = yearPlayers.filter(name => name !== activeDuelFilter.opponentName);
+    const playerBOptions = yearPlayers.filter(name => name !== activeDuelFilter.playerName);
+
+    const playerAMenuHtml = playerAOptions.map(name => {
+      const selected = name === activeDuelFilter.playerName;
+      return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-player-a="${escapeHtml(name)}" role="menuitemradio" aria-checked="${selected}">
+        <span>${escapeHtml(name)}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
+      </button>`;
+    }).join('');
+
+    const playerBMenuHtml = playerBOptions.map(name => {
+      const selected = name === activeDuelFilter.opponentName;
+      return `<button type="button" class="custom-dropdown-item ${selected ? 'selected' : ''}" data-player-b="${escapeHtml(name)}" role="menuitemradio" aria-checked="${selected}">
+        <span>${escapeHtml(name)}</span>${selected ? '<span class="dropdown-item-check" aria-hidden="true">✓</span>' : ''}
+      </button>`;
+    }).join('');
+
+    document.getElementById('controlsArea').innerHTML = `
+      <div class="control-main-row">
+        <div class="period-selectors">
+          <div class="custom-dropdown-container" id="duelPlayerAContainer">
+            <button id="duelPlayerASelector" class="dropdown-trigger duel-player-dropdown" type="button" aria-label="選擇玩家A" aria-haspopup="menu" aria-expanded="false" aria-controls="duelPlayerAMenu">
+              <span class="dropdown-trigger-label">${escapeHtml(activeDuelFilter.playerName)}</span>
+            </button>
+            <div id="duelPlayerAMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇玩家A">${playerAMenuHtml}</div>
+          </div>
+          <span class="duel-vs-label" aria-hidden="true">vs</span>
+          <div class="custom-dropdown-container" id="duelPlayerBContainer">
+            <button id="duelPlayerBSelector" class="dropdown-trigger duel-player-dropdown" type="button" aria-label="選擇玩家B" aria-haspopup="menu" aria-expanded="false" aria-controls="duelPlayerBMenu">
+              <span class="dropdown-trigger-label">${escapeHtml(activeDuelFilter.opponentName)}</span>
+            </button>
+            <div id="duelPlayerBMenu" class="custom-dropdown-menu" role="menu" aria-label="選擇玩家B">${playerBMenuHtml}</div>
+          </div>
+        </div>
+        <button type="button" id="duelBackBtn" class="duel-back-btn">返回</button>
+      </div>`;
+
+    setupControlDropdown('duelPlayerASelector', 'duelPlayerAMenu', 'player-a', name => switchDuelPlayer('A', name));
+    setupControlDropdown('duelPlayerBSelector', 'duelPlayerBMenu', 'player-b', name => switchDuelPlayer('B', name));
+    document.getElementById('duelBackBtn')?.addEventListener('click', exitDuelToLatestMonth);
+    return;
+  }
+
+  // 【正常模式控制列】
   const monthNames = allSheetNames.filter(name => name !== '年度排名');
   const hasMonths = monthNames.length > 0;
   const yearMenuHtml = availableYears.map(year => {
@@ -2479,6 +2738,7 @@ function renderControls() {
   const isMonthView = activeViewMode === 'month';
   const yearLabel = availableYears.length ? String(activeYear) : '沒有年份';
   const monthLabel = activeMonthNo !== null ? monthShortName(activeMonthNo) : '沒有牌局';
+
   document.getElementById('controlsArea').innerHTML = `
     <div class="control-main-row">
       <div class="period-selectors">
@@ -2496,6 +2756,7 @@ function renderControls() {
         <button type="button" class="view-segment-btn ${!isMonthView ? 'active' : ''}" data-view-mode="year" aria-pressed="${!isMonthView}">全年</button>
       </div>
     </div>`;
+
   setupControlDropdown('yearSelector', 'yearSelectorMenu', 'year', switchYear);
   setupControlDropdown('monthSelectorTrigger', 'monthSelectorMenu', 'month-no', switchMonth);
   document.querySelectorAll('.view-segment-btn').forEach(button => {
@@ -2511,6 +2772,7 @@ function resetTableViewState() {
 
 function focusGameInTable(targetGame) {
   if (!targetGame) return;
+  clearDuelView(); 
   if (targetGame.is_deleted) {
     hasInitializedYear = false;
     preferredMonthNo = null;
@@ -2626,14 +2888,20 @@ function formatHeaderDate(dayVal, data) {
 }
 
 function renderTableLayout() {
-  const data = globalData[activeSheetName];
+  const isDuel = Boolean(activeDuelFilter && activeDuelData);
+  const data = isDuel ? activeDuelData : globalData[activeSheetName];
   if (!data) return;
-  const isOverall = activeSheetName === '年度排名';
-  const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall);
+  if (isDuel && getColLimit(data) <= 2) {
+    document.getElementById('contentArea').innerHTML = `
+      <div class="duel-empty-state">${escapeHtml(activeDuelFilter.year)} 年沒有找到同場牌局</div>`;
+    return;
+  }
+  const isOverall = !isDuel && activeSheetName === '年度排名';
+  const colIndices = getValidColumnsOrder(data, getColLimit(data), focusedDateCol, isOverall || isDuel);
   const headHtml = colIndices.map(j => {
     const val = data[1][j];
     const isF = j === focusedDateCol;
-    const text = val !== '' && val !== undefined ? (isOverall ? val : formatHeaderDate(val, data)) : '-';
+    const text = val !== '' && val !== undefined ? (isOverall || isDuel ? val : formatHeaderDate(val, data)) : '-';
     const icon = val !== '' && val !== undefined ? `<span class="sort-icon-container">${getSortIcon(j)}</span>` : '';
     return `<th data-col="${j}" class="${isF ? 'focused-sticky' : ''}">${escapeHtml(text)} ${icon}</th>`;
   }).join('');
@@ -2699,10 +2967,13 @@ function setupTableScrollArrows() {
 function renderTableBody() {
   const tbody = document.getElementById('tableBody');
   if (!tbody) return;
-  const data = globalData[activeSheetName];
-  const isOverall = activeSheetName === '年度排名';
+  const isDuel = Boolean(activeDuelFilter && activeDuelData);
+  const data = isDuel ? activeDuelData : globalData[activeSheetName];
+  if (!data) return;
+  const isOverall = !isDuel && activeSheetName === '年度排名';
   const colLimit = getColLimit(data);
-  const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall);
+  const colIndices = getValidColumnsOrder(data, colLimit, focusedDateCol, isOverall || isDuel);
+
   const rows = data.slice(2).filter(r => r[0]).map(row => {
     const hasPart = row.slice(2, colLimit).some(v => v !== '' && v !== undefined && v !== '-' && String(v).trim() !== '');
     return { data: row, total: Number(row[1]) || 0, hasPart };
@@ -2710,7 +2981,7 @@ function renderTableBody() {
 
   let rank = 1, displayRank = 1, prev = null;
   rows.forEach(r => {
-    if (!r.hasPart) {
+    if (isDuel || !r.hasPart) {
       r.rank = '-';
       return;
     }
@@ -2732,15 +3003,29 @@ function renderTableBody() {
     return Number.isFinite(number) ? number : -Infinity;
   };
 
-  rows.sort((a, b) => {
-    if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
-    const vA = getSortValue(a);
-    const vB = getSortValue(b);
-    return sortAscending ? vA - vB : vB - vA;
-  });
+  let finalRows = rows;
+  if (isDuel) {
+    const p1 = rows.find(r => r.data[0] === activeDuelFilter.playerName);
+    const p2 = rows.find(r => r.data[0] === activeDuelFilter.opponentName);
+    const others = rows
+      .filter(r => r.data[0] !== activeDuelFilter.playerName && r.data[0] !== activeDuelFilter.opponentName)
+      .sort((a, b) => {
+        const vA = getSortValue(a);
+        const vB = getSortValue(b);
+        return sortAscending ? vA - vB : vB - vA;
+      });
+    finalRows = [p1, p2, ...others].filter(Boolean);
+  } else {
+    rows.sort((a, b) => {
+      if (!a.hasPart || !b.hasPart) return b.hasPart - a.hasPart;
+      const vA = getSortValue(a);
+      const vB = getSortValue(b);
+      return sortAscending ? vA - vB : vB - vA;
+    });
+  }
 
-  tbody.innerHTML = rows.map(r => {
-    const rHtml = !r.hasPart
+  tbody.innerHTML = finalRows.map((r, idx) => {
+    const rHtml = (isDuel || !r.hasPart)
       ? `<span class="rank-other">-</span>`
       : (r.rank <= 3 ? `<span class="rank-circle rank-${r.rank}">${r.rank}</span>` : `<span class="rank-other">${r.rank}</span>`);
     const tClass = r.total > 0 ? 'win' : (r.total < 0 ? 'lose' : '');
@@ -2751,7 +3036,8 @@ function renderTableBody() {
       return `<td class="${cClass} ${j === focusedDateCol ? 'focused-sticky' : ''}">${hasV ? v : '-'}</td>`;
     }).join('');
     const playerName = String(r.data[0] ?? '');
-    return `<tr><td>${rHtml}</td><td><button type="button" class="player-name-btn" data-player="${escapeHtml(playerName)}">${escapeHtml(playerName)}</button></td><td class="${tClass} ${focusedDateCol !== null ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
+    const pinClass = isDuel ? (idx === 0 ? 'duel-pin-1' : (idx === 1 ? 'duel-pin-2' : '')) : '';
+    return `<tr class="${pinClass}"><td>${rHtml}</td><td><button type="button" class="player-name-btn" data-player="${escapeHtml(playerName)}">${escapeHtml(playerName)}</button></td><td class="${tClass} ${focusedDateCol !== null ? 'total-no-shadow' : ''}">${r.total}</td>${colsHtml}</tr>`;
   }).join('');
 
   tbody.querySelectorAll('.player-name-btn').forEach(btn => {
@@ -2910,8 +3196,12 @@ function renderProfileStats(stats) {
     </div></section>
     <section class="profile-section"><div class="profile-section-title">本年近期 10 場</div><div class="recent-grid">${recentHtml}</div><div class="recent-meta"><span>最新 → 最舊</span><span>近 ${stats.recent.length} 場勝率 ${pct(stats.recent.filter(g => g.score > 0).length, stats.recent.length)}</span></div></section>
     <section class="profile-section"><div class="profile-section-title">魔鬼 / 天使</div><div class="duel-grid">
-      <div class="duel-card"><div class="duel-label">😈 魔鬼</div>${nemesis ? `<div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
-      <div class="duel-card"><div class="duel-label">😇 天使</div>${benefactor ? `<div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div>` : `<div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div>`}</div>
+      ${nemesis
+        ? `<button type="button" class="duel-card clickable" data-player="${escapeHtml(stats.name)}" data-opponent="${escapeHtml(nemesis.name)}"><div class="duel-label">😈 魔鬼</div><div class="duel-opponent">${escapeHtml(nemesis.name)}</div><div class="duel-rate">勝率 ${pct(nemesis.wins, nemesis.games)}</div><div class="duel-note">共 ${nemesis.games} 場</div></button>`
+        : `<div class="duel-card"><div class="duel-label">😈 魔鬼</div><div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div></div>`}
+      ${benefactor
+        ? `<button type="button" class="duel-card clickable" data-player="${escapeHtml(stats.name)}" data-opponent="${escapeHtml(benefactor.name)}"><div class="duel-label">😇 天使</div><div class="duel-opponent">${escapeHtml(benefactor.name)}</div><div class="duel-rate">勝率 ${pct(benefactor.wins, benefactor.games)}</div><div class="duel-note">共 ${benefactor.games} 場</div></button>`
+        : `<div class="duel-card"><div class="duel-label">😇 天使</div><div class="duel-opponent" style="text-align:center;margin-top:12px;color:var(--text-tertiary);font-weight:normal;font-size:24px;line-height:1.5;">-</div></div>`}
     </div></section>
     <section class="profile-section"><div class="profile-section-title">最佳 / 最差單局</div><div class="record-row"><div class="record-label">最佳單局</div><div class="record-value ${signedClass(best)}">${best === null ? '-' : signedNumber(best)}</div></div><div class="record-row"><div class="record-label">最差單局</div><div class="record-value ${signedClass(worst)}">${worst === null ? '-' : signedNumber(worst)}</div></div></section>`;
 
@@ -2921,6 +3211,18 @@ function renderProfileStats(stats) {
       if (!game) return;
       closePlayerProfile();
       focusGameInTable(game);
+      requestAnimationFrame(() => {
+        document.querySelector('.table-scroll-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  });
+
+  document.querySelectorAll('.duel-card.clickable[data-opponent]').forEach(button => {
+    button.addEventListener('click', () => {
+      const { player, opponent } = button.dataset;
+      if (!player || !opponent) return;
+      closePlayerProfile();
+      openDuelView(player, opponent);
       requestAnimationFrame(() => {
         document.querySelector('.table-scroll-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
@@ -3433,6 +3735,7 @@ async function toggleEditGameDeleted() {
       activeMonthNo = null;
       activeViewMode = 'month';
       resetTableViewState();
+      clearDuelView();
     }
     const refreshSucceeded = await fetchData();
     if (!refreshSucceeded) {
